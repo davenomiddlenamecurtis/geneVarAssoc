@@ -4,7 +4,7 @@
 #define STARTOFFILE -99
 // special value because btree cannot store values of 0
 
-int hapsLocalLocus::outputAlleles(allelePair *all, FILE *f, long filePos, int nSubs, int *alleleMap, analysisSpecs const &spec)
+int hapsLocalLocus::outputAlleles(allelePair *all, FILE *f, FILEPOSITION filePos, int nSubs, int *alleleMap, analysisSpecs const &spec)
 {
 	char *ptr;
 	int s;
@@ -49,7 +49,7 @@ int hapsLocalLocus::outputAlleles(allelePair *all, FILE *f, long filePos, int nS
 	return 1;
 }
 
-int hapsLocalLocus::input(FILE *f, long *locusPosInFile, analysisSpecs const &spec)
+int hapsLocalLocus::input(FILE *f, FILEPOSITION *locusPosInFile, analysisSpecs const &spec)
 {
 	char *ptr,chrStr[10],*chrStrPtr,posStr[20];
 	*locusPosInFile=ftell(f);
