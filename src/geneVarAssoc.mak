@@ -1,4 +1,4 @@
-# Makefile for programs in vcf folder
+# Makefile for geneVaraAssoc and related programs 
 # the file makes its targets in ../obj and then copies executables to $DCBIN
 # this means it and source files can live in ../src which will only be text files
 
@@ -13,14 +13,14 @@ OURFLAGS = $(CFLAGS)
 HEADERS = btree.h consequenceType.hpp dcerror.hpp dcindex.hpp geneVarUtils.hpp getGene.hpp getSequence.hpp intervalList.h masterLocusFile.hpp vcfLocusFile.hpp hapsLocusFile.hpp
 
 ifdef INOBJ
-all: groupGetGenotypes genePhaseRec geneTestRec geneVarAssoc groupVarAssoc geneVarAssocAll geneVarAssocSome showAltSubs SNPVarAssoc
+all: geneVarAssoc groupVarAssoc geneVarAssocAll geneVarAssocSome showAltSubs SNPVarAssoc intVarAssoc
 else
 all:
 	if [ ! -e ../obj ] ; then mkdir ../obj ; fi ; \
 	if [ ! -e ${DCBIN} ] ; then mkdir ${DCBIN} ; fi ; \
 	cd ../obj; \
 	make -f ../src/vcf.mak INOBJ=INOBJ ; \
-	cp groupGetGenotypes genePhaseRec geneTestRec geneVarAssoc groupVarAssoc geneVarAssocAll geneVarAssocSome showAltSubs SNPVarAssoc ../bin ; \
+	cp geneVarAssoc groupVarAssoc geneVarAssocAll geneVarAssocSome showAltSubs SNPVarAssoc intVarAssoc ../bin ; \
 	echo copied executables to /bin ; \
 	cd ../src
 endif
