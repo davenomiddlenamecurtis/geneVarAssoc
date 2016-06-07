@@ -19,7 +19,7 @@ all:
 	if [ ! -e ../obj ] ; then mkdir ../obj ; fi ; \
 	if [ ! -e ${DCBIN} ] ; then mkdir ${DCBIN} ; fi ; \
 	cd ../obj; \
-	make -f ../src/vcf.mak INOBJ=INOBJ ; \
+	make -f ../src/geneVarAssoc.mak INOBJ=INOBJ ; \
 	cp geneVarAssoc groupVarAssoc geneVarAssocAll geneVarAssocSome showAltSubs SNPVarAssoc intVarAssoc ../bin ; \
 	echo copied executables to /bin ; \
 	cd ../src
@@ -31,12 +31,12 @@ clean:
 	rm *.o ; \
 	cd ../vcfcode
 
-VPATH=../vcfcode
+VPATH=../src
 	
-%.o: ../vcfcode/%.cpp $(HEADERS)
+%.o: ../src/%.cpp $(HEADERS)
 	$(CC) $(OURFLAGS) -c $< -o ../obj/$@
 	
-%.o: ../vcfcode/%.c $(HEADERS)
+%.o: ../src/%.c $(HEADERS)
 	$(C) $(OURFLAGS) -c $< -o ../obj/$@
 
 groupGetGenotypes: groupGetGenotypes.o btree.o consequenceType.o dcerror.o dcindex.o geneVarUtils.o getGeneFuncs.o getSequenceFuncs.o intervalList.o vcfLocusFile.o vcfWriteVars.o masterLocusFile.o hapsLocusFile.o outputGenotypes.o 
@@ -59,6 +59,9 @@ geneVarAssocAll: geneVarAssocAll.o btree.o consequenceType.o dcerror.o dcindex.o
 
 geneVarAssocSome: geneVarAssocSome.o btree.o consequenceType.o dcerror.o dcindex.o geneVarUtils.o getGeneFuncs.o getSequenceFuncs.o intervalList.o vcfLocusFile.o vcfWriteVars.o masterLocusFile.o hapsLocusFile.o
 	$(CC) -o geneVarAssocSome geneVarAssocSome.o btree.o consequenceType.o dcerror.o dcindex.o geneVarUtils.o getGeneFuncs.o getSequenceFuncs.o intervalList.o vcfLocusFile.o vcfWriteVars.o masterLocusFile.o hapsLocusFile.o
+
+intVarAssoc: intVarAssoc.o btree.o consequenceType.o dcerror.o dcindex.o geneVarUtils.o getGeneFuncs.o getSequenceFuncs.o intervalList.o vcfLocusFile.o vcfWriteVars.o masterLocusFile.o hapsLocusFile.o
+	$(CC) -o intVarAssoc geneVarAssoc.o btree.o consequenceType.o dcerror.o dcindex.o geneVarUtils.o getGeneFuncs.o getSequenceFuncs.o intervalList.o vcfLocusFile.o vcfWriteVars.o masterLocusFile.o hapsLocusFile.o
 
 SNPVarAssoc: SNPVarAssoc.o btree.o consequenceType.o dcerror.o dcindex.o geneVarUtils.o getGeneFuncs.o getSequenceFuncs.o intervalList.o vcfLocusFile.o vcfWriteVars.o masterLocusFile.o hapsLocusFile.o
 	$(CC) -o SNPVarAssoc SNPVarAssoc.o btree.o consequenceType.o dcerror.o dcindex.o geneVarUtils.o getGeneFuncs.o getSequenceFuncs.o intervalList.o vcfLocusFile.o vcfWriteVars.o masterLocusFile.o hapsLocusFile.o
