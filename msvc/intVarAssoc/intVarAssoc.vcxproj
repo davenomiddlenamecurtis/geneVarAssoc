@@ -19,9 +19,9 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{7AF40B72-C794-4C86-9DCA-B40BBEEC4BC8}</ProjectGuid>
+    <ProjectGuid>{07E7E6ED-D95C-4C5C-B331-060868A481B3}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>geneVarAssoc</RootNamespace>
+    <RootNamespace>intVarAssoc</RootNamespace>
     <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -71,8 +71,6 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <OutDir>..\..\exe</OutDir>
-    <IntDir>..\..\obj</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
@@ -91,8 +89,7 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;MSDOS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -105,7 +102,7 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>_DEBUG;_CONSOLE;MSVC;MSDOS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;_CONSOLE;MSDOS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
     <Link>
@@ -172,12 +169,12 @@
     <ClCompile Include="..\..\src\consequenceType.cpp" />
     <ClCompile Include="..\..\src\dcerror.cpp" />
     <ClCompile Include="..\..\src\dcindex.cpp" />
-    <ClCompile Include="..\..\src\geneVarAssoc.cpp" />
     <ClCompile Include="..\..\src\geneVarUtils.cpp" />
     <ClCompile Include="..\..\src\getGeneFuncs.cpp" />
     <ClCompile Include="..\..\src\getSequenceFuncs.cpp" />
     <ClCompile Include="..\..\src\hapsLocusFile.cpp" />
     <ClCompile Include="..\..\src\intervalList.cpp" />
+    <ClCompile Include="..\..\src\intVarAssoc.cpp" />
     <ClCompile Include="..\..\src\masterLocusFile.cpp" />
     <ClCompile Include="..\..\src\vcfLocusFile.cpp" />
     <ClCompile Include="..\..\src\vcfWriteVars.cpp" />
