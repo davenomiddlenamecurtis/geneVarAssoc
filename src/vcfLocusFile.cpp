@@ -255,7 +255,10 @@ int vcfLocalLocus::outputAlleles(allelePair *all,FILE *f,FILEPOSITION filePos,in
 		}
 		gq=atof(ptr2);
 		}
-		if (allStr[0]=='.' || gq<spec.GQThreshold)
+		
+		if (allStr[0] == '.'  && spec.wildIfUnknown)
+			all[s][0] = all[s][1] = 1;
+		else if (allStr[0]=='.' || gq<spec.GQThreshold)
 			all[s][0]=all[s][1]=0;
 		else
 		{	

@@ -159,7 +159,9 @@ int gvaParams::readParms(int argc,char *argv[],analysisSpecs &spec)
 		else if (FILLARG("--add-chr"))
 			strcpy(addChrStr, arg);
 		else if (FILLARG("--unknown-if-untyped"))
-			spec.unknownIfUntyped=atoi(arg);
+			spec.unknownIfUntyped = atoi(arg);
+		else if (FILLARG("--wild-if-unknown"))
+			spec.wildIfUnknown = atoi(arg);
 		else if (FILLARG("--unknown-if-no-pass"))
 			spec.unknownIfNoPass=atoi(arg);
 		else if (FILLARG("--skip-if-no-pass"))

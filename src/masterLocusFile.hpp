@@ -64,6 +64,7 @@ public:
 	{ 
 		unknownIfUntyped=1; // if there are no calls for a variant in the VCF file assume it has not been covered rather than all wildtype
 		unknownIfNoPass=1; altIsCommon=0; 
+		wildIfUnknown=0;
 		sc=0; sp=0L; ec=25; ep=0L;
 		skipIfNoPass=1;
 		proportionCalledToPass=0.95;
@@ -83,7 +84,7 @@ public:
 		ignoreAlleles=0;
 		*alleleFreqStr=*alleleNumberStr=*alleleCountStr='\0';
 	} 
-int unknownIfUntyped,unknownIfNoPass,altIsCommon,sc,ec,skipIfNoPass,useConsequenceWeights,useEnsembl,onlyUseSNPs,nExc,doRecessiveTest,addChrInVCF[MAXVCFFILES],useHaplotypes,count_hom_as_het,useTrios,ignoreAlleles,useProbs;
+int unknownIfUntyped,unknownIfNoPass,altIsCommon,sc,ec,skipIfNoPass,useConsequenceWeights,useEnsembl,onlyUseSNPs,nExc,doRecessiveTest,addChrInVCF[MAXVCFFILES],useHaplotypes,count_hom_as_het,useTrios,ignoreAlleles,useProbs,wildIfUnknown;
 int *phenotypes;
 long sp,ep;
 float GQThreshold,proportionCalledToPass;
