@@ -29,7 +29,7 @@ endif
 clean:
 	cd ../obj ; \
 	rm *.o ; \
-	cd ../vcfcode
+	cd ../src
 
 VPATH=../src
 	
