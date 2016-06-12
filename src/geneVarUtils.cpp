@@ -48,6 +48,7 @@ int gvaParams::readParms(int argc,char *argv[],analysisSpecs &spec)
 	spec.unknownIfNoPass=1;
 	spec.useHaplotypes=0;
 	spec.GQThreshold=0;
+	spec.ignoreAlleles=0;
 	*referencePath=*sequencePath=*posName='\0';
 	*spec.alleleFreqStr=*spec.alleleNumberStr=*spec.alleleCountStr='\0';
 	spec.nExc=0;

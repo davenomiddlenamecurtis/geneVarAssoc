@@ -7,6 +7,8 @@
 
 // SSS uses .:.:.:.:. to mean unknown??
 
+#define PROGRAM "geneVarAassoc"
+#define GVAVERSION "1.1"
 
 int main(int argc,char *argv[])
 {
@@ -19,7 +21,7 @@ int main(int argc,char *argv[])
 	analysisSpecs spec;
 
 #if 1
-	printf("Running ");
+	printf("%s %s\nRunning ",PROGRAM,GVAVERSION);
 	for (i=0;i<argc;++i)
 		printf("%s ",argv[i]);
 	printf("\n");
