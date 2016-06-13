@@ -742,6 +742,12 @@ int masterLocusFile::writeScoreAssocFiles(masterLocusFile &subFile,char *root, f
 	fprintf(fp,"\n");
 	fclose(fp);
 	sprintf(strchr(commandString,'\0')," --locusfilterfile %s",fn);
+	if (spec.doRecessiveTest)
+	{
+		sprintf(strchr(commandString, '\0'), " --dorecessive --minweight %f --ldthreshold %f ", spec.weightThreshold, spec.LDThreshold);
+		if (spec.useHaplotypes)
+			sprintf(strchr(commandString, '\0'), " --usehaps");
+	}
 #if 0
 	fprintf(fp,"\n%f %d\n%d %d %d %d %d %d %f %f %d %d\n",
 		wf,
