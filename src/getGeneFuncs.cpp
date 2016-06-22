@@ -143,7 +143,7 @@ int refseqTranscript::getEffect(faSequenceFile &f,int pos,char *all0,char *all1,
 		}
 		else if (strand == '+' && pos >= (exonStarts[i + 1] + 1) - NSBACCEPTORINTRON && pos<(exonStarts[i + 1] + 1) + NSBACCEPTOREXON)
 		{
-			essential=(exonStarts[i + 1] + 1) - 2 && pos<(exonStarts[i + 1] + 1);
+			essential=pos>=(exonStarts[i + 1] + 1) - 2 && pos<(exonStarts[i + 1] + 1);
 			getSpliceSiteSequence(f, (exonStarts[i + 1] + 1) - NSBACCEPTORINTRON, (exonStarts[i + 1] + 1) + NSBACCEPTOREXON - 1, ACCEPTOR, essential, pos, all0, all1);
 		}
 		else if (strand == '-' && pos>exonEnds[i] - NSBACCEPTOREXON && pos <= exonEnds[i] + NSBACCEPTORINTRON)
