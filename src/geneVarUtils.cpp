@@ -193,7 +193,7 @@ int gvaParams::readParms(int argc,char *argv[],analysisSpecs &spec)
 		else if(FILLARG("--hetdev-threshold"))
 		{
 			spec.hetDevThreshold=atof(arg);
-			spec.hetDevThresholdSq=spec.hetDevThresholdSq*spec.hetDevThresholdSq;
+			spec.hetDevThresholdSq=spec.hetDevThreshold*spec.hetDevThreshold;
 		}
 		else if (FILLARG("--gene"))
 			strcpy(geneName, arg);
