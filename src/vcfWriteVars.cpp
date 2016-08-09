@@ -224,7 +224,6 @@ int vcfLocalLocus::outputCalls(strEntry *call,FILE *f,FILEPOSITION filePos,int n
 	char *ptr,*strPtr,firstStr[100],secondStr[100],allStr[100];
 	allelePair all;
 	int s,i;
-	float gq;
 	if (fseek(f,filePos,SEEK_SET)!=0)
 	{
 		dcerror(99,"Failed to fseek() correctly in localLocus::outputAlleles()");
@@ -244,7 +243,6 @@ int vcfLocalLocus::outputCalls(strEntry *call,FILE *f,FILEPOSITION filePos,int n
 	}
 	for (s=0;s<nSubs;++s)
 	{
-		gq=1000;
 		firstStr[0]=allStr[0]=secondStr[0]='\0';
 		strPtr=firstStr;
 		if (*ptr!='.') for (i=0;i<GTpos;++i)

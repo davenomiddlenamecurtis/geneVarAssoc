@@ -72,6 +72,7 @@ public:
 		consequenceThreshold=NULL_CONSEQUENCE;
 		useEnsembl=0;
 		GQThreshold=-1;
+		hetDevThreshold=hetDevThresholdSq=-1;
 		onlyUseSNPs=0;
 		doRecessiveTest=0;
 		weightThreshold=0;
@@ -87,7 +88,7 @@ public:
 int unknownIfUntyped,unknownIfNoPass,altIsCommon,sc,ec,skipIfNoPass,useConsequenceWeights,useEnsembl,onlyUseSNPs,nExc,doRecessiveTest,addChrInVCF[MAXVCFFILES],useHaplotypes,count_hom_as_het,useTrios,ignoreAlleles,useProbs,wildIfUnknown;
 int *phenotypes;
 long sp,ep;
-float GQThreshold,proportionCalledToPass;
+float GQThreshold,proportionCalledToPass,hetDevThreshold,hetDevThresholdSq;
 float weightThreshold,LDThreshold;
 consequenceType consequenceThreshold;
 char exclusionStr[20][200];

@@ -48,6 +48,7 @@ int gvaParams::readParms(int argc,char *argv[],analysisSpecs &spec)
 	spec.unknownIfNoPass=1;
 	spec.useHaplotypes=0;
 	spec.GQThreshold=0;
+	spec.hetDevThreshold=spec.hetDevThresholdSq=-1;
 	spec.ignoreAlleles=0;
 	*referencePath=*sequencePath=*posName='\0';
 	*spec.alleleFreqStr=*spec.alleleNumberStr=*spec.alleleCountStr='\0';
@@ -189,6 +190,11 @@ int gvaParams::readParms(int argc,char *argv[],analysisSpecs &spec)
 			strcpy(intervalListFn, arg);
 		else if (FILLARG("--GQ-threshold"))
 			spec.GQThreshold=atof(arg);
+		else if(FILLARG("--hetdev-threshold"))
+		{
+			spec.hetDevThreshold=atof(arg);
+			spec.hetDevThresholdSq=spec.hetDevThresholdSq*spec.hetDevThresholdSq;
+		}
 		else if (FILLARG("--gene"))
 			strcpy(geneName, arg);
 		else if (FILLARG("--clear-cont"))
@@ -315,107 +321,4 @@ int gvaParams::getNextArg(char *nextArg, int argc,char *argv[], FILE *fp[MAXDEPT
 	}
 	else
 		return 0;
-}
-
-int gvaParams::input(FILE *fp,analysisSpecs &spec)
-{
-	char line[2000],rest[2000],phenotypeFn[1000];
-	int i,usePhenotypes,s;
-	FILE *phenotypeFile;
-	for (i=0;i<MAXVCFFILES;++i)
-		spec.addChrInVCF[i]=0;
-	if (spec.phenotypes!=NULL)
-	{
-		free(spec.phenotypes);
-		spec.phenotypes=0;
-	}
-	// ways to provide VCF files
-	// filename -1 on first line
-	// means filename has phenotype codes in, then there is just one file of cases and controls on next line
-	// filename -2 on first line
-	// means filename has trio pedigrees in, then there is just one file of cases and controls on next line
-	// otherwise, control files are on first line, case files on second line
-	// filename 1 nSubs means this file has allele frequencies only, derived from nSub subjects (can be for controls and/or cases)
-	// filename0 filename1 filename2 ... control or case files, depending on whether on first or second line
-	spec.useTrios=0;
-	for (i=0;i<2;++i)
-	{
-		fgets(line,1999,fp);
-		useFreqs[i]=0; // default
-		if (sscanf(line, "%s %d", phenotypeFn, &usePhenotypes) == 2 && usePhenotypes == -2 && i == 0)
-		{
-			spec.useTrios=1;
-			strcpy(spec.triosFn,phenotypeFn);
-			nCc[0]=0;
-		}
-		else if (sscanf(line,"%s %d",phenotypeFn,&usePhenotypes)==2 && usePhenotypes==-1 && i==0)
-		{
-			spec.phenotypes=(int*)malloc(sizeof(int)*MAXSUB);
-			phenotypeFile=fopen(phenotypeFn,"r");
-			nCc[0]=0;
-			for (s=0;fgets(line,1999,phenotypeFile) && sscanf(line,"%d",&spec.phenotypes[s])==1;++s)
-				;
-			fclose(phenotypeFile);
-		}
-		else if (sscanf(line,"%s %d %d",ccFn[i][0],&useFreqs[i],&nSubs[i])==3 && useFreqs[i]==1 && nSubs[i]>0)
-			nCc[i]=1;
-		else
-		{
-			for (nCc[i]=0,*rest='\0';sscanf(line,"%s %[^\n]",ccFn[i][nCc[i]],rest)>=1;++nCc[i])
-			{
-				strcpy(line,rest);
-				*rest='\0';
-			}
-		}
-	}
-	fgets(line,1999,fp);
-	baitFn[0]='\0';
-	sscanf(line,"%s %s",geneListFn,baitFn);
-	upstream=1000;
-	downstream=0;
-	margin=0;
-	fgets(line,1999,fp);
-	sscanf(line,"%d %d %d",&upstream,&downstream,&margin);
-	fgets(line,1999,fp);
-	wf=10.0;
-	wFunc=0;
-	writeScoreFile=0;
-	sscanf(line,"%f %d",&wf,&wFunc);
-	fgets(line,1999,fp);
-	char addChrStr[MAXVCFFILES+1];
-	*addChrStr='\0';
-	sscanf(line,"%d %d %d %d %d %d %d %f %f %s %d %d %d %d",
-		&spec.useEnsembl,
-		&spec.consequenceThreshold,
-		&spec.useConsequenceWeights,
-		&spec.onlyUseSNPs,
-		&writeComments,
-		&writeScoreFile,
-		&spec.doRecessiveTest,
-		&spec.weightThreshold,
-		&spec.LDThreshold,
-		addChrStr,
-		&spec.unknownIfUntyped,
-		&spec.skipIfNoPass,
-		&spec.unknownIfNoPass,
-		&spec.useHaplotypes);
-	int len;
-	if (*addChrStr != '\0')
-	{
-		if ((len=strlen(addChrStr))==1)
-			for (i=0;i<MAXVCFFILES;++i)
-				spec.addChrInVCF[i]=addChrStr[0]-'0';
-		else
-			for (i=0;i<len;++i)
-				spec.addChrInVCF[i]=addChrStr[i]-'0';
-	}
-	*line='\0';
-	fgets(line,1999,fp);
-	sscanf(line,"%s",referencePath);
-	spec.GQThreshold=0;
-	fgets(line,1999,fp);
-	sscanf(line,"%f",&spec.GQThreshold);
-	for (spec.nExc=0;fgets(line,1999,fp) && sscanf(line,"%[^\n]",spec.exclusionStr[spec.nExc])==1;++spec.nExc)
-		;
-	return 1;
 }

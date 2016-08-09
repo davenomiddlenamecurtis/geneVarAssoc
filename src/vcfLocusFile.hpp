@@ -4,7 +4,7 @@
 #include "masterLocusFile.hpp"
 
 class vcfLocalLocus : localLocus {
-	int GTpos,GQpos,GPpos; //position of these variables in genotype entry
+	int GTpos,GQpos,GPpos,ADpos; //position of these variables in genotype entry
 	float qual;
 	char info[VCFFIELDLENGTH];
 	char format[VCFFIELDLENGTH];

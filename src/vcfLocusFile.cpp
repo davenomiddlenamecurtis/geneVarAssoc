@@ -14,6 +14,7 @@ int vcfLocalLocus::typeSpecificCopy(localLocus *s)
 	GTpos=src->GTpos;
 	GPpos=src->GPpos;
 	GQpos=src->GQpos;
+	ADpos=src->ADpos;
 	qual=src->qual;
 	BCOPY(info,src->info);
 	BCOPY(format,src->format);
@@ -28,6 +29,7 @@ int vcfLocalLocus::read(FILE *fp)
 	fread(&GTpos,sizeof(GTpos),1,fp);
 	fread(&GPpos,sizeof(GTpos),1,fp);
 	fread(&GQpos,sizeof(GQpos),1,fp);
+	fread(&ADpos,sizeof(ADpos),1,fp);
 	fread(&qual,sizeof(qual),1,fp);
 	BREAD(info,fp);
 	BREAD(format,fp);
@@ -42,6 +44,7 @@ int vcfLocalLocus::write(FILE *fp)
 	fwrite(&GTpos,sizeof(GTpos),1,fp);
 	fwrite(&GPpos,sizeof(GTpos),1,fp);
 	fwrite(&GQpos,sizeof(GQpos),1,fp);
+	fwrite(&ADpos,sizeof(ADpos),1,fp);
 	fwrite(&qual,sizeof(qual),1,fp);
 	BWRITE(info,fp);
 	BWRITE(format,fp);
@@ -51,7 +54,7 @@ int vcfLocalLocus::write(FILE *fp)
 
 void vcfLocalLocus::parseFormat()
 {
-	// find position of GT and GQ fields
+	// find position of GT, GP, GQ, AD fields
 	int i;
 	char *ptr;
 	ptr=format;
@@ -66,6 +69,11 @@ void vcfLocalLocus::parseFormat()
 				GPpos = i;
 			else if (ptr[1] == 'Q')
 				GQpos = i;
+		}
+		else if(*ptr == 'A')
+		{
+			if(ptr[1] == 'D')
+				ADpos = i;
 		}
 		do {
 			++ptr;
@@ -187,6 +195,7 @@ int vcfLocalLocus::outputProbs(probTriple *prob,FILE *f,FILEPOSITION filePos,int
 		if (*ptr=='.' || gq<spec.GQThreshold)
 			prob[s][0]=prob[s][1]=prob[s][2]=0;
 		// there may be a problem in dealing with X-linked loci
+		// for now, cannot apply AD criteria to genotype probabilities
 		while (!isspace(*ptr))
 			++ptr;
 		while (isspace(*ptr))
@@ -199,7 +208,7 @@ int vcfLocalLocus::outputAlleles(allelePair *all,FILE *f,FILEPOSITION filePos,in
 {
 	char *ptr,allStr[20],*aptr,*ptr2;
 	int s,i;
-	float gq;
+	float gq,ad[2],hetDev,dp;
 	if (fseek(f,filePos,SEEK_SET)!=0)
 	{
 		dcerror(99,"Failed to fseek() correctly in vcfLocalLocus::outputAlleles()");
@@ -237,7 +246,8 @@ int vcfLocalLocus::outputAlleles(allelePair *all,FILE *f,FILEPOSITION filePos,in
 		aptr=allStr;
 		while (*ptr!=':' && *ptr!=' ' && *ptr!='\t')
 			*aptr++=*ptr++;
-		*aptr='\0';
+		*aptr='\0'; // copied genotype into allStr
+		ptr=ptr2; // back at start of entry
 		if (GQpos>0 && *ptr2!='.')
 		{
 		for (i=0;i<GQpos;++i)
@@ -260,6 +270,36 @@ int vcfLocalLocus::outputAlleles(allelePair *all,FILE *f,FILEPOSITION filePos,in
 			all[s][0] = all[s][1] = 1;
 		else if (allStr[0]=='.' || gq<spec.GQThreshold)
 			all[s][0]=all[s][1]=0;
+		else if(spec.hetDevThresholdSq!=-1 && allStr[0]!=allStr[2]) // heterozygous
+		{
+			ptr2=ptr;
+			for(i=0;i<ADpos;++i)
+			{
+				while(*ptr2!=':')
+				{
+					if(isspace(*ptr2))
+					{
+						dcerror(99,"Could not read AD in this line: %s",locusFile::buff);
+						return 0;
+					}
+					++ptr2;
+				}
+				++ptr2;
+			}
+			ad[0]=atof(ptr2);
+			while(*ptr2!=',')
+				++ptr2;
+			ad[1]=atof(ptr2+1);
+			dp=ad[0]+ad[1];
+			hetDev=dp/2-ad[0]; // avoid calling sscanf, sqrt, etc.
+			if(hetDev*hetDev>dp*spec.hetDevThresholdSq) // heterozygous counts too far from expected
+				all[s][0]=all[s][1]=0;
+			else
+			{
+				all[s][0]=alleleMap[allStr[0]-'0']+1;
+				all[s][1]=alleleMap[allStr[2]-'0']+1;
+			}
+		}
 		else
 		{	
 			if (allStr[1]=='\0')
