@@ -11,11 +11,11 @@ int gvaParams::readParms(int argc,char *argv[],analysisSpecs &spec)
 {
 	FILE *fp[MAXDEPTH],*ef;
 	int argNum,i,s,usePhenotypes,f,depth;
-	char arg[2000],line[2000],addChrStr[MAXVCFFILES+1],phenotypeFileName[200],samplesFileName[200];
+	char arg[2000],line[2000],addChrStr[MAXVCFFILES+1],phenotypeFileName[200],IDsAndPhenotypeFileName[200],samplesFileName[200];
 	depth=-1;
 	argNum=1;
 	FILE *phenotypeFile;
-	*phenotypeFileName=*samplesFileName='\0';
+	*IDsAndPhenotypeFileName=*phenotypeFileName=*samplesFileName='\0';
 	geneListFn[0]=baitFn[0]=ccFn[2][MAXVCFPERCC][0]=referencePath[0]=geneName[0]=sequencePath[0]=posName[0]=intervalListFn[0]=testName[0]='\0';
 	for (i=0;i<MAXVCFFILES;++i)
 		spec.addChrInVCF[i]=0;
@@ -24,6 +24,7 @@ int gvaParams::readParms(int argc,char *argv[],analysisSpecs &spec)
 		free(spec.phenotypes);
 		spec.phenotypes=0;
 	}
+	spec.subPhenos.clear();
 	baitFn[0]='\0';
 	upstream=1000;
 	downstream=0;
@@ -86,9 +87,13 @@ int gvaParams::readParms(int argc,char *argv[],analysisSpecs &spec)
 				}
 			}
 		}
-		else if (FILLARG("--phenotype-file"))
+		else if(FILLARG("--phenotype-file"))
 		{
 			strcpy(phenotypeFileName,arg);
+		}
+		else if(FILLARG("--ID-and-phenotype-file"))
+		{
+			strcpy(IDsAndPhenotypeFileName,arg);
 		}
 		else if (FILLARG("--samples-file"))
 		{
@@ -240,7 +245,7 @@ int gvaParams::readParms(int argc,char *argv[],analysisSpecs &spec)
 		}
 		;
 	}
-	if (phenotypeFileName[0] || samplesFileName[0])
+	if (phenotypeFileName[0] || samplesFileName[0] || IDsAndPhenotypeFileName[0])
 	{
 		spec.phenotypes = (int*)malloc(sizeof(int)*MAXSUB);
 		if (phenotypeFileName[0])
@@ -251,6 +256,17 @@ int gvaParams::readParms(int argc,char *argv[],analysisSpecs &spec)
 			nCc[0] = 0;
 			for (s = 0; fgets(line, 1999, phenotypeFile) && sscanf(line, "%d", &spec.phenotypes[s]) == 1; ++s)
 				;
+		}
+		else if(IDsAndPhenotypeFileName[0])
+		{
+			char ID[100];
+			int phen;
+			assert((phenotypeFile = fopen(phenotypeFileName,"r"))!=0);
+			if(phenotypeFile == NULL)
+				dcerror(1,"Could not open ID and phenotype file: %s\n",IDsAndPhenotypeFileName);
+			nCc[0] = 0;
+			for(s = 0; fgets(line,1999,phenotypeFile) && sscanf(line,"%s %d",ID,&phen) == 2; ++s)
+				spec.subPhenos.insert(TStrIntPair(ID,phen));
 		}
 		else
 		{

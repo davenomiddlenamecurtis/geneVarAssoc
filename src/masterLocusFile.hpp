@@ -23,6 +23,11 @@
 #include <stdio.h>
 #include <string.h>
 #include "getGene.hpp"
+#include <string>
+#include <map>
+typedef std::pair<std::string,int> TStrIntPair;
+typedef std::map<std::string,int> TStrIntMap;
+
 
 #ifndef FILEPOSITION
 #ifdef WIN32
@@ -87,6 +92,7 @@ public:
 	} 
 int unknownIfUntyped,unknownIfNoPass,altIsCommon,sc,ec,skipIfNoPass,useConsequenceWeights,useEnsembl,onlyUseSNPs,nExc,doRecessiveTest,addChrInVCF[MAXVCFFILES],useHaplotypes,count_hom_as_het,useTrios,ignoreAlleles,useProbs,wildIfUnknown;
 int *phenotypes;
+TStrIntMap subPhenos;
 long sp,ep;
 float GQThreshold,proportionCalledToPass,hetDevThreshold,hetDevThresholdSq;
 float weightThreshold,LDThreshold;
