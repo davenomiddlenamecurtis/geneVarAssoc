@@ -8,7 +8,7 @@ DCBIN = ../bin
 C = gcc
 CC = g++
 
-OURFLAGS = $(CFLAGS) 
+OURFLAGS = $(CFLAGS) -gdb
 
 HEADERS = btree.h consequenceType.hpp dcerror.hpp dcindex.hpp geneVarUtils.hpp getGene.hpp getSequence.hpp intervalList.h masterLocusFile.hpp vcfLocusFile.hpp hapsLocusFile.hpp
 
