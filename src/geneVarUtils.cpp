@@ -261,7 +261,6 @@ int gvaParams::readParms(int argc,char *argv[],analysisSpecs &spec)
 		{
 			char ID[100];
 			int phen;
-			assert((phenotypeFile = fopen(IDsAndPhenotypeFileName,"r"))!=0);
 			if(phenotypeFile == NULL)
 				dcerror(1,"Could not open ID and phenotype file: %s\n",IDsAndPhenotypeFileName);
 			nCc[0] = 0;

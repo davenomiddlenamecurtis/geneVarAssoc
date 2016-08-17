@@ -715,13 +715,14 @@ int masterLocusFile::writeScoreAssocFiles(masterLocusFile &subFile,char *root, f
 // hereOK();
 	sprintf(fn,"%s.dat",root);
 	fp=fopen(fn,"w");
-	if(spec.subPhenos.size()>0 && spec.phenotypes==NULL)
+	if(spec.subPhenos.size()>0)
 	{
+		if(spec.phenotypes==NULL) // should have been allocated when IDsAndPhenotypesFileName read
+		{
+			spec.phenotypes=(int*)malloc(sizeof(int)*totalSub);
+			assert(spec.phenotypes!=0);
+		}
 		TStrIntMap::iterator it;
-		spec.phenotypes=(int*)malloc(sizeof(int)*totalSub);
-		assert(spec.phenotypes!=0);
-		for(s=0;s<totalSub;++s)
-			spec.phenotypes[s]=-1;
 		for(s=0;s<totalSub;++s)
 		{
 			it=spec.subPhenos.find(subName[s]);
