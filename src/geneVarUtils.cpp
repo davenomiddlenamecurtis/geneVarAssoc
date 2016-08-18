@@ -250,8 +250,8 @@ int gvaParams::readParms(int argc,char *argv[],analysisSpecs &spec)
 		spec.phenotypes = (int*)malloc(sizeof(int)*MAXSUB);
 		if (phenotypeFileName[0])
 		{
-		assert((phenotypeFile = fopen(phenotypeFileName, "r"))!=0);
-			if (phenotypeFile == NULL)
+		phenotypeFile = fopen(phenotypeFileName, "r");
+		if (phenotypeFile == NULL)
 				dcerror(1, "Could not open phenotype file: %s\n", phenotypeFileName);
 			nCc[0] = 0;
 			for (s = 0; fgets(line, 1999, phenotypeFile) && sscanf(line, "%d", &spec.phenotypes[s]) == 1; ++s)
@@ -261,7 +261,8 @@ int gvaParams::readParms(int argc,char *argv[],analysisSpecs &spec)
 		{
 			char ID[100];
 			int phen;
-			if(phenotypeFile == NULL)
+			phenotypeFile = fopen(IDsAndPhenotypeFileName, "r");
+			if (phenotypeFile == NULL)
 				dcerror(1,"Could not open ID and phenotype file: %s\n",IDsAndPhenotypeFileName);
 			nCc[0] = 0;
 			for(s = 0; fgets(line,1999,phenotypeFile) && sscanf(line,"%s %d",ID,&phen) == 2; ++s)
