@@ -20,8 +20,8 @@ all:
 	if [ ! -e ${DCBIN} ] ; then mkdir ${DCBIN} ; fi ; \
 	cd ../obj; \
 	make -f ../src/geneVarAssoc.mak INOBJ=INOBJ CFLAGS=$(CFLAGS) ; \
-	cp geneVarAssoc groupVarAssoc geneVarAssocAll geneVarAssocSome showAltSubs SNPVarAssoc intVarAssoc ../bin ; \
-	echo copied executables to /bin ; \
+	cp geneVarAssoc intVarAssoc ${DCBIN} ; \
+	echo copied executables to ${DCBIN} ; \
 	cd ../src
 endif
 # unless you have a folder on path called $DCBIN you should delete that line to copy the executables to it
