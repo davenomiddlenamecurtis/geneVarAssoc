@@ -108,7 +108,7 @@ int refseqTranscript::getEffect(faSequenceFile &f,int pos,char *all0,char *all1,
 			return 1;
 		}
 	}
-	else if (strand=='-')
+	else // if (strand=='-')
 	{
 		if (pos<=exonStarts[0]-downstreamLength||pos>exonEnds[exonCount-1]+promoterLength)
 		{
@@ -317,6 +317,11 @@ int refseqTranscript::getCodingEffect(faSequenceFile &f,int pos,char *a0,char *a
 	int posInGene,cdsStartExon,posExon,e,b,framePos;
 	char oldAA,newAA;
 	char codon[4],newCodon[4],buff[4],all0[2],all1[2];
+	if (!strchr("GACT", *a0) || !strchr("GACT", *a1))
+	{
+		dcerror(1,"Bad allele pair %c %c at position %d\n", *a0, *a1, pos);
+		return 0;
+	}
 	all0[0]=a0[0];
 	all1[0]=a1[0];
 	all0[1]=all1[1]='\0';
