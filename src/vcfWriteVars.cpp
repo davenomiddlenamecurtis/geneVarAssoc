@@ -10,7 +10,7 @@
 int masterLocusFile::writeVars(char *fn,int *useFreqs,analysisSpecs &spec)
 {
 	char buff[1000];
-	int i,l,ll,totalSub,c,lc;
+	int i,l,ll,totalSub,c,lc,*subjectSelector;
 	FILEPOSITION recPos;
 	const char *testKey;
 	FILE *fp;
@@ -24,6 +24,8 @@ int masterLocusFile::writeVars(char *fn,int *useFreqs,analysisSpecs &spec)
 		totalSub+=nSubs[i];
 	assert ((subName=(strEntry *)calloc(totalSub,sizeof(strEntry)))!=0);
 	assert ((call=(strEntry **)calloc(totalSub,sizeof(strEntry *)))!=0);
+	assert ((subjectSelector=(int *)calloc(totalSub,sizeof(int)))!=0);
+
 	for (i=0;i<totalSub;++i)
 		assert ((call[i]=(strEntry *)calloc(MAXLOCIINGENE,sizeof(strEntry)))!=0);
 

@@ -70,6 +70,7 @@ public:
 		unknownIfUntyped=1; // if there are no calls for a variant in the VCF file assume it has not been covered rather than all wildtype
 		unknownIfNoPass=1; altIsCommon=0; 
 		wildIfUnknown=0;
+		onlycc01=1; // do not use subject unless cc status is 0 or 1
 		sc=0; sp=0L; ec=25; ep=0L;
 		skipIfNoPass=1;
 		proportionCalledToPass=0.95;
@@ -90,7 +91,7 @@ public:
 		ignoreAlleles=0;
 		*alleleFreqStr=*alleleNumberStr=*alleleCountStr='\0';
 	} 
-int unknownIfUntyped,unknownIfNoPass,altIsCommon,sc,ec,skipIfNoPass,useConsequenceWeights,useEnsembl,onlyUseSNPs,nExc,doRecessiveTest,addChrInVCF[MAXVCFFILES],useHaplotypes,count_hom_as_het,useTrios,ignoreAlleles,useProbs,wildIfUnknown;
+int onlycc01,unknownIfUntyped,unknownIfNoPass,altIsCommon,sc,ec,skipIfNoPass,useConsequenceWeights,useEnsembl,onlyUseSNPs,nExc,doRecessiveTest,addChrInVCF[MAXVCFFILES],useHaplotypes,count_hom_as_het,useTrios,ignoreAlleles,useProbs,wildIfUnknown;
 int *phenotypes;
 TStrIntMap subPhenos;
 long sp,ep;
@@ -269,8 +270,6 @@ public:
 	int outputSAInfo(int *useLocus,float *locusWeight,analysisSpecs const &spec);
 	int getEnsemblConsequences(analysisSpecs const &spec);
 	int getQuickConsequences(refseqGeneInfo &r,analysisSpecs const &spec,int redo=0);
-	int writeOldScoreAssocFiles(char *root,float wf,int wFunc,int *useFreqs,int *suppliedNSubs,int writeNames,int writeComments,analysisSpecs &spec);
-	int writeOldScoreAssocFiles(masterLocusFile &subFile,char *root,float wf,int wFunc,int *useFreqs,int *suppliedNSubs,int writeNames,int writeComments,analysisSpecs &spec);
 	int writeScoreAssocFiles(char *root,float wf,int wFunc,int *useFreqs,int *suppliedNSubs,int writeNames,int writeComments,int writeScorefile,analysisSpecs &spec);
 	int writeScoreAssocFiles(masterLocusFile &subFile,char *root,float wf,int wFunc,int *useFreqs,int *suppliedNSubs,int writeNames,int writeComments,int writeScorefile,analysisSpecs &spec);
 	int writeVars(char *fn,int *useFreqs,analysisSpecs &spec);
