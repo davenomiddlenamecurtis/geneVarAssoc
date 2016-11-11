@@ -14,9 +14,8 @@ int main(int argc,char *argv[])
 
 	dcerror.warn();
 
-	fp=fopen(argv[1],"r");
-	gp.input(fp,spec);
-	fclose(fp);
+	if(!gp.readParms(argc,argv,spec))
+		exit(1);
 	masterLocusFile vf(gp.nCc[0]+gp.nCc[1]);
 
 	fi=fopen(argv[2],"r");
@@ -60,12 +59,19 @@ int main(int argc,char *argv[])
 
 	sprintf(fn,"gva.%s",testName);
 
-	vf.writeOldScoreAssocFiles(fn,gp.wf,gp.wFunc,gp.useFreqs,gp.nSubs,1,gp.writeComments,spec);
-
-	sprintf(line,"scoreassoc %s.par %s.dat %s.sao",fn,fn,fn);
-	if (gp.writeScoreFile==1)
-		sprintf(strchr(line,'\0')," %s.sco",fn);
-	system(line);
+	vf.writeScoreAssocFiles(fn,gp.wf,gp.wFunc,gp.useFreqs,gp.nSubs,1,gp.writeComments,gp.writeScoreFile,spec);
+#ifndef MSDOS
+	sprintf(line,"bash %s.sh\n",fn);
+#else
+	sprintf(line,"%s.bat\n",fn);
+#endif
+	if(!gp.doNotRun)
+	{
+		printf("Running command: %s\n",line);
+		system(line);
+	}
+	else
+		printf("Files for %s analysis written OK, to run analysis enter:\n%s\n\n",fn,line);
 
 	return 0;
 }

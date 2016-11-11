@@ -2,7 +2,7 @@
 #include <ctype.h>
 #include <assert.h>
 
-#define MAXSUB 10000
+#define MAXSUB 20000
 
 #define isArgType(a) (a[0]=='-' && a[1]=='-')
 #define FILLARG(str) (strcmp(arg,str) ? 0 : ((getNextArg(arg, argc, argv, fp,&depth, &argNum) && !isArgType(arg)) ? 1 : (dcerror(1,"No value provided for argument: %s\n",str), 0)))
