@@ -150,6 +150,12 @@ int vcfLocalLocus::outputProbs(probTriple *prob,FILE *f,FILEPOSITION filePos,int
 		dcerror(99,"Failed read locus data after fseek() in vcfLocalLocus::outputProbs()");
 		return 0;
 	}
+	if(strchr(locusFile::buff,'\n')==0)
+	{
+		dcerror(99,"This line is too long:\n\n%s\n\nAbove line in locus file was too long. Need to change BUFFSIZE in masterLocusFile.hpp and recompile.\n",locusFile::buff);
+		return 0;
+	}
+
 	for (s=0,ptr=locusFile::buff;s<nFieldsToSkip;++s)
 	{
 		while (!isspace(*ptr))
@@ -219,6 +225,12 @@ int vcfLocalLocus::outputAlleles(allelePair *all,FILE *f,FILEPOSITION filePos,in
 		dcerror(99,"Failed read locus data after fseek() in vcfLocalLocus::outputAlleles()");
 		return 0;
 	}
+	if (strchr(locusFile::buff,'\n')==0)
+	{
+		dcerror(99,"This line is too long:\n\n%s\n\nAbove line in locus file was too long. Need to change BUFFSIZE in masterLocusFile.hpp and recompile.\n",locusFile::buff);
+		return 0;
+	}
+
 	for (s=0,ptr=locusFile::buff;s<nFieldsToSkip;++s)
 	{
 		while (!isspace(*ptr))
