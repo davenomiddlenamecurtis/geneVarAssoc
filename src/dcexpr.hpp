@@ -14,6 +14,8 @@
 #endif
 #include <stdio.h>
 
+#define TOKENMAXLEN 100
+
 class dcexpr_val {
 public:
 virtual int is_string_really()=0;
@@ -42,7 +44,7 @@ virtual int is_string_really();
 virtual operator char*();
 virtual operator double();
 ~dcexpr_string();
-dcexpr_string(char *t,int len=0);
+dcexpr_string(const char *t,int len=0);
 };
 
 class dcvnode {
@@ -73,7 +75,7 @@ extern void add_bin_op_next(char *lab,dcexpr_val *(*f)(dcvnode *,dcvnode *));
 class express {
 protected:
 dcvnode *head;
-dcstring token;
+char token[TOKENMAXLEN ];
 char *vbin_op(char *s,dcvnode **br,int level);
 char *vun_op(char*s,dcvnode **br);
 char *vbracket(char*s,dcvnode **br);
@@ -117,6 +119,19 @@ dcexpr_val *eval();
 struct new_op_t { char *str; dcvnode *inst; };
 
 extern char dc_expr_buff[];
+
+#define MAX_N_OPS 30
+#define MAX_OP_LEVEL 15
+#define EVAL_R1 \
+if ((r1=b1->eval())==NULL) return NULL; 
+
+#define EVAL_R2 \
+if ((r2=b2->eval())==NULL) return NULL; 
+
+#define EVAL_BOTH \
+if ((r1=b1->eval())==NULL) return NULL; \
+if ((r2=b2->eval())==NULL) { delete r1; return NULL; }
+
 
 #endif
 

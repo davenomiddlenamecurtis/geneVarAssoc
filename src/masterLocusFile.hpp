@@ -144,7 +144,6 @@ protected:
 	int write(FILE *fp);
 	int writePredictorQuery(FILE *fp);
 	int readQueryOutput(FILE *fp);
-	int getQuickFeature(refseqGeneInfo &r);
 public:
 	masterLocus(int nLF);
 	~masterLocus();
@@ -159,6 +158,9 @@ public:
 	int writeRiskVarInfo(char *s,int withFreqs=0);
 	bool readRiskVarInfo(char *s,int withFreqs=0);
 	consequenceType getWorstConsequenceType() { return worstConsequenceType; }
+	int getQuickFeature(refseqGeneInfo &r);
+	const char *reportQuickConsequence() { return quickConsequence; }
+	// this is text of worst consequence after call to getQuickFeature()
 	int getGenoCount(int g) { return genoCount[g]; }
 	void setLocusPosInFile(int f, FILEPOSITION l) { locusPosInFile[f] = l; }
 	FILEPOSITION getLocusPosInFile(int f) { return locusPosInFile[f]; }

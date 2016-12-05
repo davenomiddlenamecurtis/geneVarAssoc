@@ -122,6 +122,16 @@ public:
 	int extractGene(refseqGeneInfo &r,char *outFn,int appendToOld=0,int addChrInVCF=0); // from local file
 };
 
+#if 0
+annotationMethod yields a string
+it has a name, e.g. defaultAnnot
+weightMap provides a weight (float) for a string
+it has a name, e.g. defaultWeightMap
+user can provide a function based on combination of annotationMethods and user-provided weightMaps
+start by implementing this as a default with the quickConsequence string
+#endif
+
+
 #ifndef DEFAULTVARIANTFILENAME
 #define DEFAULTVARIANTFILENAME "ftp://ftp.1000genomes.ebi.ac.uk/vol1/ftp/release/20110521/ALL.chr.phase1_release_v2.20101123.snps_indels_svs.vcf.gz"
 #endif

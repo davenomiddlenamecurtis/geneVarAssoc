@@ -157,6 +157,7 @@
     <ClInclude Include="..\..\src\dcstr.hpp" />
     <ClInclude Include="..\..\src\dcutils.hpp" />
     <ClInclude Include="..\..\src\ensembleConsequences.hpp" />
+    <ClInclude Include="..\..\src\geneVarParser.hpp" />
     <ClInclude Include="..\..\src\geneVarUtils.hpp" />
     <ClInclude Include="..\..\src\getGene.hpp" />
     <ClInclude Include="..\..\src\getSequence.hpp" />
@@ -171,8 +172,10 @@
     <ClCompile Include="..\..\src\btree.c" />
     <ClCompile Include="..\..\src\consequenceType.cpp" />
     <ClCompile Include="..\..\src\dcerror.cpp" />
+    <ClCompile Include="..\..\src\dcexpr.cpp" />
     <ClCompile Include="..\..\src\dcindex.cpp" />
     <ClCompile Include="..\..\src\geneVarAssoc.cpp" />
+    <ClCompile Include="..\..\src\geneVarParser.cpp" />
     <ClCompile Include="..\..\src\geneVarUtils.cpp" />
     <ClCompile Include="..\..\src\getGeneFuncs.cpp" />
     <ClCompile Include="..\..\src\getSequenceFuncs.cpp" />

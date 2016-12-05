@@ -34,18 +34,8 @@ int n_un_ops,n_bin_ops[MAX_OP_LEVEL],n_levels,n_all_ops,last_op_level;
 // for initialisers to work, all these must be zero
 // hopefully they should be
 
-#define EVAL_R1 \
-if ((r1=b1->eval())==NULL) return NULL; 
-
-#define EVAL_R2 \
-if ((r2=b2->eval())==NULL) return NULL; 
-
-#define EVAL_BOTH \
-if ((r1=b1->eval())==NULL) return NULL; \
-if ((r2=b2->eval())==NULL) { delete r1; return NULL; }
-
 express::express()
-{ head=NULL; token[0]='\0'; }
+{ head=NULL; token[0]='\0';  }
 
 dcexpr_val *express::eval()
 { 
@@ -67,7 +57,7 @@ int dcexpr_string::is_string_really() { return 1; }
 dcexpr_string::operator char*() { return buff; }
 dcexpr_string::operator double() { return atof(buff); }
 dcexpr_string::~dcexpr_string() { if (buff) delete buff; }
-dcexpr_string::dcexpr_string(char *t,int len) 
+dcexpr_string::dcexpr_string(const char *t,int len) 
 { 
 if (len)
   {
@@ -88,21 +78,21 @@ else
 
 char dc_expr_buff[2000];
 
-class vnvbin_op:public vnode {
-dcexpr_val *(*func)(vnode *,vnode *);
+class vnvbin_op:public dcvnode {
+dcexpr_val *(*func)(dcvnode *,dcvnode *);
 public:
-vnvbin_op(dcexpr_val *(*f)(vnode *,vnode *));
+vnvbin_op(dcexpr_val *(*f)(dcvnode *,dcvnode *));
 ~vnvbin_op(){;}
 dcexpr_val *eval();
-vnode *copy();
+dcvnode *copy();
 };
 
-vnode *vnvbin_op::copy()
+dcvnode *vnvbin_op::copy()
 {
 return new vnvbin_op(func);
 }
 
-vnvbin_op::vnvbin_op(dcexpr_val *(*f)(vnode *,vnode *)) : vnode(2)
+vnvbin_op::vnvbin_op(dcexpr_val *(*f)(dcvnode *,dcvnode *)) : dcvnode(2)
 {
 func=f;
 }
@@ -114,21 +104,21 @@ if (branch[0]==NULL || branch[1]==NULL)
 return func(branch[0],branch[1]);
 }
 
-class vnvun_op:public vnode {
-dcexpr_val *(*func)(vnode *);
+class vnvun_op:public dcvnode {
+dcexpr_val *(*func)(dcvnode *);
 public:
-vnvun_op(dcexpr_val *(*f)(vnode *));
+vnvun_op(dcexpr_val *(*f)(dcvnode *));
 ~vnvun_op(){;}
 dcexpr_val *eval();
-vnode *copy();
+dcvnode *copy();
 };
 
-vnode *vnvun_op::copy()
+dcvnode *vnvun_op::copy()
 {
 return new vnvun_op(func);
 }
 
-vnvun_op::vnvun_op(dcexpr_val *(*f)(vnode *)) : vnode(1)
+vnvun_op::vnvun_op(dcexpr_val *(*f)(dcvnode *)) : dcvnode(1)
 {
 func=f;
 }
@@ -141,20 +131,20 @@ return func(branch[0]);
 
 variable::~variable() {;}
 
-variable::variable() : vnode(0) {;}
+variable::variable() : dcvnode(0) {;}
 
-vnode *vconstant::copy() { return new vconstant(value); }
+dcvnode *vconstant::copy() { return new vconstant(value); }
 vconstant::~vconstant(){;}
 dcexpr_val *vconstant::eval() { return new dcexpr_double(value); }
 
-vnode *vstrconstant::copy() { return new vstrconstant(value); }
-vstrconstant::vstrconstant(char *s) : vnode(0)
+dcvnode *vstrconstant::copy() { return new vstrconstant(value); }
+vstrconstant::vstrconstant(char *s) : dcvnode(0)
   { if ((value=new char[strlen(s)+1])!=NULL) strcpy(value,s); }
 vstrconstant::~vstrconstant() { if (value) delete value;}
 
 dcexpr_val *vstrconstant::eval() { return new dcexpr_string(value); }
 
-dcexpr_val *iftrue_op(vnode *b1,vnode *b2)
+dcexpr_val *iftrue_op(dcvnode *b1,dcvnode *b2)
 {
 dcexpr_val *r1;
 EVAL_R1;
@@ -164,7 +154,7 @@ if (test) return b2->eval();
 else return new dcexpr_string("");
 }
 
-dcexpr_val *mult_op(vnode *b1,vnode *b2)
+dcexpr_val *mult_op(dcvnode *b1,dcvnode *b2)
 {
 dcexpr_val *r1,*r2;
 EVAL_BOTH;
@@ -174,7 +164,7 @@ delete r2;
 return new dcexpr_double(test);
 }
 
-dcexpr_val *or_op(vnode *b1,vnode *b2)
+dcexpr_val *or_op(dcvnode *b1,dcvnode *b2)
 {
 dcexpr_val *r1,*r2;
 EVAL_R1;
@@ -189,7 +179,7 @@ if (!test)
 return new dcexpr_double(test);
 }
 
-dcexpr_val *and_op(vnode *b1,vnode *b2)
+dcexpr_val *and_op(dcvnode *b1,dcvnode *b2)
 {
 dcexpr_val *r1,*r2;
 EVAL_R1;
@@ -203,7 +193,7 @@ if (test)
 return new dcexpr_double(test);
 }
 
-dcexpr_val *div_op(vnode *b1,vnode *b2)
+dcexpr_val *div_op(dcvnode *b1,dcvnode *b2)
 {
 dcexpr_val *r1,*r2;
 EVAL_BOTH;
@@ -212,7 +202,7 @@ delete r1; delete r2;
 return new dcexpr_double(rv);
 }
 
-dcexpr_val *comma_op(vnode *b1,vnode *b2)
+dcexpr_val *comma_op(dcvnode *b1,dcvnode *b2)
 {
 dcexpr_val *r1,*r2;
 EVAL_BOTH;
@@ -220,7 +210,7 @@ delete r1;
 return r2;
 }
 
-dcexpr_val *mod_op(vnode *b1,vnode *b2)
+dcexpr_val *mod_op(dcvnode *b1,dcvnode *b2)
 {
 dcexpr_val *r1,*r2;
 EVAL_BOTH;
@@ -231,7 +221,7 @@ return new dcexpr_double(t2?((m=t1%t2)>=0)?m:m+t2 : 0.0);
 }
 // x mod 0 = 0
 
-dcexpr_val *add_op(vnode *b1,vnode *b2)
+dcexpr_val *add_op(dcvnode *b1,dcvnode *b2)
 {
 dcexpr_val *r1,*r2;
 EVAL_BOTH;
@@ -241,7 +231,7 @@ return new dcexpr_double(rv);
 }
 
 
-dcexpr_val *sub_op(vnode *b1,vnode *b2)
+dcexpr_val *sub_op(dcvnode *b1,dcvnode *b2)
 {
 dcexpr_val *r1,*r2;
 EVAL_BOTH;
@@ -250,7 +240,7 @@ delete r1; delete r2;
 return new dcexpr_double(rv);
 }
 
-dcexpr_val *lt_op(vnode *b1,vnode *b2)
+dcexpr_val *lt_op(dcvnode *b1,dcvnode *b2)
 {
 dcexpr_val *r1,*r2;
 EVAL_BOTH;
@@ -259,7 +249,7 @@ delete r1; delete r2;
 return new dcexpr_double(rv);
 }
 
-dcexpr_val *lte_op(vnode *b1,vnode *b2)
+dcexpr_val *lte_op(dcvnode *b1,dcvnode *b2)
 {
 dcexpr_val *r1,*r2;
 EVAL_BOTH;
@@ -268,7 +258,7 @@ delete r1; delete r2;
 return new dcexpr_double(rv);
 }
 
-dcexpr_val *gt_op(vnode *b1,vnode *b2)
+dcexpr_val *gt_op(dcvnode *b1,dcvnode *b2)
 {
 dcexpr_val *r1,*r2;
 EVAL_BOTH;
@@ -277,7 +267,7 @@ delete r1; delete r2;
 return new dcexpr_double(rv);
 }
 
-dcexpr_val *gte_op(vnode *b1,vnode *b2)
+dcexpr_val *gte_op(dcvnode *b1,dcvnode *b2)
 {
 dcexpr_val *r1,*r2;
 EVAL_BOTH;
@@ -286,7 +276,7 @@ delete r1; delete r2;
 return new dcexpr_double(rv);
 }
 
-dcexpr_val *equ_op(vnode *b1,vnode *b2)
+dcexpr_val *equ_op(dcvnode *b1,dcvnode *b2)
 { 
 dcexpr_val *r1,*r2;
 EVAL_BOTH;
@@ -299,7 +289,7 @@ delete r1; delete r2;
 return new dcexpr_double(rv);
 }
 
-dcexpr_val *neq_op(vnode *b1,vnode *b2)
+dcexpr_val *neq_op(dcvnode *b1,dcvnode *b2)
 { 
 double rv;
 dcexpr_val *r1;
@@ -309,7 +299,7 @@ delete r1;
 return new dcexpr_double(rv);
 }
 
-dcexpr_val *pow_op(vnode *b1,vnode *b2)
+dcexpr_val *pow_op(dcvnode *b1,dcvnode *b2)
 {
 dcexpr_val *r1,*r2;
 EVAL_BOTH;
@@ -318,7 +308,7 @@ delete r1; delete r2;
 return new dcexpr_double(rv);
 }
 
-dcexpr_val *abs_op(vnode *b1)
+dcexpr_val *abs_op(dcvnode *b1)
 {
 dcexpr_val *r1;
 EVAL_R1;
@@ -327,7 +317,7 @@ delete r1;
 return new dcexpr_double(rv);
 }
 
-dcexpr_val *negate_op(vnode *b1)
+dcexpr_val *negate_op(dcvnode *b1)
 {
 dcexpr_val *r1;
 EVAL_R1;
@@ -336,7 +326,7 @@ delete r1;
 return new dcexpr_double(rv);
 }
 
-dcexpr_val *exp_op(vnode *b1)
+dcexpr_val *exp_op(dcvnode *b1)
 {
 dcexpr_val *r1;
 EVAL_R1;
@@ -345,7 +335,7 @@ delete r1;
 return new dcexpr_double(rv);
 }
 
-dcexpr_val *not_op(vnode *b1)
+dcexpr_val *not_op(dcvnode *b1)
 {
 dcexpr_val *r1;
 EVAL_R1;
@@ -354,7 +344,7 @@ delete r1;
 return new dcexpr_double(rv);
 }
 
-dcexpr_val *ln_op(vnode *b1)
+dcexpr_val *ln_op(dcvnode *b1)
 {
 dcexpr_val *r1;
 EVAL_R1;
@@ -363,7 +353,7 @@ delete r1;
 return new dcexpr_double(rv);
 }
 
-dcexpr_val *log_op(vnode *b1)
+dcexpr_val *log_op(dcvnode *b1)
 {
 dcexpr_val *r1;
 EVAL_R1;
@@ -372,7 +362,7 @@ delete r1;
 return new dcexpr_double(rv);
 }
 
-dcexpr_val *sin_op(vnode *b1)
+dcexpr_val *sin_op(dcvnode *b1)
 {
 dcexpr_val *r1;
 EVAL_R1;
@@ -381,7 +371,7 @@ delete r1;
 return new dcexpr_double(rv);
 }
 
-dcexpr_val *arcsin_op(vnode *b1)
+dcexpr_val *arcsin_op(dcvnode *b1)
 {
 dcexpr_val *r1;
 EVAL_R1;
@@ -390,7 +380,7 @@ delete r1;
 return new dcexpr_double(rv);
 }
 
-dcexpr_val *cos_op(vnode *b1)
+dcexpr_val *cos_op(dcvnode *b1)
 {
 dcexpr_val *r1;
 EVAL_R1;
@@ -399,7 +389,7 @@ delete r1;
 return new dcexpr_double(rv);
 }
 
-dcexpr_val *arccos_op(vnode *b1)
+dcexpr_val *arccos_op(dcvnode *b1)
 {
 dcexpr_val *r1;
 EVAL_R1;
@@ -408,7 +398,7 @@ delete r1;
 return new dcexpr_double(rv);
 }
 
-dcexpr_val *tan_op(vnode *b1)
+dcexpr_val *tan_op(dcvnode *b1)
 {
 dcexpr_val *r1;
 EVAL_R1;
@@ -417,7 +407,7 @@ delete r1;
 return new dcexpr_double(rv);
 }
 
-dcexpr_val *arctan_op(vnode *b1)
+dcexpr_val *arctan_op(dcvnode *b1)
 {
 dcexpr_val *r1;
 EVAL_R1;
@@ -426,7 +416,7 @@ delete r1;
 return new dcexpr_double(rv);
 }
 
-vnode& vnode::operator=(vnode &old)
+dcvnode& dcvnode::operator=(dcvnode &old)
 {
 for (int i=0;i<nbranches;++i)
   if (old.branch[i])
@@ -437,23 +427,23 @@ for (int i=0;i<nbranches;++i)
 return *this;
 }
 
-vnode::vnode(int nb)
+dcvnode::dcvnode(int nb)
  {
  nbranches=nb;
  for (int i=0;i<nbranches;++i) branch[i]=NULL;
  }
 
-vnode::~vnode()
+dcvnode::~dcvnode()
  {
  wipe();
  }
 
-void vnode::wipe()
+void dcvnode::wipe()
  {
  for (int i=0;i<nbranches;++i) if (branch[i]!=NULL) delete branch[i];
  }
 
-int vnode::add(vnode *vn,int b)
+int dcvnode::add(dcvnode *vn,int b)
  {
  if (b>=nbranches)
    return dcerror(1,"Syntax error"); // Was error 3, blank line ??!?
@@ -498,9 +488,9 @@ int express::parse(char *s)
  return 1;
  }
 
-char *express::vbin_op(char *s,vnode **br,int level)
+char *express::vbin_op(char *s,dcvnode **br,int level)
  {
- vnode *tempbr;
+ dcvnode *tempbr;
  if (level<=n_levels)
       {
       if ((s=vbin_op(s,br,level+1))==NULL) return NULL;
@@ -509,7 +499,7 @@ char *express::vbin_op(char *s,vnode **br,int level)
            {
            if ((s=get_next(s))==NULL) return NULL;
            if ((s=vbin_op(s,&tempbr,level+1))==NULL) return NULL;
-           vnode *temp;
+           dcvnode *temp;
            if ((temp=bin_ch[level][i].inst->copy())==NULL) return NULL;
            temp->add(*br,0);
            temp->add(tempbr,1);
@@ -522,7 +512,7 @@ char *express::vbin_op(char *s,vnode **br,int level)
   return s;
   }
 
-char *express::vun_op(char*s,vnode **br)
+char *express::vun_op(char*s,dcvnode **br)
     {
     int i;
     int op=0;
@@ -539,7 +529,7 @@ char *express::vun_op(char*s,vnode **br)
 	    return NULL;  // deepest level
     if (op)
        {
-       vnode *temp;
+       dcvnode *temp;
        if ((temp=un_ch[i].inst->copy())==NULL) return NULL;
        temp->add(*br,0);
        *br=temp;
@@ -547,7 +537,7 @@ char *express::vun_op(char*s,vnode **br)
     return s;
     }
 
-char *express::vbracket(char*s,vnode **br)
+char *express::vbracket(char*s,dcvnode **br)
     {
     if (!strcmp("(",token))
      {
@@ -560,7 +550,7 @@ char *express::vbracket(char*s,vnode **br)
     return s;
     }
 
-char *express::vprimitive(char *s,vnode **br)
+char *express::vprimitive(char *s,dcvnode **br)
  {
  int c;
  if (s==NULL) return NULL;
@@ -607,21 +597,21 @@ char *express::get_next(char *s)
  else return s;
  }
 
-void add_un_op(char *lab,dcexpr_val *(*f)(vnode *)) 
+void add_un_op(char *lab,dcexpr_val *(*f)(dcvnode *)) 
 { 
 un_ch[n_un_ops].str=lab;
 un_ch[n_un_ops++].inst=new vnvun_op(f); 
 all_op[n_all_ops++]=lab;
 }
  
-void add_bin_op_same(char *lab,dcexpr_val *(*f)(vnode *,vnode *)) 
+void add_bin_op_same(char *lab,dcexpr_val *(*f)(dcvnode *,dcvnode *)) 
 { 
 bin_ch[last_op_level][n_bin_ops[last_op_level]].str=lab;
 bin_ch[last_op_level][n_bin_ops[last_op_level]++].inst=new vnvbin_op(f); 
 all_op[n_all_ops++]=lab;
 }
 
-void add_bin_op_next(char *lab,dcexpr_val *(*f)(vnode *,vnode *)) 
+void add_bin_op_next(char *lab,dcexpr_val *(*f)(dcvnode *,dcvnode *)) 
 { 
 ++last_op_level;
 if (n_levels<last_op_level)
@@ -631,7 +621,7 @@ bin_ch[last_op_level][n_bin_ops[last_op_level]++].inst=new vnvbin_op(f);
 all_op[n_all_ops++]=lab;
 }
 	
-void add_bin_op(char *lab,dcexpr_val *(*f)(vnode *,vnode *),int level) 
+void add_bin_op(char *lab,dcexpr_val *(*f)(dcvnode *,dcvnode *),int level) 
 { 
 last_op_level=level;
 if (n_levels<last_op_level)
@@ -669,7 +659,7 @@ add_bin_op_next("!=",neq_op);
 add_bin_op_same("=",equ_op);
 add_bin_op_same("IS",equ_op);
 add_bin_op_next("<=",lte_op); //  these pairs must be in this order
-add_bin_op_same("<",lt_op);   // otherwise ie.g. > will be found before >=
+add_bin_op_same("<",lt_op);   // otherwise e.g. > will be found before >=
 add_bin_op_same(">=",gte_op);
 add_bin_op_same(">",gt_op);
 add_bin_op_next("-",sub_op);
