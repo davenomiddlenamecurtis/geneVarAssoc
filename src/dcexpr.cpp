@@ -52,6 +52,9 @@ dcexpr_double::operator char*() { sprintf(buff,"%f",val); return buff; }
 dcexpr_double::operator double() { return val; }
 dcexpr_double::~dcexpr_double() {;}
 dcexpr_double::dcexpr_double(double v) { val=v; }
+dcexpr_double & dcexpr_double::operator= (dcexpr_val &v)
+{ val=(double)v; return *this; }
+
 
 int dcexpr_string::is_string_really() { return 1; }
 dcexpr_string::operator char*() { return buff; }
@@ -74,6 +77,16 @@ else
     strcpy(buff,t);
   else dcerror(ENOMEM); 
   }
+}
+
+dcexpr_string & dcexpr_string::operator= (dcexpr_val &val)
+{
+	char *s=(char*)val;
+	if (buff)
+		delete buff;
+	buff=new char[strlen(s)+1];
+	strcpy(buff,s);
+	return *this;
 }
 
 char dc_expr_buff[2000];

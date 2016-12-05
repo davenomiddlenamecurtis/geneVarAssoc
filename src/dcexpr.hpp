@@ -21,6 +21,7 @@ public:
 virtual int is_string_really()=0;
 virtual operator char*()=0;
 virtual operator double()=0;
+virtual dcexpr_val & operator= (dcexpr_val &v)=0;
 // virtual ~dcexpr_val()=0;
 // above doesn't seem to work
 virtual ~dcexpr_val();
@@ -33,6 +34,9 @@ public:
 virtual int is_string_really();
 virtual operator char*();
 virtual operator double();
+virtual dcexpr_double & operator= (dcexpr_val &v);
+dcexpr_double & operator=(double v) { val=v; return *this; }
+// can make this virtual one day in dcexpr_val if ever needed
 ~dcexpr_double();
 dcexpr_double(double v=0.0);
 };
@@ -43,6 +47,7 @@ public:
 virtual int is_string_really();
 virtual operator char*();
 virtual operator double();
+virtual dcexpr_string & operator= (dcexpr_val &val);
 ~dcexpr_string();
 dcexpr_string(const char *t,int len=0);
 };
