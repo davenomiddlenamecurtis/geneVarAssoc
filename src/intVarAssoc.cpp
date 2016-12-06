@@ -59,7 +59,7 @@ int main(int argc,char *argv[])
 
 	sprintf(fn,"gva.%s",testName);
 
-	vf.writeScoreAssocFiles(fn,gp.wf,gp.wFunc,gp.useFreqs,gp.nSubs,1,gp.writeComments,gp.writeScoreFile,spec);
+	vf.writeScoreAssocFiles(fn,gp.wf,gp.useFreqs,gp.nSubs,1,gp.writeComments,gp.writeScoreFile,spec);
 #ifndef MSDOS
 	sprintf(line,"bash %s.sh\n",fn);
 #else

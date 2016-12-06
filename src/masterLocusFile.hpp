@@ -90,6 +90,7 @@ public:
 		useTrios=0;
 		ignoreAlleles=0;
 		*alleleFreqStr=*alleleNumberStr=*alleleCountStr='\0';
+		*weightExpression=0;
 	} 
 int onlycc01,unknownIfUntyped,unknownIfNoPass,altIsCommon,sc,ec,skipIfNoPass,useConsequenceWeights,useEnsembl,onlyUseSNPs,nExc,doRecessiveTest,addChrInVCF[MAXVCFFILES],useHaplotypes,count_hom_as_het,useTrios,ignoreAlleles,useProbs,wildIfUnknown;
 int *phenotypes;
@@ -101,6 +102,7 @@ consequenceType consequenceThreshold;
 char exclusionStr[20][200];
 char triosFn[200];
 char alleleFreqStr[100],alleleNumberStr[100],alleleCountStr[100];
+char weightExpression[1000];
 };
 
 #if 0
@@ -272,8 +274,8 @@ public:
 	int outputSAInfo(int *useLocus,float *locusWeight,analysisSpecs const &spec);
 	int getEnsemblConsequences(analysisSpecs const &spec);
 	int getQuickConsequences(refseqGeneInfo &r,analysisSpecs const &spec,int redo=0);
-	int writeScoreAssocFiles(char *root,float wf,int wFunc,int *useFreqs,int *suppliedNSubs,int writeNames,int writeComments,int writeScorefile,analysisSpecs &spec);
-	int writeScoreAssocFiles(masterLocusFile &subFile,char *root,float wf,int wFunc,int *useFreqs,int *suppliedNSubs,int writeNames,int writeComments,int writeScorefile,analysisSpecs &spec);
+	int writeScoreAssocFiles(char *root,float wf,int *useFreqs,int *suppliedNSubs,int writeNames,int writeComments,int writeScorefile,analysisSpecs &spec);
+	int writeScoreAssocFiles(masterLocusFile &subFile,char *root,float wf,int *useFreqs,int *suppliedNSubs,int writeNames,int writeComments,int writeScorefile,analysisSpecs &spec);
 	int writeVars(char *fn,int *useFreqs,analysisSpecs &spec);
 	int writeGenos(char *fn,int *useFreqs,analysisSpecs &spec);
 	int writeGenoCounts(FILE *fo[2],char *geneName,long *varNum,analysisSpecs &spec,allelePair **a);

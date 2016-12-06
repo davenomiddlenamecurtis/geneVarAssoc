@@ -1,6 +1,7 @@
 #include "masterLocusFile.hpp"
 #include "vcfLocusFile.hpp" // I need this so I can call constructor
 #include "hapsLocusFile.hpp"
+#include "geneVarParser.hpp"
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
@@ -463,9 +464,9 @@ return locusCount;
 int useLocus[MAXLOCIINSCOREASSOCFILE];
 float locusWeight[MAXLOCIINSCOREASSOCFILE];
 
-int masterLocusFile::writeScoreAssocFiles(char *root, float wf, int wFunc, int *useFreqs, int *suppliedNSubs, int writeNames, int writeComments, int writeScoreFile, analysisSpecs &spec)
+int masterLocusFile::writeScoreAssocFiles(char *root, float wf, int *useFreqs, int *suppliedNSubs, int writeNames, int writeComments, int writeScoreFile, analysisSpecs &spec)
 {
-	return writeScoreAssocFiles(*this,root,wf,wFunc,useFreqs,suppliedNSubs,writeNames,writeComments,writeScoreFile, spec);
+	return writeScoreAssocFiles(*this,root,wf,useFreqs,suppliedNSubs,writeNames,writeComments,writeScoreFile, spec);
 }
 
 int masterLocusFile::loadFirst(analysisSpecs &spec)
@@ -493,7 +494,7 @@ int masterLocusFile::loadNext(analysisSpecs &spec)
 		load(tempRecord, currentRecPos);
 }
 
-int masterLocusFile::writeScoreAssocFiles(masterLocusFile &subFile,char *root, float wf, int wFunc, int *useFreqs, int *suppliedNSubs, int writeNames, int writeComments, int writeScorefile,analysisSpecs &spec)
+int masterLocusFile::writeScoreAssocFiles(masterLocusFile &subFile,char *root, float wf, int *useFreqs, int *suppliedNSubs, int writeNames, int writeComments, int writeScorefile,analysisSpecs &spec)
 // allow information about subjects to be provided by a different masterLocusFile 
 // however we are assuming both files refer to identical set of subjects
 {
@@ -797,10 +798,14 @@ int masterLocusFile::outputSAInfo(int *useLocus,float *locusWeight,analysisSpecs
 	const char *testKey;
 	int c,i,doNotUseUntypedFreqfile;
 	consequenceType cons;
+	geneVarParser parser;
 	locusCount=0;
-recPos=findFirstInRange(spec);
+	recPos=findFirstInRange(spec);
 if (recPos!=0L)
 {
+	if(spec.weightExpression[0])
+		parser.parse(spec.weightExpression); // only have to parse once
+											// it is essential that geneVarParser::thisGene has been set!!
 	while (1)
 	{
 		testKey=index.current_key();
@@ -815,6 +820,8 @@ if (recPos!=0L)
 		}
 		else
 		{
+			locusWeight[locusCount]=1.0; // default if nothing else changes it
+			useLocus[locusCount]=1;
 			load(tempRecord,recPos);
 			doNotUseUntypedFreqfile=0;
 			if (spec.unknownIfUntyped)
@@ -835,8 +842,13 @@ if (recPos!=0L)
 		}
 			else 
 			{
-				if (spec.useEnsembl==1)
-			{
+				if (spec.weightExpression[0] && spec.useConsequenceWeights)
+				{
+					geneVarParser::thisLocus=&tempRecord;
+					locusWeight[locusCount]=(double)(*parser.eval());
+				}
+				else if (spec.useEnsembl==1 && spec.useConsequenceWeights)
+				{
 				if (tempRecord.ensemblConsequence[0]=='\0')
 					cons=NULL_CONSEQUENCE;
 				else
@@ -855,8 +867,11 @@ if (recPos!=0L)
 							return 0;
 						}
 				}
-			}
-			else 
+				locusWeight[locusCount]=consequence[c].weight;
+				if(spec.consequenceThreshold!=0)
+					useLocus[locusCount]=(cons>=spec.consequenceThreshold)?1:0;
+				}
+			else if (spec.useConsequenceWeights)
 			{
 				if (tempRecord.quickConsequence[0]=='\0')
 					cons=NULL_CONSEQUENCE;
@@ -876,15 +891,10 @@ if (recPos!=0L)
 							return 0;
 						}
 				}
-			}
-			if (spec.useConsequenceWeights!=0)
 				locusWeight[locusCount]=consequence[c].weight;
-			else
-				locusWeight[locusCount]=1.0;
-			if (spec.consequenceThreshold!=0)
-				useLocus[locusCount]=(cons>=spec.consequenceThreshold)?1:0;
-			else
-				useLocus[locusCount]=1;
+				if(spec.consequenceThreshold!=0)
+					useLocus[locusCount]=(cons>=spec.consequenceThreshold)?1:0;
+			}
 			}
 		}
 		++locusCount;

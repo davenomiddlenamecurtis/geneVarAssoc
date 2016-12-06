@@ -479,9 +479,9 @@ void express::wipe()
    }
  }
 
-int express::parse(char *s)
+int express::parse(const char *s)
  {
- char *ptr;
+ const char *ptr;
  if ((s=get_next(s))==NULL) return 0;
  if (token[0]=='\0') 
   {
@@ -501,7 +501,7 @@ int express::parse(char *s)
  return 1;
  }
 
-char *express::vbin_op(char *s,dcvnode **br,int level)
+const char *express::vbin_op(const char *s,dcvnode **br,int level)
  {
  dcvnode *tempbr;
  if (level<=n_levels)
@@ -525,7 +525,7 @@ char *express::vbin_op(char *s,dcvnode **br,int level)
   return s;
   }
 
-char *express::vun_op(char*s,dcvnode **br)
+const char *express::vun_op(const char*s,dcvnode **br)
     {
     int i;
     int op=0;
@@ -550,7 +550,7 @@ char *express::vun_op(char*s,dcvnode **br)
     return s;
     }
 
-char *express::vbracket(char*s,dcvnode **br)
+const char *express::vbracket(const char*s,dcvnode **br)
     {
     if (!strcmp("(",token))
      {
@@ -563,25 +563,44 @@ char *express::vbracket(char*s,dcvnode **br)
     return s;
     }
 
-char *express::vprimitive(char *s,dcvnode **br)
+const char *express::vprimitive(const char *s,dcvnode **br)
  {
  int c;
+ char *ptr;
  if (s==NULL) return NULL;
- *br=new vconstant(atof(token));
- c=token[0];
- if ((c!='.')&&!isdigit(c)) 
-   {
-   dcerror(1,"Syntax error: %s",(char*)token); 
-   return NULL; 
-   }
- if (*br==NULL) { dcerror(ENOMEM); return NULL; }
+ if (token[0]=='\"')
+ {
+	 ptr=strchr(token+1,'\"');
+	 if (!ptr)
+	 {
+		 dcerror(1,"Syntax error: %s",(char*)token);
+		 return NULL;
+	 }
+	 else
+	 {
+		 *ptr='\0';
+		 *br=new vstrconstant(token+1);
+	 }
+ }
+ else
+ {
+	 *br=new vconstant(atof(token));
+	 c=token[0];
+	 if((c!='.')&&!isdigit(c))
+	 {
+		 dcerror(1,"Syntax error: %s",(char*)token);
+		 return NULL;
+	 }
+	 if(*br==NULL) { dcerror(ENOMEM); return NULL; }
+ }
  return get_next(s);
  }
 
-char *express::get_next(char *s)
+const char *express::get_next(const char *s)
  {
  int i,len;
  double dummy;
+ const char *ptr;
  if (s==NULL) return NULL;
  while (isspace(*s)) ++s;
  strcpy(token,"");
@@ -597,6 +616,18 @@ char *express::get_next(char *s)
    token[1]='\0';
    return s+1;
    }
+ else if (*s=='\"')
+ {
+	 ptr=strchr(s+1,'\"');
+	 if (!ptr)
+		 return s; // should produce syntax error
+	 else
+	 {
+		 strncpy(token,s,ptr-s+1);
+		 token[ptr-s+1]='\0';
+		 return ptr+1;
+	 }
+ }
  else if (len=0,(i=sscanf(s,"%lf%n",&dummy,&len))>=1)
    {
    sprintf(dc_expr_buff,"%g",dummy);

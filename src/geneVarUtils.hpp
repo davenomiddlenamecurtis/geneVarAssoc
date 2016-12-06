@@ -8,7 +8,7 @@
 
 class gvaParams {
 public:
-	char geneListFn[100],baitFn[100],ccFn[2][MAXVCFPERCC][100],referencePath[100],geneName[100],sequencePath[100],posName[100];
+	char geneListFn[100],baitFn[100],ccFn[2][MAXVCFPERCC][100],referencePath[100],geneName[100],sequencePath[100],posName[100],analysisName[100];
 	char intervalListFn[100], testName[100]; // for intVarAssoc
 	int useFreqs[2],nSubs[2],nCc[2],writeComments,writeScoreFile;
 	int dontExtractGene,keepTempFiles,doNotRun;
@@ -17,7 +17,6 @@ public:
 	int getNextArg(char *nextArg,int argc,char *argv[],FILE *fp[MAXDEPTH],int *depth,int *argNum);
 	int upstream,downstream,margin;
 	int firstGeneNum,lastGeneNum;
-	int wFunc;
 	float wf;
 };
 

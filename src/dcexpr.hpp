@@ -67,10 +67,10 @@ virtual dcvnode *copy()=0;
 int matches(const char *s);
 };
 
-extern char *vprimitive(char*,dcvnode **);
-extern char *vun_op(char*,dcvnode **);
-extern char *vbin_op(char*,dcvnode **,int);
-extern char *vbracket(char*,dcvnode **);
+extern const char *vprimitive(char*,dcvnode **);
+extern const char *vun_op(const char*,dcvnode **);
+extern const char *vbin_op(const char*,dcvnode **,int);
+extern const char *vbracket(const char*,dcvnode **);
 extern int vcompute(char,dcvnode **,dcvnode **);
 extern int un_vcompute(char,dcvnode **);
 extern void add_un_op(char *lab,dcexpr_val *(*f)(dcvnode *));
@@ -81,19 +81,19 @@ class express {
 protected:
 dcvnode *head;
 char token[TOKENMAXLEN ];
-char *vbin_op(char *s,dcvnode **br,int level);
-char *vun_op(char*s,dcvnode **br);
-char *vbracket(char*s,dcvnode **br);
-virtual char *vprimitive(char *s,dcvnode **br);
+const char *vbin_op(const char *s,dcvnode **br,int level);
+const char *vun_op(const char*s,dcvnode **br);
+const char *vbracket(const char*s,dcvnode **br);
+virtual const char *vprimitive(const char *s,dcvnode **br);
 int vcompute(char o,dcvnode **i,dcvnode **j);
 int un_vcompute(char op,dcvnode **i);
-virtual char *get_next(char *s);
+virtual const char *get_next(const char *s);
 public:
 void wipe();
 express();
 virtual ~express(); // only virtual so no warning
 dcexpr_val *eval();
-int parse(char *s);
+int parse(const char *s);
 };
 
 class variable : public dcvnode {

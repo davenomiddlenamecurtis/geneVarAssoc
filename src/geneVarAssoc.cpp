@@ -4,6 +4,7 @@
 #endif
 #include "geneVarUtils.hpp"
 #include "vcfLocusFile.hpp"
+#include "geneVarParser.hpp"
 
 // SSS uses .:.:.:.:. to mean unknown??
 
@@ -19,6 +20,7 @@ int main(int argc,char *argv[])
 	FILE *fp;
 	gvaParams gp;
 	analysisSpecs spec;
+	weightTable wt;
 
 #if 1
 	printf("%s %s\nRunning ",PROGRAM,GVAVERSION);
@@ -26,6 +28,7 @@ int main(int argc,char *argv[])
 		printf("%s ",argv[i]);
 	printf("\n");
 #endif
+	wt.init("DEFAULTWEIGHTS",consequence,NCONSEQUENCETYPES);
 
 	dcerror.warn();
 
@@ -39,6 +42,7 @@ int main(int argc,char *argv[])
 #else
 	if (!gp.readParms(argc,argv,spec))
 		exit(1);
+
 	strcpy(geneName,gp.geneName);
 #endif
 	masterLocusFile vf(gp.nCc[0]+gp.nCc[1]);
@@ -102,16 +106,21 @@ int main(int argc,char *argv[])
 					vf.getQuickConsequences(r, spec);
 			}
 		}
+#if 0
 	if (spec.consequenceThreshold!=0)
 		sprintf(fn,"gva.%s.ct%02d",geneName,spec.consequenceThreshold);
 	else if (spec.useConsequenceWeights!=0)
 		sprintf(fn,"gva.%s.ucw",geneName);
 	else
 		sprintf(fn,"gva.%s",geneName);
+#else
+	sprintf(fn,"%s.%s",(gp.analysisName[0]?gp.analysisName:"gva"),geneName);
+#endif
 	if (extractedOK)
 	{
+		geneVarParser::thisGene=&r; // esssential for the annotation to work
 		printf("Writing scoreassoc files...\n");
-		vf.writeScoreAssocFiles(fn, gp.wf, gp.wFunc, gp.useFreqs, gp.nSubs, 1, gp.writeComments, gp.writeScoreFile, spec);
+		vf.writeScoreAssocFiles(fn, gp.wf,  gp.useFreqs, gp.nSubs, 1, gp.writeComments, gp.writeScoreFile, spec);
 #ifndef MSDOS
 		sprintf(line, "bash %s.sh\n",fn);
 #else
