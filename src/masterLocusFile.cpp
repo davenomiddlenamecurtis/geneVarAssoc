@@ -798,14 +798,16 @@ int masterLocusFile::outputSAInfo(int *useLocus,float *locusWeight,analysisSpecs
 	const char *testKey;
 	int c,i,doNotUseUntypedFreqfile;
 	consequenceType cons;
-	geneVarParser parser;
+	geneVarParser weightParser,excludeParser;
 	locusCount=0;
 	recPos=findFirstInRange(spec);
 if (recPos!=0L)
 {
-	if(spec.weightExpression[0])
-		parser.parse(spec.weightExpression); // only have to parse once
+	if (spec.weightExpression[0])
+		weightParser.parse(spec.weightExpression); // only have to parse once
 											// it is essential that geneVarParser::thisGene has been set!!
+	if (spec.excludeExpression[0])
+		excludeParser.parse(spec.excludeExpression);
 	while (1)
 	{
 		testKey=index.current_key();
@@ -845,7 +847,7 @@ if (recPos!=0L)
 				if (spec.weightExpression[0] && spec.useConsequenceWeights)
 				{
 					geneVarParser::thisLocus=&tempRecord;
-					locusWeight[locusCount]=(double)(*parser.eval());
+					locusWeight[locusCount]=(double)(*weightParser.eval());
 				}
 				else if (spec.useEnsembl==1 && spec.useConsequenceWeights)
 				{
@@ -896,6 +898,15 @@ if (recPos!=0L)
 					useLocus[locusCount]=(cons>=spec.consequenceThreshold)?1:0;
 			}
 			}
+		}
+		if (spec.excludeExpression[0])
+		{	
+			double rv;
+			geneVarParser::thisLocus=&tempRecord;
+			geneVarParser::thisWeight=locusWeight[locusCount];
+			rv=(*excludeParser.eval());
+			if (rv==0)
+				useLocus[locusCount]=0;
 		}
 		++locusCount;
 		recPos=index.get_next();
