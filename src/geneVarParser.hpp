@@ -10,6 +10,7 @@ class geneVarParser : public express {
 public:
 	static masterLocus *thisLocus;
 	static refseqGeneInfo *thisGene;
+	static double thisWeight;
 	geneVarParser();
 	~geneVarParser() { ; }
 	int init(masterLocus &m,refseqGeneInfo &r) { thisLocus=&m; thisGene=&r; }

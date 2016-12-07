@@ -85,6 +85,7 @@ int initGeneVarParser()
 bool geneVarParser::parserIsInited=0;
 masterLocus *geneVarParser::thisLocus;
 refseqGeneInfo *geneVarParser::thisGene;
+double geneVarParser::thisWeight;
 
 geneVarParser::geneVarParser()
 {
