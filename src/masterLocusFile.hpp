@@ -89,10 +89,11 @@ public:
 		count_hom_as_het=0;
 		useTrios=0;
 		ignoreAlleles=0;
+		debug=0;
 		*alleleFreqStr=*alleleNumberStr=*alleleCountStr='\0';
 		*weightExpression=*excludeExpression='\0';
 	} 
-int onlycc01,unknownIfUntyped,unknownIfNoPass,altIsCommon,sc,ec,skipIfNoPass,useConsequenceWeights,useEnsembl,onlyUseSNPs,nExc,doRecessiveTest,addChrInVCF[MAXVCFFILES],useHaplotypes,count_hom_as_het,useTrios,ignoreAlleles,useProbs,wildIfUnknown;
+int onlycc01,unknownIfUntyped,unknownIfNoPass,altIsCommon,sc,ec,skipIfNoPass,useConsequenceWeights,useEnsembl,onlyUseSNPs,nExc,doRecessiveTest,addChrInVCF[MAXVCFFILES],useHaplotypes,count_hom_as_het,useTrios,ignoreAlleles,useProbs,wildIfUnknown,debug;
 int *phenotypes;
 TStrIntMap subPhenos;
 long sp,ep;
@@ -156,7 +157,7 @@ public:
 	int outputVcfGenotypes(FILE *fo,FILE *f,int whichFile,int nSubs,analysisSpecs const &spec);
 	int print(FILE *fp);
 	int printFeatures(FILE* fp,int showFreq=-1);
-	const char *getID(); // get a hhuman readable ID if one of myLocalLocus has one
+	const char *getID(); // get a human readable ID if one of myLocalLocus has one
 	int writeRiskVarInfo(char *s,int withFreqs=0);
 	bool readRiskVarInfo(char *s,int withFreqs=0);
 	consequenceType getWorstConsequenceType() { return worstConsequenceType; }
@@ -164,8 +165,10 @@ public:
 	const char *reportQuickConsequence() { return quickConsequence; }
 	// this is text of worst consequence after call to getQuickFeature()
 	int getGenoCount(int g) { return genoCount[g]; }
-	void setLocusPosInFile(int f, FILEPOSITION l) { locusPosInFile[f] = l; }
+	void setLocusPosInFile(int f,FILEPOSITION l) { locusPosInFile[f] = l; }
 	FILEPOSITION getLocusPosInFile(int f) { return locusPosInFile[f]; }
+	int getChr() { return chr; }
+	long getPos() { return pos; }
 };
 
 class localLocus {

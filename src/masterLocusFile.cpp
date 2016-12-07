@@ -799,6 +799,8 @@ int masterLocusFile::outputSAInfo(int *useLocus,float *locusWeight,analysisSpecs
 	int c,i,doNotUseUntypedFreqfile;
 	consequenceType cons;
 	geneVarParser weightParser,excludeParser;
+	if (spec.debug)
+		weightParser.debug(stdout); // will set debug for both parsers
 	locusCount=0;
 	recPos=findFirstInRange(spec);
 if (recPos!=0L)
@@ -904,7 +906,7 @@ if (recPos!=0L)
 			double rv;
 			geneVarParser::thisLocus=&tempRecord;
 			geneVarParser::thisWeight=locusWeight[locusCount];
-			rv=(*excludeParser.eval());
+			rv=*excludeParser.eval();
 			if (rv==0)
 				useLocus[locusCount]=0;
 		}

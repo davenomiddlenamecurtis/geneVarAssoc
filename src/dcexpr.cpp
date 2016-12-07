@@ -34,6 +34,8 @@ int n_un_ops,n_bin_ops[MAX_OP_LEVEL],n_levels,n_all_ops,last_op_level;
 // for initialisers to work, all these must be zero
 // hopefully they should be
 
+FILE *express::debugFile;
+
 express::express()
 { head=NULL; token[0]='\0';  }
 
@@ -114,7 +116,10 @@ dcexpr_val *vnvbin_op::eval()
 {
 if (branch[0]==NULL || branch[1]==NULL)
   return 0;
-return func(branch[0],branch[1]);
+dcexpr_val *rv=func(branch[0],branch[1]);
+if (express::debugFile)
+	fprintf(express::debugFile,"%s\t",(char*)(*rv));
+return rv;
 }
 
 class vnvun_op:public dcvnode {
@@ -139,7 +144,10 @@ func=f;
 dcexpr_val *vnvun_op::eval()
 {
 if (branch[0]==NULL) return NULL;
-return func(branch[0]);
+dcexpr_val *rv=func(branch[0]);
+if(express::debugFile)
+	fprintf(express::debugFile,"%s\t",(char*)(*rv));
+return rv;
 }
 
 variable::~variable() {;}
@@ -210,7 +218,9 @@ dcexpr_val *div_op(dcvnode *b1,dcvnode *b2)
 {
 dcexpr_val *r1,*r2;
 EVAL_BOTH;
-double rv=double(*r1) / double(*r2);
+double rv=double(*r1);
+if (rv)
+	rv=rv/double(*r2); // so 0/0 is 0 rather than NaN
 delete r1; delete r2;
 return new dcexpr_double(rv);
 }
@@ -295,7 +305,7 @@ dcexpr_val *r1,*r2;
 EVAL_BOTH;
 double rv;
 if (r1->is_string_really() && r2->is_string_really())
-  rv=!strncmp(strupr((char*)(*r1)),strupr((char*)(*r2)),strlen((char*)(*r2)));
+  rv=!strcmp((char*)(*r1),(char*)(*r2));
 else
   rv=double(*r1) == double(*r2);
 delete r1; delete r2;

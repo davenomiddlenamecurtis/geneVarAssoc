@@ -11,9 +11,11 @@ public:
 	static masterLocus *thisLocus;
 	static refseqGeneInfo *thisGene;
 	static double thisWeight;
+	std::map<std::string,std::string> queryCache;
 	geneVarParser();
 	~geneVarParser() { ; }
 	int init(masterLocus &m,refseqGeneInfo &r) { thisLocus=&m; thisGene=&r; }
+	dcexpr_val *eval();
 };
 
 class weightTable {

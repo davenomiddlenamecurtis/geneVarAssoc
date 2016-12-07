@@ -58,6 +58,7 @@ int gvaParams::readParms(int argc,char *argv[],analysisSpecs &spec)
 	dontExtractGene=0;
 	keepTempFiles=0;
 	doNotRun=0;
+	spec.debug=0;
 	for (i = 0; i < 2; ++i)
 	{
 		useFreqs[i] = 0; // default
@@ -196,8 +197,10 @@ int gvaParams::readParms(int argc,char *argv[],analysisSpecs &spec)
 			dontExtractGene=atoi(arg);
 		else if (FILLARG("--keep-temp-files"))
 			keepTempFiles=atoi(arg);
-		else if (FILLARG("--do-not-run"))
+		else if(FILLARG("--do-not-run"))
 			doNotRun=atoi(arg);
+		else if(FILLARG("--debug"))
+			spec.debug=atoi(arg);
 		else if (FILLARG("--reference-path"))
 			strcpy(referencePath, arg);
 		else if (FILLARG("--sequence-path"))

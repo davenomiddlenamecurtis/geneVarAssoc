@@ -67,12 +67,6 @@ virtual dcvnode *copy()=0;
 int matches(const char *s);
 };
 
-extern const char *vprimitive(char*,dcvnode **);
-extern const char *vun_op(const char*,dcvnode **);
-extern const char *vbin_op(const char*,dcvnode **,int);
-extern const char *vbracket(const char*,dcvnode **);
-extern int vcompute(char,dcvnode **,dcvnode **);
-extern int un_vcompute(char,dcvnode **);
 extern void add_un_op(char *lab,dcexpr_val *(*f)(dcvnode *));
 extern void add_bin_op_same(char *lab,dcexpr_val *(*f)(dcvnode *,dcvnode *));
 extern void add_bin_op_next(char *lab,dcexpr_val *(*f)(dcvnode *,dcvnode *));
@@ -85,8 +79,6 @@ const char *vbin_op(const char *s,dcvnode **br,int level);
 const char *vun_op(const char*s,dcvnode **br);
 const char *vbracket(const char*s,dcvnode **br);
 virtual const char *vprimitive(const char *s,dcvnode **br);
-int vcompute(char o,dcvnode **i,dcvnode **j);
-int un_vcompute(char op,dcvnode **i);
 virtual const char *get_next(const char *s);
 public:
 void wipe();
@@ -94,6 +86,8 @@ express();
 virtual ~express(); // only virtual so no warning
 dcexpr_val *eval();
 int parse(const char *s);
+void debug(FILE *dbf) { debugFile=dbf; }
+static FILE *debugFile;
 };
 
 class variable : public dcvnode {
