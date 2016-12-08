@@ -11,7 +11,7 @@ public:
 	static masterLocus *thisLocus;
 	static refseqGeneInfo *thisGene;
 	static double thisWeight;
-	std::map<std::string,std::string> queryCache;
+	static std::map<std::string,std::string> queryCache;
 	geneVarParser();
 	~geneVarParser() { ; }
 	int init(masterLocus &m,refseqGeneInfo &r) { thisLocus=&m; thisGene=&r; }

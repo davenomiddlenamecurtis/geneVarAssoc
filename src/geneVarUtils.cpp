@@ -238,7 +238,7 @@ int gvaParams::readParms(int argc,char *argv[],analysisSpecs &spec)
 					return 0;
 				}
 				ef=fp[depth];
-				--depth; // because file will get cclosed
+				--depth; // because file will get closed
 			}
 			else
 			{
@@ -248,7 +248,6 @@ int gvaParams::readParms(int argc,char *argv[],analysisSpecs &spec)
 					dcerror(1,"Could not open exclusion list file: %s\n",arg);
 					return 0;
 				}
-
 			}
 			for (;fgets(line,1999,ef) && sscanf(line,"%[^\n]",spec.exclusionStr[spec.nExc])==1;++spec.nExc)
 				;
@@ -334,11 +333,30 @@ int gvaParams::readParms(int argc,char *argv[],analysisSpecs &spec)
 
 int gvaParams::getNextArg(char *nextArg, int argc,char *argv[], FILE *fp[MAXDEPTH],int *depth, int *argNum)
 {
+	char *ptr;
+	int ch;
 	*nextArg='\0';
 	while (*depth>-1)
 	{
-		if (fscanf(fp[*depth],"%s ",nextArg)==1)
+		do {
+			ch=fgetc(fp[*depth]);
+		} while (ch!=EOF && isspace(ch));
+		if (ch=='\'')
+		{
+			ptr=nextArg;
+			while ((ch=fgetc(fp[*depth]))!='\'' && ch!=EOF)
+				*ptr++=ch;
+			*ptr='\0';
+		}
+		else if(ch!=EOF)
+		{
+			nextArg[0]=ch;
+			ptr=nextArg+1;
+			while((ch=fgetc(fp[*depth]))!=EOF && !isspace(ch))
+				*ptr++=ch;
+			*ptr='\0';
 			return 1;
+		}
 		else
 		{
 			fclose(fp[*depth]);
@@ -347,7 +365,13 @@ int gvaParams::getNextArg(char *nextArg, int argc,char *argv[], FILE *fp[MAXDEPT
 	}
 	if (*argNum < argc)
 	{
-		strcpy(nextArg,argv[*argNum]);
+		if (argv[*argNum][0]=='\'' && (ptr=strchr(argv[*argNum]+1,'\''))!=0)
+		{
+			*ptr='\0';
+			strcpy(nextArg,argv[*argNum]+1);
+		}
+		else
+			strcpy(nextArg,argv[*argNum]);
 		++ *argNum;
 		return 1;
 	}

@@ -907,7 +907,7 @@ if (recPos!=0L)
 			geneVarParser::thisLocus=&tempRecord;
 			geneVarParser::thisWeight=locusWeight[locusCount];
 			rv=*excludeParser.eval();
-			if (rv==0)
+			if (rv!=0)
 				useLocus[locusCount]=0;
 		}
 		++locusCount;

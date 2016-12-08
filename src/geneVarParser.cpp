@@ -13,10 +13,11 @@ void weightTable::init(char *n,consequenceReport consequence[],int nConsequence)
 	weightTableList[tableName]=this;
 }
 
-dcexpr_val *performTabixQuery(char *buff,const char *fn,int addChr)
+dcexpr_val *performTabixQuery(char *buff,const char *fn,int addChr,char *lookupStr)
 {
-	char fnBuff[1000],*ptr,lineBuff[5000],chrStr[10];
+	char fnBuff[1000],*ptr,*tptr,queryBuff[1000],lineBuff[5000],tempBuff[1000],chrStr[10];
 	dcexpr_val *rv;
+	FILE *fq;
 	strcpy(fnBuff,fn);
 	int chr=geneVarParser::thisLocus->getChr();
 	if (chr==23)
@@ -30,8 +31,44 @@ dcexpr_val *performTabixQuery(char *buff,const char *fn,int addChr)
 		ptr=strchr(lineBuff,'*');
 		strcat(fnBuff,lineBuff);
 	}
-	unlink("tabixQueryOutput.txt");
-	sprintf(lineBuff,"tabix %s %s%s:%ld-%ld",fnBuff,addChr?"CHR":"",chrStr,geneVarParser::thisLocus->getPos(),geneVarParser::thisLocus->getPos());
+	sprintf(queryBuff,"tabix %s %s%s:%ld-%ld",fnBuff,addChr?"CHR":"",chrStr,geneVarParser::thisLocus->getPos(),geneVarParser::thisLocus->getPos());
+	std::map<std::string,std::string>::const_iterator queryIter=geneVarParser::queryCache.find(queryBuff);
+	if (queryIter==geneVarParser::queryCache.end())
+	{
+		unlink("tabixQueryOutput.txt");
+		strcat(queryBuff," > tabixQueryOutput.txt");
+		fq=fopen("tabixQueryOutput.txt","r");
+		if(fq==0 || fscanf(fq,"%*s %*s %*s %*s %*s %*s %*s %s",lineBuff)!=1)
+			sprintf(lineBuff,"NOVCFLINE_%s_%ld",chrStr,geneVarParser::thisLocus->getPos());
+		else
+		{
+			if (fq)
+				fclose(fq);
+			sprintf(tempBuff,";%s",lookupStr);
+			while((ptr=strstr(lineBuff,tempBuff))!=0) // possible multiple occurrences, e.g. of AF
+			{
+				if (ptr[strlen(tempBuff)]=='=')
+					break;
+			}
+			if (ptr==0)
+				sprintf(lineBuff,"NOVCFENTRY_%s_%ld_%s",chrStr,geneVarParser::thisLocus->getPos(),lookupStr);
+			else
+			{
+				ptr+=strlen(tempBuff)+1;
+				tptr=tempBuff;
+				while (*ptr && *ptr!=';')
+					*tptr++=*ptr++;
+				*tptr=0;
+				strcpy(lineBuff,tempBuff);
+			}
+		}
+		geneVarParser::queryCache[queryBuff]=lineBuff;
+	}
+	else
+	{
+		strcpy(lineBuff,queryIter->second.c_str());
+	}
+	rv=new dcexpr_string(lineBuff);
 	return rv;
 }
 
@@ -42,7 +79,7 @@ dcexpr_val *vcfAddChrLookup_func(dcvnode* b1,dcvnode *b2)
 	dcexpr_val *rv;
 	char fnBuff[1000],lineBuff[5000];
 	strcpy(fnBuff,(char*)(*r2));
-	rv=performTabixQuery(lineBuff,fnBuff,1);
+	rv=performTabixQuery(lineBuff,fnBuff,1,(char*)(*r2));
 	delete r1; delete r2;
 	return rv;
 }
@@ -54,7 +91,7 @@ dcexpr_val *vcfLookup_func(dcvnode* b1,dcvnode *b2)
 	dcexpr_val *rv;
 	char fnBuff[1000],lineBuff[5000];
 	strcpy(fnBuff,(char*)(*r2));
-	rv=performTabixQuery(lineBuff,fnBuff,1);
+	rv=performTabixQuery(lineBuff,fnBuff,1,(char*)(*r2));
 	delete r1; delete r2;
 	return rv;
 }
@@ -150,6 +187,7 @@ bool geneVarParser::parserIsInited=0;
 masterLocus *geneVarParser::thisLocus;
 refseqGeneInfo *geneVarParser::thisGene;
 double geneVarParser::thisWeight;
+std::map<std::string,std::string> geneVarParser::queryCache;
 
 geneVarParser::geneVarParser()
 {
