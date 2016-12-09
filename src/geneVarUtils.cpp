@@ -347,6 +347,7 @@ int gvaParams::getNextArg(char *nextArg, int argc,char *argv[], FILE *fp[MAXDEPT
 			while ((ch=fgetc(fp[*depth]))!='\'' && ch!=EOF)
 				*ptr++=ch;
 			*ptr='\0';
+			return 1;
 		}
 		else if(ch!=EOF)
 		{

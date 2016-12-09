@@ -13,7 +13,7 @@ void weightTable::init(char *n,consequenceReport consequence[],int nConsequence)
 	weightTableList[tableName]=this;
 }
 
-dcexpr_val *performTabixQuery(char *buff,const char *fn,int addChr,char *lookupStr)
+dcexpr_val *performTabixQuery(const char *fn,int addChr,char *lookupStr)
 {
 	char fnBuff[1000],*ptr,*tptr,queryBuff[1000],lineBuff[5000],tempBuff[1000],chrStr[10];
 	dcexpr_val *rv;
@@ -37,36 +37,37 @@ dcexpr_val *performTabixQuery(char *buff,const char *fn,int addChr,char *lookupS
 	{
 		unlink("tabixQueryOutput.txt");
 		strcat(queryBuff," > tabixQueryOutput.txt");
+		system(queryBuff);
 		fq=fopen("tabixQueryOutput.txt","r");
-		if(fq==0 || fscanf(fq,"%*s %*s %*s %*s %*s %*s %*s %s",lineBuff)!=1)
+		if (fq==0 || fscanf(fq,"%*s %*s %*s %*s %*s %*s %*s %s",lineBuff)!=1)
 			sprintf(lineBuff,"NOVCFLINE_%s_%ld",chrStr,geneVarParser::thisLocus->getPos());
-		else
-		{
-			if (fq)
-				fclose(fq);
-			sprintf(tempBuff,";%s",lookupStr);
-			while((ptr=strstr(lineBuff,tempBuff))!=0) // possible multiple occurrences, e.g. of AF
-			{
-				if (ptr[strlen(tempBuff)]=='=')
-					break;
-			}
-			if (ptr==0)
-				sprintf(lineBuff,"NOVCFENTRY_%s_%ld_%s",chrStr,geneVarParser::thisLocus->getPos(),lookupStr);
-			else
-			{
-				ptr+=strlen(tempBuff)+1;
-				tptr=tempBuff;
-				while (*ptr && *ptr!=';')
-					*tptr++=*ptr++;
-				*tptr=0;
-				strcpy(lineBuff,tempBuff);
-			}
-		}
+		if(fq)
+			fclose(fq);
 		geneVarParser::queryCache[queryBuff]=lineBuff;
 	}
 	else
 	{
 		strcpy(lineBuff,queryIter->second.c_str());
+	}
+	if (strncmp(lineBuff,"NOVCFLINE",strlen("NOVCFLINE")))
+	{
+		sprintf(tempBuff,";%s",lookupStr);
+		while((ptr=strstr(lineBuff,tempBuff))!=0) // possible multiple occurrences, e.g. of AF
+		{
+			if(ptr[strlen(tempBuff)]=='=')
+				break;
+		}
+		if(ptr==0)
+			sprintf(lineBuff,"NOVCFENTRY_%s_%ld_%s",chrStr,geneVarParser::thisLocus->getPos(),lookupStr);
+		else
+		{
+			ptr+=strlen(tempBuff)+1;
+			tptr=tempBuff;
+			while(*ptr && *ptr!=';')
+				*tptr++=*ptr++;
+			*tptr=0;
+			strcpy(lineBuff,tempBuff);
+		}
 	}
 	rv=new dcexpr_string(lineBuff);
 	return rv;
@@ -77,9 +78,7 @@ dcexpr_val *vcfAddChrLookup_func(dcvnode* b1,dcvnode *b2)
 	dcexpr_val *r1,*r2;
 	EVAL_BOTH;
 	dcexpr_val *rv;
-	char fnBuff[1000],lineBuff[5000];
-	strcpy(fnBuff,(char*)(*r2));
-	rv=performTabixQuery(lineBuff,fnBuff,1,(char*)(*r2));
+	rv=performTabixQuery((char*)(*r2),1,(char*)(*r1));
 	delete r1; delete r2;
 	return rv;
 }
@@ -89,9 +88,7 @@ dcexpr_val *vcfLookup_func(dcvnode* b1,dcvnode *b2)
 	dcexpr_val *r1,*r2;
 	EVAL_BOTH;
 	dcexpr_val *rv;
-	char fnBuff[1000],lineBuff[5000];
-	strcpy(fnBuff,(char*)(*r2));
-	rv=performTabixQuery(lineBuff,fnBuff,1,(char*)(*r2));
+	rv=performTabixQuery((char*)(*r2),0,(char*)(*r1));
 	delete r1; delete r2;
 	return rv;
 }
@@ -178,6 +175,8 @@ int initGeneVarParser()
 {
 	add_bin_op_next("STRCAT",strcat_func);
 	add_bin_op_next("GETWEIGHT",getWeight_func);
+	add_bin_op_same("VCFLOOKUP",vcfLookup_func);
+	add_bin_op_same("VCFADDCHRLOOKUP",vcfAddChrLookup_func);
 	add_un_op("ANNOT",annot_func);
 	add_un_op("ATTRIB",attrib_func);
 	return 1;
