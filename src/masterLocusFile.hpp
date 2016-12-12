@@ -25,6 +25,7 @@
 #include "getGene.hpp"
 #include <string>
 #include <map>
+#include <list>
 typedef std::pair<std::string,int> TStrIntPair;
 typedef std::map<std::string,int> TStrIntMap;
 
@@ -91,7 +92,7 @@ public:
 		ignoreAlleles=0;
 		debug=0;
 		*alleleFreqStr=*alleleNumberStr=*alleleCountStr='\0';
-		*weightExpression=*excludeExpression='\0';
+		*weightExpression='\0';
 	} 
 int onlycc01,unknownIfUntyped,unknownIfNoPass,altIsCommon,sc,ec,skipIfNoPass,useConsequenceWeights,useEnsembl,onlyUseSNPs,nExc,doRecessiveTest,addChrInVCF[MAXVCFFILES],useHaplotypes,count_hom_as_het,useTrios,ignoreAlleles,useProbs,wildIfUnknown,debug;
 int *phenotypes;
@@ -103,7 +104,8 @@ consequenceType consequenceThreshold;
 char exclusionStr[20][200];
 char triosFn[200];
 char alleleFreqStr[100],alleleNumberStr[100],alleleCountStr[100];
-char weightExpression[1000],excludeExpression[1000];
+char weightExpression[1000];
+std::list<std::string> excludeExpressions;
 };
 
 #if 0

@@ -798,7 +798,8 @@ int masterLocusFile::outputSAInfo(int *useLocus,float *locusWeight,analysisSpecs
 	const char *testKey;
 	int c,i,doNotUseUntypedFreqfile;
 	consequenceType cons;
-	geneVarParser weightParser,excludeParser;
+	geneVarParser weightParser;
+	std::list<geneVarParser *> excludeParser;
 	if (spec.debug)
 		weightParser.debug(stdout); // will set debug for both parsers
 	locusCount=0;
@@ -808,8 +809,15 @@ if (recPos!=0L)
 	if (spec.weightExpression[0])
 		weightParser.parse(spec.weightExpression); // only have to parse once
 											// it is essential that geneVarParser::thisGene has been set!!
-	if (spec.excludeExpression[0])
-		excludeParser.parse(spec.excludeExpression);
+	if(spec.excludeExpressions.size())
+	{
+		for (std::list<std::string>::const_iterator it=spec.excludeExpressions.begin();it!=spec.excludeExpressions.end();++it)
+		{
+			geneVarParser *eP=new geneVarParser;
+			eP->parse(it->c_str());
+			excludeParser.push_back(eP);
+		}
+	}
 	while (1)
 	{
 		testKey=index.current_key();
@@ -901,19 +909,31 @@ if (recPos!=0L)
 			}
 			}
 		}
-		if (spec.excludeExpression[0])
+		if (excludeParser.size())
 		{	
 			double rv;
 			geneVarParser::thisLocus=&tempRecord;
 			geneVarParser::thisWeight=locusWeight[locusCount];
-			rv=*excludeParser.eval();
-			if (rv!=0)
-				useLocus[locusCount]=0;
+			for(std::list<geneVarParser *>::iterator it=excludeParser.begin();it!=excludeParser.end();++it)
+			{
+				rv=*((*it)->eval());
+				if(rv!=0)
+					useLocus[locusCount]=0;
+				break;
+			}
 		}
 		++locusCount;
 		recPos=index.get_next();
 		if (recPos==0L)
 			break;
+	}
+	if(excludeParser.size())
+	{
+		for(std::list<geneVarParser *>::iterator it=excludeParser.begin();it!=excludeParser.end();++it)
+		{
+			geneVarParser *gP=*it;
+			delete gP;
+		}
 	}
 }
 return locusCount;

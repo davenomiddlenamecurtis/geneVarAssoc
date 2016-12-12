@@ -18,7 +18,7 @@ int gvaParams::readParms(int argc,char *argv[],analysisSpecs &spec)
 	*IDsAndPhenotypeFileName=*phenotypeFileName=*samplesFileName='\0';
 	geneListFn[0]=baitFn[0]=ccFn[2][MAXVCFPERCC][0]=referencePath[0]=geneName[0]=sequencePath[0]=posName[0]=intervalListFn[0]=testName[0]=analysisName[0]='\0';
 //	strcpy(spec.weightExpression,"ANNOT(\"DEFAULT\")GETWEIGHT(\"DEFAULTWEIGHTS\")");
-	spec.excludeExpression[0]='\0';
+	spec.excludeExpressions.clear();
 	for (i=0;i<MAXVCFFILES;++i)
 		spec.addChrInVCF[i]=0;
 	if (spec.phenotypes!=NULL)
@@ -99,7 +99,7 @@ int gvaParams::readParms(int argc,char *argv[],analysisSpecs &spec)
 		}
 		else if(FILLARG("--exclude-expression"))
 		{
-			strcpy(spec.excludeExpression,arg);
+			spec.excludeExpressions.push_back(arg);
 		}
 		else if (FILLARG("--phenotype-file"))
 		{
