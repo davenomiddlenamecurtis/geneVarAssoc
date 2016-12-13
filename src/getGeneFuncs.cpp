@@ -9,7 +9,7 @@ char refseqGeneInfo::geneLine[GENELINELENGTH];
 #define strnicmp strncasecmp
 #define strupr mystrupr
 #include <ctype.h>
-char *mystrupr(char *s)
+static char *mystrupr(char *s)
 {
 	char *t;
 	t=s;
