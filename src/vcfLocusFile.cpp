@@ -462,7 +462,10 @@ int vcfLocalLocus::input(FILE *f,FILEPOSITION *locusPosInFile,analysisSpecs cons
 		if ((ptr=strstr(info,afstr))!=0)
 			AC=atof(ptr+strlen(afstr));
 		if (AF==-1 && AC!=-1 && AN!=-1)
-			AF=AC/AN;
+			if (AN==0)
+				AF=0;
+			else
+				AF=AC/AN;
 		if (AF == -1)
 		{	
 #if 0
