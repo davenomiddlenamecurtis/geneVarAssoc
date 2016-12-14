@@ -4,7 +4,7 @@
 
 char refseqGeneInfo::geneLine[GENELINELENGTH];
 
-#ifdef MSDOS
+#ifndef MSDOS
 #define stricmp strcasecmp
 #define strnicmp strncasecmp
 #define strupr mystrupr
