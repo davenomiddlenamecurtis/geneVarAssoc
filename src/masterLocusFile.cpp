@@ -1542,7 +1542,13 @@ int masterLocusFile::merge(masterLocus &rec,localLocus *loc,FILEPOSITION locusPo
 			if (!strcmp(all,rec.alls[l]))
 				break;
 		if (l==rec.nAlls)
-			strcpy(rec.alls[rec.nAlls++],all);
+			if (rec.nAlls>=MAXALL)
+			{
+				dcerror(1,"Total number of alleles for locus at %d:%ld exceeds MAXALL so cannot merge(). Need to increase MAXALL.",rec.chr,rec.pos);
+				return 0;
+			}
+			else
+				strcpy(rec.alls[rec.nAlls++],all);
 
 		rec.alleleMapping[currentLocusFile][a]=l;
 		strcpy(line,rest);

@@ -8,19 +8,19 @@ DCBIN = ../bin
 C = gcc
 CC = g++
 
-OURFLAGS = $(CFLAGS) 
+CFLAGS = $(OURFLAGS) 
 
 HEADERS = btree.h consequenceType.hpp dcerror.hpp dcindex.hpp geneVarUtils.hpp getGene.hpp getSequence.hpp intervalList.h masterLocusFile.hpp vcfLocusFile.hpp hapsLocusFile.hpp geneVarParser.hpp dcexpr.hpp
 
 ifdef INOBJ
-all: geneVarAssoc intVarAssoc
+all: geneVarAssoc 
 else
 all:
 	if [ ! -e ../obj ] ; then mkdir ../obj ; fi ; \
 	if [ ! -e ${DCBIN} ] ; then mkdir ${DCBIN} ; fi ; \
 	cd ../obj; \
 	make -f ../src/geneVarAssoc.mak INOBJ=INOBJ CFLAGS=$(CFLAGS) ; \
-	cp geneVarAssoc intVarAssoc ${DCBIN} ; \
+	cp geneVarAssoc  ${DCBIN} ; \
 	echo copied executables to ${DCBIN} ; \
 	cd ../src
 endif

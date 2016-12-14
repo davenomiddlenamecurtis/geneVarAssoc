@@ -1,7 +1,7 @@
 #ifndef masterLocusFileHPP
 #define masterLocusFileHPP
 
-#define MAXALL 10 // maximum number of alleles occurring at any locus
+#define MAXALL 15 // maximum number of alleles occurring at any locus
 #define MAXALLLENGTH 100
 // #define MAXALLLENGTH 300 // maximum length of the character string describing each REF allele 
 // or all ALT alleles with commas separating them
