@@ -14,7 +14,7 @@
 #define strnicmp strncasecmp
 #define strupr mystrupr
 #include <ctype.h>
-static har *mystrupr(char *s)
+static char *mystrupr(char *s)
 {
 	char *t;
 	t=s;
