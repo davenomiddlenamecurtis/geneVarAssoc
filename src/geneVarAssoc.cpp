@@ -21,6 +21,7 @@ int main(int argc,char *argv[])
 	gvaParams gp;
 	analysisSpecs spec;
 	weightTable wt;
+	checkSystem();
 
 #if 1
 	printf("%s %s\nRunning ",PROGRAM,GVAVERSION);
@@ -31,7 +32,7 @@ int main(int argc,char *argv[])
 	wt.init("DEFAULTWEIGHTS",consequence,NCONSEQUENCETYPES);
 
 	dcerror.warn();
-
+	checkSystem();
 #if 0
 	fp = fopen(argv[1], "r");
 	if (fp == NULL)
@@ -67,6 +68,7 @@ int main(int argc,char *argv[])
 	vf.openFiles(fn,fn2);
 	extractedOK=1;
 	int ff=0;
+	checkSystem();
 	for (i=0;i<gp.nCc[0];++i)
 		{
 			gcont.setVariantFileName(gp.ccFn[0][i]);
@@ -95,6 +97,7 @@ int main(int argc,char *argv[])
 			if (!vf.readLocusFileEntries(fn,spec,1))
 				extractedOK=0;
 		}
+	checkSystem();
 	if (extractedOK)
 		{
 			if (spec.consequenceThreshold != 0 || spec.useConsequenceWeights != 0)
@@ -116,6 +119,7 @@ int main(int argc,char *argv[])
 #else
 	sprintf(fn,"%s.%s",(gp.analysisName[0]?gp.analysisName:"gva"),geneName);
 #endif
+	checkSystem();
 	if (extractedOK)
 	{
 		geneVarParser::thisGene=&r; // esssential for the annotation to work
@@ -146,6 +150,7 @@ int main(int argc,char *argv[])
 		else 
 			printf("Failed to extract variants for %s\n",fn);
 	}
+	checkSystem();
 	if (!gp.keepTempFiles)
 	{
 		vf.closeFiles();
@@ -168,5 +173,6 @@ int main(int argc,char *argv[])
 		unlink(fn);
 		unlink(fn2);
 	}
+	checkSystem();
 	return 0;
 }
