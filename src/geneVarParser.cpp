@@ -41,6 +41,7 @@ dcexpr_val *performTabixQuery(const char *fn,int addChr,char *lookupStr)
 		printf("Will run: %s\n",lineBuff);
 
 		stest=system("echo $PATH");
+		printf("stest=system(\"echo $PATH\"); returns %d\n",stest);
 		stest=system(NULL);
 		printf("stest=system(NULL); returns %d\n",stest);
 		if ((stest=system(lineBuff))!=0)
