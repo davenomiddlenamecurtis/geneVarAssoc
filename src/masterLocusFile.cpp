@@ -506,6 +506,7 @@ int masterLocusFile::writeScoreAssocFiles(masterLocusFile &subFile,char *root, f
 	FILEPOSITION recPos;
 	const char *testKey;
 	strEntry *subName;
+	checkSystem();
 	if (nLocusFiles==1)
 		nSubs[0]=subFile.getTotalSubs();
 	else if (nLocusFiles==subFile.nLocusFiles)
@@ -523,6 +524,7 @@ int masterLocusFile::writeScoreAssocFiles(masterLocusFile &subFile,char *root, f
 // hereOK();
 	subFile.outputSubNames(subName,spec);
 // hereOK();
+	checkSystem();
 	if (spec.useProbs)
 	{
 		assert((p = (probTriple **)calloc(MAXLOCIINSCOREASSOCFILE, sizeof(probTriple*))) != 0);
@@ -539,6 +541,7 @@ int masterLocusFile::writeScoreAssocFiles(masterLocusFile &subFile,char *root, f
 	}
 // hereOK();
 	sprintf(fn,"%s.dat",root);
+	checkSystem();
 	fp=fopen(fn,"w");
 	if(spec.subPhenos.size()>0)
 	{
@@ -557,6 +560,7 @@ int masterLocusFile::writeScoreAssocFiles(masterLocusFile &subFile,char *root, f
 				spec.phenotypes[s]=it->second;
 		}
 	}
+	checkSystem();
 	for (s=0,i=0;i<subFile.nLocusFiles;++i)
 	for (ss=0;ss<subFile.nSubs[i];++s,++ss)
 	{
@@ -577,6 +581,7 @@ int masterLocusFile::writeScoreAssocFiles(masterLocusFile &subFile,char *root, f
 		fprintf(fp,"\n");
 	}
 	fclose(fp);
+	checkSystem();
 	sprintf(commandString,"scoreassoc %s %s --numloci %d",spec.useProbs?"--gendatafile":"--gcdatafile",fn,lc);
 	outputSAInfo(useLocus,locusWeight,spec);
 	sprintf(fn,"%s.lf.par",root);
@@ -586,6 +591,7 @@ int masterLocusFile::writeScoreAssocFiles(masterLocusFile &subFile,char *root, f
 	fprintf(fp,"\n");
 	fclose(fp);
 	sprintf(strchr(commandString,'\0')," --locusfilterfile %s",fn);
+	checkSystem();
 	if (spec.doRecessiveTest)
 	{
 		sprintf(strchr(commandString, '\0'), " --dorecessive --minweight %f --ldthreshold %f ", spec.weightThreshold, spec.LDThreshold);
@@ -607,6 +613,7 @@ int masterLocusFile::writeScoreAssocFiles(masterLocusFile &subFile,char *root, f
 		spec.useHaplotypes,
 		spec.useTrios);
 #endif
+	checkSystem();
 	if (spec.useConsequenceWeights)
 	{
 		sprintf(fn,"%s.lw.par",root);
@@ -617,6 +624,7 @@ int masterLocusFile::writeScoreAssocFiles(masterLocusFile &subFile,char *root, f
 		fclose(fp);
 	sprintf(strchr(commandString,'\0')," --locusweightfile %s",fn);
 	}
+	checkSystem();
 	for (i=0;i<2;++i)
 		if (useFreqs[i])
 		{
@@ -639,6 +647,7 @@ int masterLocusFile::writeScoreAssocFiles(masterLocusFile &subFile,char *root, f
 			delete[] freqs;
 		}
 // no longer dealing with names seperately
+	checkSystem();
 	if (writeComments)
 	{
 		sprintf(fn,"%s.comm.par",root);
@@ -686,6 +695,7 @@ int masterLocusFile::writeScoreAssocFiles(masterLocusFile &subFile,char *root, f
 
 	if (spec.useTrios)
 		sprintf(strchr(commandString,'\0')," --triofile %s",spec.triosFn);
+	checkSystem();
 	if (spec.nExc > 0)
 	{
 		sprintf(fn,"%s.filter.par",root);
@@ -696,6 +706,7 @@ int masterLocusFile::writeScoreAssocFiles(masterLocusFile &subFile,char *root, f
 		sprintf(strchr(commandString,'\0')," --filterfile %s",fn);
 	}
 	sprintf(strchr(commandString,'\0')," --outfile %s.sao",root);
+	checkSystem();
 	if (writeScorefile)
 		sprintf(strchr(commandString,'\0')," --scorefile %s.sco",root);
 #ifndef MSDOS
