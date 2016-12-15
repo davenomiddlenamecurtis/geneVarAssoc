@@ -2,7 +2,7 @@
 #define masterLocusFileHPP
 
 #define MAXALL 15 // maximum number of alleles occurring at any locus
-#define MAXALLLENGTH 100
+#define MAXALLLENGTH 200
 // #define MAXALLLENGTH 300 // maximum length of the character string describing each REF allele 
 // or all ALT alleles with commas separating them
 // 100 was too short
@@ -13,7 +13,7 @@
 // when I do this I get a segmentation fault
 
 #define MAXVCFFILES 10
-#define MAXFILENAMELENGTH 60
+#define MAXFILENAMELENGTH 100
 #define BUFFSIZE 900000 // maximum length of e.g. line read in from VCF file
 #define VCFFIELDLENGTH 2000 // maximum length for e.g. quality, format fields
 // even 3000 was too short for a UK10K gene with many PolyPhen entries

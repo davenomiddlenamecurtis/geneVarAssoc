@@ -498,7 +498,7 @@ int masterLocusFile::writeScoreAssocFiles(masterLocusFile &subFile,char *root, f
 // allow information about subjects to be provided by a different masterLocusFile 
 // however we are assuming both files refer to identical set of subjects
 {
-	char fn[100],buff[1000],buff2[20],comment[1000],*ptr,alleles[MAXSTR+1],commandString[1000];
+	char fn[100],buff[1000],buff2[1000],comment[MAXALL*MAXALLLENGTH],*ptr,alleles[MAXSTR+1],commandString[1000];
 	allelePair **a;
 	probTriple **p;
 	int totalSub,lc,s,l,ss,i,c;
@@ -1521,7 +1521,7 @@ int masterLocusFile::fill(masterLocus &rec,localLocus *loc,FILEPOSITION locusPos
 
 int masterLocusFile::merge(masterLocus &rec,localLocus *loc,FILEPOSITION locusPosInFile)
 {
-	char line[MAXALLLENGTH*2],rest[MAXALLLENGTH*2],all[MAXALLLENGTH*2];
+	char line[MAXALLLENGTH*MAXALL],rest[MAXALLLENGTH*MAXALL],all[MAXALLLENGTH*2];
 	int l,a;
 	if (rec.masterID[0]=='\0' && loc->id[0]!='\0' && loc->id[0]!='.')
 		strcpy(rec.masterID,loc->id);
@@ -1543,12 +1543,14 @@ int masterLocusFile::merge(masterLocus &rec,localLocus *loc,FILEPOSITION locusPo
 				break;
 		if(strlen(all)>MAXALLLENGTH)
 		{
+			dcerror.kill();
 			dcerror(1,"Length of allele for locus at %d:%ld exceeds MAXALLLENGTH of %d so cannot merge(). Need to increase MAXALLLENGTH.\n%s",rec.chr,rec.pos,MAXALLLENGTH,all);
 			return 0;
 		}
 		if (l==rec.nAlls)
 			if (rec.nAlls>=MAXALL)
 			{
+				dcerror.kill();
 				dcerror(1,"Total number of alleles for locus at %d:%ld exceeds MAXALL of %d so cannot merge(). Need to increase MAXALL.",rec.chr,rec.pos,MAXALL);
 				return 0;
 			}
@@ -1903,7 +1905,8 @@ if (recPos!=0L)
 // if we have no match then recPos is 0L, else we have read matching record into tempRecord
 if (recPos!=0L)
 {
-	merge(tempRecord,tempLocus,locusPosInFile);
+	if (!merge(tempRecord,tempLocus,locusPosInFile))
+		return 0;
 }
 else
 {
