@@ -35,12 +35,13 @@ dcexpr_val *performTabixQuery(const char *fn,int addChr,char *lookupStr)
 	std::map<std::string,std::string>::const_iterator queryIter=geneVarParser::queryCache.find(queryBuff);
 	if (queryIter==geneVarParser::queryCache.end())
 	{
+		int stest;
 		unlink("tabixQueryOutput.txt");
 		sprintf(lineBuff,"%s &> tabixQueryOutput.txt",queryBuff);
 		printf("Will run: %s\n",lineBuff);
-		if (!system(lineBuff))
+		if ((stest=system(lineBuff))!=0)
 		{
-			dcerror(1,"Could not execute %s\n",lineBuff);
+			dcerror(1,"Could not execute %s, failed with error %d\n",lineBuff,stest);
 		}
 		fq=fopen("tabixQueryOutput.txt","r");
 		if (fq==0 || fscanf(fq,"%*s %*s %*s %*s %*s %*s %*s %s",lineBuff)!=1)
