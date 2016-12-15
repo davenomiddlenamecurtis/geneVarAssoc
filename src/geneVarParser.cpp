@@ -37,7 +37,10 @@ dcexpr_val *performTabixQuery(const char *fn,int addChr,char *lookupStr)
 	{
 		unlink("tabixQueryOutput.txt");
 		strcat(queryBuff," &> tabixQueryOutput.txt");
-		system(queryBuff);
+		if(system(queryBuff))
+		{
+			dcerror(1,"Could not execute %s",queryBuff);
+		}
 		fq=fopen("tabixQueryOutput.txt","r");
 		if (fq==0 || fscanf(fq,"%*s %*s %*s %*s %*s %*s %*s %s",lineBuff)!=1)
 			sprintf(lineBuff,"NOVCFLINE_%s_%ld",chrStr,geneVarParser::thisLocus->getPos());
