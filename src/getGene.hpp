@@ -136,4 +136,6 @@ start by implementing this as a default with the quickConsequence string
 #define DEFAULTVARIANTFILENAME "ftp://ftp.1000genomes.ebi.ac.uk/vol1/ftp/release/20110521/ALL.chr.phase1_release_v2.20101123.snps_indels_svs.vcf.gz"
 #endif
 
+#define checkSystem() { if (system(NULL)==0) { fprintf(stderr,"The system() command cannot run, perhaps because of low memory (line %d, file %s)\n",__LINE__,__FILE__ ); exit(1); } }
+
 #endif

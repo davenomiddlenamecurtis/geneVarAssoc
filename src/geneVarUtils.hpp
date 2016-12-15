@@ -21,5 +21,4 @@ public:
 };
 
 #define hereOK() fprintf(stderr,"Got to line %d in %s OK\n",__LINE__,__FILE__)
-#define checkSystem() fprintf(stderr,"system(NULL) returns %d (%d, %s)\n",system(NULL),__LINE__,__FILE__ )
 #endif

@@ -34,12 +34,14 @@ int main(int argc,char *argv[])
 		{
 			sprintf(fn,"iva.%s.cont.%d.vcf",testName,i+1);
 			sprintf(line,"tabix %s %s %s%s %s %s",gp.ccFn[0][i],first==1?"-h":"",spec.addChrInVCF[ff++]?"chr":"",intStr,first?">":">>",fn);
+			checkSystem();
 			system(line);
 		}
 		for (i=0;i<gp.nCc[1];++i)
 		{
 			sprintf(fn,"iva.%s.case.%d.vcf",testName,i+1);
 			sprintf(line,"tabix %s %s %s%s %s %s",gp.ccFn[1][i],first==1?"-h":"",spec.addChrInVCF[ff++]?"chr":"",intStr,first?">":">>",fn);
+			checkSystem();
 			system(line);
 		}
 		first=0;
@@ -68,6 +70,7 @@ int main(int argc,char *argv[])
 	if(!gp.doNotRun)
 	{
 		printf("Running command: %s\n",line);
+		checkSystem();
 		system(line);
 	}
 	else

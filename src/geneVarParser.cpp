@@ -39,16 +39,8 @@ dcexpr_val *performTabixQuery(const char *fn,int addChr,char *lookupStr)
 	{
 		int stest;
 		unlink("tabixQueryOutput.txt");
-		sprintf(lineBuff,"%s &> tabixQueryOutput.txt",queryBuff);
-
-		stest=system("date");
-		printf("stest=system(\"date\"); returns %d\n",stest);
-		stest=system("echo $PATH >path.txt");
-		printf("stest=system(\"echo $PATH\ >path.txt\"); returns %d\n",stest);
-		stest=system(NULL);
-		printf("stest=system(NULL); returns %d\n",stest);
-
-		printf("Will run: %s\n",lineBuff);
+		sprintf(lineBuff,"%s > tabixQueryOutput.txt",queryBuff);
+		checkSystem();
 		if ((stest=system(lineBuff))!=0)
 		{
 			dcerror(1,"Could not execute %s, failed with error %d\n",lineBuff,stest);

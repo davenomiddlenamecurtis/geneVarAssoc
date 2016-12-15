@@ -424,6 +424,7 @@ if (recPos!=0L)
 	}
 	fclose(fp);
 	unlink("predictorOutput.txt");
+	checkSystem();
 	system("perl variant_effect_predictor.pl -i predictorQuery.txt -o predictorOutput.txt --most_severe");
 	fp=fopen("predictorOutput.txt","rb"); // binary mode can use fseek/ftell
 	if (fp==NULL)
@@ -507,7 +508,6 @@ int masterLocusFile::writeScoreAssocFiles(masterLocusFile &subFile,char *root, f
 	FILEPOSITION recPos;
 	const char *testKey;
 	strEntry *subName;
-	checkSystem();
 	if (nLocusFiles==1)
 		nSubs[0]=subFile.getTotalSubs();
 	else if (nLocusFiles==subFile.nLocusFiles)
@@ -525,30 +525,22 @@ int masterLocusFile::writeScoreAssocFiles(masterLocusFile &subFile,char *root, f
 // hereOK();
 	subFile.outputSubNames(subName,spec);
 // hereOK();
-	checkSystem();
 	if (spec.useProbs)
 	{
-		checkSystem();
 		assert((p = (probTriple **)calloc(MAXLOCIINSCOREASSOCFILE, sizeof(probTriple*))) != 0);
 		for (l = 0; l < MAXLOCIINSCOREASSOCFILE; ++l)
 			p[l] = (probTriple *)calloc(totalSub, sizeof(probTriple));
 		lc = outputProbs(p, spec);
-		checkSystem();
 	}
 	else
 	{
-		checkSystem();
 		assert((a = (allelePair **)calloc(MAXLOCIINSCOREASSOCFILE, sizeof(allelePair*))) != 0);
-		checkSystem();
 		for (l = 0; l < MAXLOCIINSCOREASSOCFILE; ++l)
 			a[l] = (allelePair *)calloc(totalSub, sizeof(allelePair));
-		checkSystem();
 		lc = outputAlleles(a, spec);
-		checkSystem();
 	}
 // hereOK();
 	sprintf(fn,"%s.dat",root);
-	checkSystem();
 	fp=fopen(fn,"w");
 	if(spec.subPhenos.size()>0)
 	{
