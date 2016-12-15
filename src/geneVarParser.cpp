@@ -73,7 +73,7 @@ dcexpr_val *performTabixQuery(const char *fn,int addChr,char *lookupStr)
 			if (ptr[strlen(tempBuff)]=='=')
 				break;
 			else
-				tptr+=strlen(tempBuff);
+				tptr=ptr+strlen(tempBuff);
 		}
 		if (ptr==0)
 			sprintf(lineBuff,"NOVCFENTRY_%s_%ld_%s",chrStr,geneVarParser::thisLocus->getPos(),lookupStr);
