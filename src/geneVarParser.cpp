@@ -37,12 +37,12 @@ dcexpr_val *performTabixQuery(const char *fn,int addChr,char *lookupStr)
 	{
 		int stest;
 		unlink("tabixQueryOutput.txt");
-		sprintf(lineBuff,"%s &> tabixQueryOutput.txt",queryBuff);
+		sprintf(lineBuff,"bash %s &> tabixQueryOutput.txt",queryBuff);
 		printf("Will run: %s\n",lineBuff);
 
-		stest=system("echo $PATH >path.txt");
+		stest=system("bash echo $PATH >path.txt");
 		printf("stest=system(\"echo $PATH\ >path.txt\") returns %d\n",stest);
-		stest=system("echo $PATH");
+		stest=system("bash echo $PATH");
 		printf("stest=system(\"echo $PATH\"); returns %d\n",stest);
 		stest=system(NULL);
 		printf("stest=system(NULL); returns %d\n",stest);
