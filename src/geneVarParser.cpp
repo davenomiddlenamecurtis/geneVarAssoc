@@ -1,5 +1,7 @@
 #include "geneVarParser.hpp"
 
+#include <stdlib.h>
+
 // this will mainly be to parse annotations, assign weights
 
 std::map<std::string,weightTable*> weightTableList;
