@@ -39,7 +39,10 @@ dcexpr_val *performTabixQuery(const char *fn,int addChr,char *lookupStr)
 		unlink("tabixQueryOutput.txt");
 		sprintf(lineBuff,"%s &> tabixQueryOutput.txt",queryBuff);
 		printf("Will run: %s\n",lineBuff);
-		system("echo $PATH");
+
+		stest=system("echo $PATH");
+		stest=system(NULL);
+		printf("stest=system(NULL); returns %d\n",stest);
 		if ((stest=system(lineBuff))!=0)
 		{
 			dcerror(1,"Could not execute %s, failed with error %d\n",lineBuff,stest);
