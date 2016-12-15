@@ -136,10 +136,10 @@ protected:
 	int nLocusFiles;
 	consequenceType worstConsequenceType;
 	char masterID[VCFFIELDLENGTH];
-	char ref[MAXALLLENGTH];
+	char ref[MAXALLLENGTH+1];
 	char alt[MAXALLLENGTH*MAXALL];
 	int nAlls;
-	char alls[MAXALL][MAXALLLENGTH];
+	char alls[MAXALL][MAXALLLENGTH+1];
 	alleleMap *alleleMapping; // maps how allele in local file maps to global allele list for that locus
 	char ensemblConsequence[100],quickConsequence[100],PolyPhen[100];
 	int genoCount[3],genoCcCount[2][3]; // may know this sometimes
