@@ -1,6 +1,6 @@
 #include "geneVarParser.hpp"
 
-#include <stdlib.h>
+#include <stdlib.h>q
 
 // this will mainly be to parse annotations, assign weights
 
@@ -44,7 +44,7 @@ dcexpr_val *performTabixQuery(const char *fn,int addChr,char *lookupStr)
 
 		stest=system("bash echo $PATH >path.txt");
 		printf("stest=system(\"echo $PATH\ >path.txt\") returns %d\n",stest);
-		stest=system("bash echo $PATH");
+		stest=system("/bin/sh -c echo $PATH");
 		printf("stest=system(\"echo $PATH\"); returns %d\n",stest);
 		stest=system(NULL);
 		printf("stest=system(NULL); returns %d\n",stest);
