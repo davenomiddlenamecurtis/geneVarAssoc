@@ -1521,7 +1521,7 @@ int masterLocusFile::fill(masterLocus &rec,localLocus *loc,FILEPOSITION locusPos
 
 int masterLocusFile::merge(masterLocus &rec,localLocus *loc,FILEPOSITION locusPosInFile)
 {
-	char line[MAXALLLENGTH*2],rest[MAXALLLENGTH*2],all[MAXALLLENGTH];
+	char line[MAXALLLENGTH*2],rest[MAXALLLENGTH*2],all[MAXALLLENGTH*2];
 	int l,a;
 	if (rec.masterID[0]=='\0' && loc->id[0]!='\0' && loc->id[0]!='.')
 		strcpy(rec.masterID,loc->id);
