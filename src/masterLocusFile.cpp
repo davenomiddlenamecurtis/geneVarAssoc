@@ -1045,7 +1045,9 @@ int masterLocusFile::outputAlleles(allelePair **all, analysisSpecs &spec)
 	do
 	{
 // hereOK();
+		checkSystem();
 		outputCurrentAlleles(all[locusCount++], spec);
+		checkSystem();
 	} while (gotoNextInRange(spec));
 // hereOK();
 	return locusCount;
