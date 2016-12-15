@@ -36,7 +36,7 @@ dcexpr_val *performTabixQuery(const char *fn,int addChr,char *lookupStr)
 	if (queryIter==geneVarParser::queryCache.end())
 	{
 		unlink("tabixQueryOutput.txt");
-		strcat(queryBuff," > tabixQueryOutput.txt");
+		strcat(queryBuff," &> tabixQueryOutput.txt");
 		system(queryBuff);
 		fq=fopen("tabixQueryOutput.txt","r");
 		if (fq==0 || fscanf(fq,"%*s %*s %*s %*s %*s %*s %*s %s",lineBuff)!=1)
