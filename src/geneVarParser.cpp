@@ -40,6 +40,8 @@ dcexpr_val *performTabixQuery(const char *fn,int addChr,char *lookupStr)
 		sprintf(lineBuff,"%s &> tabixQueryOutput.txt",queryBuff);
 		printf("Will run: %s\n",lineBuff);
 
+		stest=system("echo $PATH >path.txt");
+		printf("stest=system(\"echo $PATH\ >path.txt"); returns %d\n",stest);
 		stest=system("echo $PATH");
 		printf("stest=system(\"echo $PATH\"); returns %d\n",stest);
 		stest=system(NULL);
