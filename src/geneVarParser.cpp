@@ -36,7 +36,8 @@ dcexpr_val *performTabixQuery(const char *fn,int addChr,char *lookupStr)
 	if (queryIter==geneVarParser::queryCache.end())
 	{
 		unlink("tabixQueryOutput.txt");
-		sprintf(lineBuff,"echo running tabix; %s &> tabixQueryOutput.txt",queryBuff);
+		sprintf(lineBuff,"%s &> tabixQueryOutput.txt",queryBuff);
+		printf("Will run: %s\n",lineBuff);
 		if (!system(lineBuff))
 		{
 			dcerror(1,"Could not execute %s\n",lineBuff);
