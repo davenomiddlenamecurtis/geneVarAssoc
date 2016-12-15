@@ -540,6 +540,7 @@ int masterLocusFile::writeScoreAssocFiles(masterLocusFile &subFile,char *root, f
 		assert((a = (allelePair **)calloc(MAXLOCIINSCOREASSOCFILE, sizeof(allelePair*))) != 0);
 		for (l = 0; l < MAXLOCIINSCOREASSOCFILE; ++l)
 			a[l] = (allelePair *)calloc(totalSub, sizeof(allelePair));
+		checkSystem();
 		lc = outputAlleles(a, spec);
 		checkSystem();
 	}
@@ -1041,6 +1042,7 @@ int masterLocusFile::outputAlleles(allelePair **all, analysisSpecs &spec)
 	int c, i, altIsCommon;
 	locusCount = 0;
 // hereOK();
+	checkSystem();
 	if (gotoFirstInRange(spec))
 	do
 	{
