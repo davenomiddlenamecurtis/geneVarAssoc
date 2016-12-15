@@ -527,17 +527,21 @@ int masterLocusFile::writeScoreAssocFiles(masterLocusFile &subFile,char *root, f
 	checkSystem();
 	if (spec.useProbs)
 	{
+		checkSystem();
 		assert((p = (probTriple **)calloc(MAXLOCIINSCOREASSOCFILE, sizeof(probTriple*))) != 0);
 		for (l = 0; l < MAXLOCIINSCOREASSOCFILE; ++l)
 			p[l] = (probTriple *)calloc(totalSub, sizeof(probTriple));
 		lc = outputProbs(p, spec);
+		checkSystem();
 	}
 	else
 	{
+		checkSystem();
 		assert((a = (allelePair **)calloc(MAXLOCIINSCOREASSOCFILE, sizeof(allelePair*))) != 0);
 		for (l = 0; l < MAXLOCIINSCOREASSOCFILE; ++l)
 			a[l] = (allelePair *)calloc(totalSub, sizeof(allelePair));
 		lc = outputAlleles(a, spec);
+		checkSystem();
 	}
 // hereOK();
 	sprintf(fn,"%s.dat",root);
