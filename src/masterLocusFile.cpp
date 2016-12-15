@@ -538,6 +538,7 @@ int masterLocusFile::writeScoreAssocFiles(masterLocusFile &subFile,char *root, f
 	{
 		checkSystem();
 		assert((a = (allelePair **)calloc(MAXLOCIINSCOREASSOCFILE, sizeof(allelePair*))) != 0);
+		checkSystem();
 		for (l = 0; l < MAXLOCIINSCOREASSOCFILE; ++l)
 			a[l] = (allelePair *)calloc(totalSub, sizeof(allelePair));
 		checkSystem();
