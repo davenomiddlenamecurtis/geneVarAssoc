@@ -67,12 +67,15 @@ dcexpr_val *performTabixQuery(const char *fn,int addChr,char *lookupStr)
 	if (strncmp(lineBuff,"NOVCFLINE",strlen("NOVCFLINE")))
 	{
 		sprintf(tempBuff,";%s",lookupStr);
-		while((ptr=strstr(lineBuff,tempBuff))!=0) // possible multiple occurrences, e.g. of AF
+		tptr=lineBuff;
+		while ((ptr=strstr(tptr,tempBuff))!=0) // possible multiple occurrences, e.g. of AF
 		{
-			if(ptr[strlen(tempBuff)]=='=')
+			if (ptr[strlen(tempBuff)]=='=')
 				break;
+			else
+				tptr+=strlen(tempBuff);
 		}
-		if(ptr==0)
+		if (ptr==0)
 			sprintf(lineBuff,"NOVCFENTRY_%s_%ld_%s",chrStr,geneVarParser::thisLocus->getPos(),lookupStr);
 		else
 		{
