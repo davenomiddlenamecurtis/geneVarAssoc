@@ -36,10 +36,10 @@ dcexpr_val *performTabixQuery(const char *fn,int addChr,char *lookupStr)
 	if (queryIter==geneVarParser::queryCache.end())
 	{
 		unlink("tabixQueryOutput.txt");
-		strcat(queryBuff," &> tabixQueryOutput.txt");
-		if(system(queryBuff))
+		sprintf(lineBuff,"echo running tabix; %s &> tabixQueryOutput.txt",queryBuff);
+		if (!system(lineBuff))
 		{
-			dcerror(1,"Could not execute %s",queryBuff);
+			dcerror(1,"Could not execute %s\n",lineBuff);
 		}
 		fq=fopen("tabixQueryOutput.txt","r");
 		if (fq==0 || fscanf(fq,"%*s %*s %*s %*s %*s %*s %*s %s",lineBuff)!=1)
