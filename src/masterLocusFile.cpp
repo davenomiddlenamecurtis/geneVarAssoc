@@ -1552,23 +1552,25 @@ int masterLocusFile::merge(masterLocus &rec,localLocus *loc,FILEPOSITION locusPo
 		for (l=0;l<rec.nAlls;++l)
 			if (!strcmp(all,rec.alls[l]))
 				break;
-		if (l==rec.nAlls)
-			if (rec.nAlls>=MAXALL)
+		if(l==rec.nAlls)
+		{
+			if(rec.nAlls>=MAXALL)
 			{
 				dcerror.kill();
 				dcerror(1,"Total number of alleles for locus at %d:%ld exceeds MAXALL of %d so cannot merge(). Need to increase MAXALL.",rec.chr,rec.pos,MAXALL);
 				return 0;
 			}
-		if (strlen(all)>MAXALLLENGTH)
-		{
-			dcerror(1,"Length of allele for locus at %d:%ld exceeds MAXALLLENGTH of %d so will be truncated.\n%s",rec.chr,rec.pos,MAXALLLENGTH,all);
-			strncpy(rec.alls[rec.nAlls],all,MAXALLLENGTH);
-			rec.alls[rec.nAlls][MAXALLLENGTH]='\0';
-			rec.nAlls++;
+			if(strlen(all)>MAXALLLENGTH)
+			{
+				dcerror(1,"Length of allele for locus at %d:%ld exceeds MAXALLLENGTH of %d so will be truncated.\n%s",rec.chr,rec.pos,MAXALLLENGTH,all);
+				strncpy(rec.alls[rec.nAlls],all,MAXALLLENGTH);
+				rec.alls[rec.nAlls][MAXALLLENGTH]='\0';
+				rec.nAlls++;
 
-		}
-		else
+			}
+			else
 				strcpy(rec.alls[rec.nAlls++],all);
+		}
 		rec.alleleMapping[currentLocusFile][a]=l;
 		strcpy(line,rest);
 		rest[0]='\0';
