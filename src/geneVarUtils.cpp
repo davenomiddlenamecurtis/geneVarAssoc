@@ -17,6 +17,7 @@ int gvaParams::readParms(int argc,char *argv[],analysisSpecs &spec)
 	FILE *phenotypeFile;
 	*IDsAndPhenotypeFileName=*phenotypeFileName=*samplesFileName='\0';
 	geneListFn[0]=baitFn[0]=ccFn[2][MAXVCFPERCC][0]=referencePath[0]=geneName[0]=sequencePath[0]=posName[0]=intervalListFn[0]=testName[0]=analysisName[0]='\0';
+	strcpy(spec.vepPath,"variant_effect_predictor.pl");
 //	strcpy(spec.weightExpression,"ANNOT(\"DEFAULT\")GETWEIGHT(\"DEFAULTWEIGHTS\")");
 	spec.excludeExpressions.clear();
 	for (i=0;i<MAXVCFFILES;++i)
@@ -201,8 +202,10 @@ int gvaParams::readParms(int argc,char *argv[],analysisSpecs &spec)
 			doNotRun=atoi(arg);
 		else if(FILLARG("--debug"))
 			spec.debug=atoi(arg);
-		else if (FILLARG("--reference-path"))
-			strcpy(referencePath, arg);
+		else if(FILLARG("--reference-path"))
+			strcpy(referencePath,arg);
+		else if(FILLARG("--vep"))
+			strcpy(spec.vepPath,arg);
 		else if (FILLARG("--sequence-path"))
 			strcpy(sequencePath, arg);
 		else if (FILLARG("--test-name"))

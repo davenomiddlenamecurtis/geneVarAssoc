@@ -424,8 +424,9 @@ if (recPos!=0L)
 	}
 	fclose(fp);
 	unlink("predictorOutput.txt");
+	sprintf(line,"perl %s -i predictorQuery.txt -o predictorOutput.txt --cache --most_severe",spec.vepPath);
 	checkSystem();
-	system("perl variant_effect_predictor.pl -i predictorQuery.txt -o predictorOutput.txt --most_severe");
+	system(line);
 	fp=fopen("predictorOutput.txt","rb"); // binary mode can use fseek/ftell
 	if (fp==NULL)
 	{
