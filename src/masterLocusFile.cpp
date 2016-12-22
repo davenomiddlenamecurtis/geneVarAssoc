@@ -424,7 +424,7 @@ if (recPos!=0L)
 	}
 	fclose(fp);
 	unlink("predictorOutput.txt");
-	sprintf(line,"perl %s -i predictorQuery.txt -o predictorOutput.txt --cache --most_severe",spec.vepPath);
+	sprintf(line," %s -i predictorQuery.txt -o predictorOutput.txt --most_severe",spec.vepCommand);
 	checkSystem();
 	system(line);
 	fp=fopen("predictorOutput.txt","rb"); // binary mode can use fseek/ftell
@@ -463,7 +463,7 @@ return locusCount;
 }
 
 // #define MAXLOCIINSCOREASSOCFILE 50000
-#define MAXLOCIINSCOREASSOCFILE 10000
+#define MAXLOCIINSCOREASSOCFILE 20000
 int useLocus[MAXLOCIINSCOREASSOCFILE];
 float locusWeight[MAXLOCIINSCOREASSOCFILE];
 
@@ -1043,6 +1043,12 @@ int masterLocusFile::outputAlleles(allelePair **all, analysisSpecs &spec)
 	{
 // hereOK();
 		outputCurrentAlleles(all[locusCount++], spec);
+		if(locusCount>MAXLOCIINSCOREASSOCFILE)
+		{
+			dcerror.kill();
+			dcerror(1,"Number of variants exceeds MAXLOCIINSCOREASSOCFILE (%d) in masterLocusFile::outputAlleles()\nNeed to increase MAXLOCIINSCOREASSOCFILE and recompile\n",MAXLOCIINSCOREASSOCFILE);
+			return 0;
+		}
 	} while (gotoNextInRange(spec));
 // hereOK();
 	return locusCount;
