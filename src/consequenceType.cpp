@@ -39,10 +39,46 @@ consequenceReport consequence[]={
 };
 
 #endif
+consequenceReport e_consequence[]={
+	{		E_NULL_CONSEQUENCE,"NULL_CONSEQUENCE",1.0 },
+	{ E_INTERGENIC,"intergenic_variant",1.0 },
+	{ E_NC_TRANSCRIPT,"nc_transcript_variant",1.0 },
+	{ E_DOWNSTREAM500B,"500B_downstream_variant",1.0 },
+	{ E_DOWNSTREAM5KB,"500B_downstream_variant",1.0 },
+	{ E_INTRONIC,"intron_variant",3.0 },
+		{ E_THREEPRIME_UTR,"3_prime_UTR_variant",5.0 },
+		{ E_TRANSCRIPTIONFACTOR,"TF_binding_site_variant",5.0 },
+		{ E_REGULATORY,"regulatory_region_variant",5.0 },
+		{ E_UPSTREAM2K,"2KB_upstream_variant",5.0 },
+		{ E_UPSTREAM5K,"5KB_upstream_variant",5.0 },
+		{ E_NMD_TRANSCRIPT,"NMD_transcript_variant",3.0 },
+		{ E_SYNONYMOUS_CODING,"synonymous_codon",3.0 },
+		{ E_STOP_RETAINED,"stop_retained_variant",3.0 },
+		{ E_CODING_UNKNOWN,"coding_sequence_variant",3.0 },
+		{ E_FIVEPRIME_UTR,"5_prime_UTR_variant",5.0 },
+		{ E_CODINGGAIN,"inframe_codon_gain",15.0 },
+		{ E_CODINGLOSS,"inframe_codon_loss",15.0 },
+		{ E_SPLICE_DONOR, "splice_donor_variant",5.0 },
+		{ E_SPLICE_SITE, "splice_region_variant",5.0 },
+		{ E_STOP_LOST, "stop_lost",5.0 },
+{ E_NON_SYNONYMOUS_CODING,"non_synonymous_codon",10.0 },
+{ E_CODON_CHANGE,"initiator_codon_change",10.0 },
+{ E_NON_TERMINAL_CODON,"incomplete_terminal_codon_variant",10.0 },
+{ E_MIRNA_VARIANT,"mature_miRNA_variant",10.0 },
+{ E_FRAMESHIFT_CODING,"frameshift_variant", 20 },
+		{ E_TRANSCRIPT_CHANGE,"complex_change_in_transcript",20.0 },
+		{ E_ESSENTIAL_SPLICE_SITE,"splice_acceptor_variant",10.0 },
+		{ E_STOP_GAINED,"stop_gained",20.0 }
+};
 
-const char* consequenceString(consequenceType t)
+const char* consequenceString(consequenceType t,int use_ensembl)
 {
-	for (int i=0;i<NCONSEQUENCETYPES;++i)
-		if (t==consequence[i].t)
-			return consequence[i].str;
+	if (use_ensembl)
+		for(int i=0;i<E_NCONSEQUENCETYPES;++i)
+			if(t==e_consequence[i].t)
+				return e_consequence[i].str;
+	else
+		for (int i=0;i<NCONSEQUENCETYPES;++i)
+			if (t==consequence[i].t)
+				return consequence[i].str;
 }

@@ -289,6 +289,7 @@ int masterLocus::writePredictorQuery(FILE *fp)
 		return 1; // predictor produces no output for these
 	if (nAlls<2)
 		return 1;
+#if 0
 	// for now, we will only consider first of alternate alleles
 	if (alls[0][0]!='-')
 	{
@@ -302,6 +303,10 @@ int masterLocus::writePredictorQuery(FILE *fp)
 		start=pos+strlen(alls[1]);
 		end=pos;
 	}
+#else
+	start=pos;
+	end=pos+strlen(alls[0])-1; // does this work if first allele is - ?
+#endif
 	fprintf(fp,"%d\t%ld\t%ld\t%s/%s\t+\n",chr,start,end,alls[0],alls[1]);
 	return 1;
 }
@@ -424,7 +429,7 @@ if (recPos!=0L)
 	}
 	fclose(fp);
 	unlink("predictorOutput.txt");
-	sprintf(line," %s -i predictorQuery.txt -o predictorOutput.txt --most_severe",spec.vepCommand);
+	sprintf(line," %s -i predictorQuery.txt -o predictorOutput.txt --most_severe --force_overwrite",spec.vepCommand);
 	checkSystem();
 	system(line);
 	fp=fopen("predictorOutput.txt","rb"); // binary mode can use fseek/ftell
@@ -808,7 +813,7 @@ int masterLocusFile::outputSAInfo(int *useLocus,float *locusWeight,analysisSpecs
 	FILEPOSITION recPos;
 	const char *testKey;
 	int c,i,doNotUseUntypedFreqfile;
-	consequenceType cons;
+	int cons;
 	geneVarParser weightParser;
 	std::list<geneVarParser *> excludeParser;
 	if (spec.debug)
@@ -876,21 +881,21 @@ if (recPos!=0L)
 					cons=NULL_CONSEQUENCE;
 				else
 				{
-				for (c=0;c<NCONSEQUENCETYPES;++c)
+				for (c=0;c<E_NCONSEQUENCETYPES;++c)
 					{
-						if (!strncmp(tempRecord.ensemblConsequence,consequence[c].str,strlen(consequence[c].str)))
+						if (!strncmp(tempRecord.ensemblConsequence,e_consequence[c].str,strlen(e_consequence[c].str)))
 						{
 							cons=consequence[c].t;
 							break;
 						}
 					}
-				if (c==NCONSEQUENCETYPES)
+				if (c==E_NCONSEQUENCETYPES)
 						{
 							dcerror(1,"Could not recognise this consequence: %s",tempRecord.ensemblConsequence);
 							return 0;
 						}
 				}
-				locusWeight[locusCount]=consequence[c].weight;
+				locusWeight[locusCount]=e_consequence[c].weight;
 				if(spec.consequenceThreshold!=0)
 					useLocus[locusCount]=(cons>=spec.consequenceThreshold)?1:0;
 				}

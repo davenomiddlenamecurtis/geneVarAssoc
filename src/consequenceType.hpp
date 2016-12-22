@@ -1,36 +1,71 @@
 #ifndef CONSEQUENCETYPEHPP
 #define CONSEQUENCETYPEHPP
 
-enum consequenceType{
-NULL_CONSEQUENCE=0,
-INTERGENIC,
-DOWNSTREAM,
-INTRONIC,
-THREEPRIME_UTR,
-UPSTREAM,
-SYNONYMOUS_CODING,
-FIVEPRIME_UTR,
-CODINGINDEL,
-SPLICE_SITE,
-STOP_LOST,
-NON_SYNONYMOUS_CODING,
-FRAMESHIFT_CODING,
-ESSENTIAL_SPLICE_SITE,
-STOP_GAINED,
-KOZAK,
-NCONSEQUENCETYPES
+enum consequenceType {
+	NULL_CONSEQUENCE=0,
+	INTERGENIC,
+	DOWNSTREAM,
+	INTRONIC,
+	THREEPRIME_UTR,
+	UPSTREAM,
+	SYNONYMOUS_CODING,
+	FIVEPRIME_UTR,
+	CODINGINDEL,
+	SPLICE_SITE,
+	STOP_LOST,
+	NON_SYNONYMOUS_CODING,
+	FRAMESHIFT_CODING,
+	ESSENTIAL_SPLICE_SITE,
+	STOP_GAINED,
+	KOZAK,
+	NCONSEQUENCETYPES
+};
+
+enum e_consequenceType {
+	E_NULL_CONSEQUENCE=0,
+	E_INTERGENIC,
+	E_NC_TRANSCRIPT,
+	E_DOWNSTREAM500B,
+	E_DOWNSTREAM5KB,
+	E_INTRONIC,
+	E_THREEPRIME_UTR,
+	E_TRANSCRIPTIONFACTOR,
+	E_REGULATORY,
+	E_UPSTREAM2K,
+	E_UPSTREAM5K,
+	E_NMD_TRANSCRIPT,
+	E_SYNONYMOUS_CODING,
+	E_STOP_RETAINED,
+	E_CODING_UNKNOWN,
+	E_FIVEPRIME_UTR,
+	E_CODINGGAIN,
+	E_CODINGLOSS,
+	E_CODINGINDEL,
+	E_SPLICE_DONOR,
+	E_SPLICE_SITE,
+	E_STOP_LOST,
+	E_CODON_CHANGE,
+	E_NON_SYNONYMOUS_CODING,
+	E_NON_TERMINAL_CODON,
+	E_MIRNA_VARIANT,
+	E_FRAMESHIFT_CODING,
+	E_ESSENTIAL_SPLICE_SITE,
+	E_TRANSCRIPT_CHANGE,
+	E_STOP_GAINED,
+	E_KOZAK,
+	E_NCONSEQUENCETYPES
 };
 
 struct consequenceReport_t {
-	consequenceType t;
+	int t;
 	char *str;
 	float weight;
 };
 
 typedef struct consequenceReport_t consequenceReport;
 
-extern consequenceReport consequence[];
-const char* consequenceString(consequenceType t);
+extern consequenceReport consequence[],e_consequence[];
+const char* consequenceString(int t,int use_ensembl);
 
 // I’ve talked with Andy about the splicing site definition. 
 // Reading literature, we decide that the donor splicing site (moving from exon to intron) we have to consider 5bp in the exon and 6 in the intron. 
