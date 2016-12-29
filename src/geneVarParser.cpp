@@ -148,8 +148,17 @@ dcexpr_val *annot_func(dcvnode *b1)
 	dcexpr_string *rv;
 	if (!strcmp(annot_type,"INBUILT"))
 	{
-		geneVarParser::thisLocus->getQuickFeature(*geneVarParser::thisGene);
+		// assume this is already done
+		// geneVarParser::thisLocus->getQuickFeature(*geneVarParser::thisGene);
 		rv=new dcexpr_string(geneVarParser::thisLocus->reportQuickConsequence());
+		ptr=(char*)(*rv);
+		while(*ptr && !isspace(*ptr))
+			++ptr;
+		*ptr='\0'; // remove e.g. gene name and so on
+	}
+	else if (!strcmp(annot_type,"VEP"))
+	{
+		rv=new dcexpr_string(geneVarParser::thisLocus->reportEnsemblConsequence());
 		ptr=(char*)(*rv);
 		while(*ptr && !isspace(*ptr))
 			++ptr;
@@ -172,6 +181,8 @@ dcexpr_val *attrib_func(dcvnode *b1)
 	dcexpr_val *rv;
 	if (!strcmp(attrib_type,"WEIGHT"))
 		rv=new dcexpr_double(geneVarParser::thisWeight);
+	else if (!strcmp(attrib_type,"POS"))
+		rv=new dcexpr_double(geneVarParser::thisLocus->getPos());
 	else
 	{
 		dcerror(1,"The ATTRIB function cannot accept %s as its argument",attrib_type);

@@ -37,7 +37,7 @@ int gvaParams::readParms(int argc,char *argv[],analysisSpecs &spec)
 	*addChrStr='\0';
 	spec.useTrios=0;
 	spec.useProbs=0;
-	spec.useEnsembl=0;
+	spec.useEnsembl=spec.willNeedEnsemblConsequence=spec.willNeedInbuiltConsequence=0;
 	spec.consequenceThreshold=NULL_CONSEQUENCE;
 	spec.useConsequenceWeights=0;
 	spec.onlyUseSNPs=0;
@@ -94,13 +94,21 @@ int gvaParams::readParms(int argc,char *argv[],analysisSpecs &spec)
 		{
 			strcpy(analysisName,arg);
 		}
-		else if(FILLARG("--weight-expression"))
+		else if (FILLARG("--weight-expression"))
 		{
 			strcpy(spec.weightExpression,arg);
+			if (strstr(arg,"VEP"))
+				spec.willNeedEnsemblConsequence=1;
+			if (strstr(arg,"INBUILT"))
+				spec.willNeedInbuiltConsequence=1;
 		}
-		else if(FILLARG("--exclude-expression"))
+		else if (FILLARG("--exclude-expression"))
 		{
 			spec.excludeExpressions.push_back(arg);
+			if(strstr(arg,"VEP"))
+				spec.willNeedEnsemblConsequence=1;
+			if(strstr(arg,"INBUILT"))
+				spec.willNeedInbuiltConsequence=1;
 		}
 		else if (FILLARG("--phenotype-file"))
 		{
@@ -331,6 +339,13 @@ int gvaParams::readParms(int argc,char *argv[],analysisSpecs &spec)
 #endif
 				strcpy(ccFn[i][f],line);
 			}
+	if (spec.consequenceThreshold || spec.useConsequenceWeights)
+	{
+		if (spec.useEnsembl)
+			spec.willNeedEnsemblConsequence=1;
+		else
+			spec.willNeedInbuiltConsequence=1;
+	}
 	return 1;
 }
 

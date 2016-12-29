@@ -29,6 +29,7 @@ int main(int argc,char *argv[])
 	printf("\n");
 #endif
 	wt.init("DEFAULTWEIGHTS",consequence,NCONSEQUENCETYPES);
+	wt.init("VEPWEIGHTS",e_consequence,E_NCONSEQUENCETYPES);
 
 	dcerror.warn();
 #if 0
@@ -96,14 +97,16 @@ int main(int argc,char *argv[])
 		}
 	if (extractedOK)
 		{
-			if (spec.consequenceThreshold != 0 || spec.useConsequenceWeights != 0)
-			{
-				printf("Annotating...\n");
-				if (spec.useEnsembl)
-					vf.getEnsemblConsequences(spec);
-				else
-					vf.getQuickConsequences(r, spec);
-			}
+		if (spec.willNeedInbuiltConsequence)
+		{
+			printf("Annotating using inbuit routines...\n");
+			vf.getQuickConsequences(r,spec);
+		}
+		if (spec.willNeedEnsemblConsequence)
+		{
+			printf("Annotating using VEP...\n");
+			vf.getEnsemblConsequences(spec);
+		}
 		}
 #if 0
 	if (spec.consequenceThreshold!=0)

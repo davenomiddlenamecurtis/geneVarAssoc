@@ -77,7 +77,7 @@ public:
 		proportionCalledToPass=0.95;
 		useConsequenceWeights=0;
 		consequenceThreshold=NULL_CONSEQUENCE;
-		useEnsembl=0;
+		useEnsembl=useEnsembl=willNeedEnsemblConsequence=willNeedInbuiltConsequence=0;
 		GQThreshold=-1;
 		hetDevThreshold=hetDevThresholdSq=-1;
 		onlyUseSNPs=0;
@@ -94,7 +94,8 @@ public:
 		*alleleFreqStr=*alleleNumberStr=*alleleCountStr='\0';
 		*weightExpression='\0';
 	} 
-int onlycc01,unknownIfUntyped,unknownIfNoPass,altIsCommon,sc,ec,skipIfNoPass,useConsequenceWeights,useEnsembl,onlyUseSNPs,nExc,doRecessiveTest,addChrInVCF[MAXVCFFILES],useHaplotypes,count_hom_as_het,useTrios,ignoreAlleles,useProbs,wildIfUnknown,debug;
+int onlycc01,unknownIfUntyped,unknownIfNoPass,altIsCommon,sc,ec,skipIfNoPass,useConsequenceWeights,onlyUseSNPs,nExc,doRecessiveTest,addChrInVCF[MAXVCFFILES],useHaplotypes,count_hom_as_het,useTrios,ignoreAlleles,useProbs,wildIfUnknown,debug;
+int useEnsembl,willNeedEnsemblConsequence,willNeedInbuiltConsequence;
 int *phenotypes;
 TStrIntMap subPhenos;
 long sp,ep;
@@ -167,6 +168,7 @@ public:
 	int getQuickFeature(refseqGeneInfo &r);
 	const char *reportQuickConsequence() { return quickConsequence; }
 	// this is text of worst consequence after call to getQuickFeature()
+	const char *reportEnsemblConsequence() { return ensemblConsequence; }
 	int getGenoCount(int g) { return genoCount[g]; }
 	void setLocusPosInFile(int f,FILEPOSITION l) { locusPosInFile[f] = l; }
 	FILEPOSITION getLocusPosInFile(int f) { return locusPosInFile[f]; }

@@ -825,7 +825,7 @@ if (recPos!=0L)
 	if (spec.weightExpression[0])
 		weightParser.parse(spec.weightExpression); // only have to parse once
 											// it is essential that geneVarParser::thisGene has been set!!
-	if(spec.excludeExpressions.size())
+	if (spec.excludeExpressions.size())
 	{
 		for (std::list<std::string>::const_iterator it=spec.excludeExpressions.begin();it!=spec.excludeExpressions.end();++it)
 		{
@@ -841,101 +841,79 @@ if (recPos!=0L)
 			break;
 		if (c==spec.ec && atol(testKey+3)>spec.ep)
 			break;
-		if (spec.useConsequenceWeights==0 && spec.consequenceThreshold==0 && spec.onlyUseSNPs==0)
+		locusWeight[locusCount]=1.0; // default if nothing else changes it
+		useLocus[locusCount]=1;
+		load(tempRecord,recPos);
+		doNotUseUntypedFreqfile=0;
+		if (spec.unknownIfUntyped)
 		{
-			useLocus[locusCount]=1;
-			locusWeight[locusCount]=1.0;
-		}
-		else
-		{
-			locusWeight[locusCount]=1.0; // default if nothing else changes it
-			useLocus[locusCount]=1;
-			load(tempRecord,recPos);
-			doNotUseUntypedFreqfile=0;
-			if (spec.unknownIfUntyped)
-			{
 				for (i=0;i<nLocusFiles;++i)
 					if (holdsFreqs[i] && !strcmp(tempRecord.myLocalLocus[i]->filter,"UNTYPED"))
 						doNotUseUntypedFreqfile=1;
-			}
-			if (doNotUseUntypedFreqfile || (tempRecord.isSNP()!=SNP_YES && spec.onlyUseSNPs==1))
-			{
+		}
+		if (doNotUseUntypedFreqfile || (tempRecord.isSNP()!=SNP_YES && spec.onlyUseSNPs==1))
+		{
 				locusWeight[locusCount]=0.0;
 				useLocus[locusCount]=0;
-			}
-		else if (spec.useConsequenceWeights==0 && spec.consequenceThreshold==0)
+		}
+		else
 		{
-			useLocus[locusCount]=1;
-			locusWeight[locusCount]=1.0;
-		}
-			else 
+			// we are going to use one of the inbuilt annotations to see if we exceed consequenceThreshold
+			// then if weight funcion specified use that weight instead
+			if (spec.consequenceThreshold || (spec.useConsequenceWeights&&spec.weightExpression[0]=='\0'))
 			{
-				if (spec.weightExpression[0] && spec.useConsequenceWeights)
+				if (spec.useEnsembl)
 				{
-					geneVarParser::thisLocus=&tempRecord;
-					locusWeight[locusCount]=(double)(*weightParser.eval());
-				}
-				else if (spec.useEnsembl==1 && spec.useConsequenceWeights)
-				{
-				if (tempRecord.ensemblConsequence[0]=='\0')
-					cons=NULL_CONSEQUENCE;
-				else
-				{
-				for (c=0;c<E_NCONSEQUENCETYPES;++c)
+					if (tempRecord.ensemblConsequence[0]=='\0')
+						cons=NULL_CONSEQUENCE;
+					else
 					{
-						if (!strncmp(tempRecord.ensemblConsequence,e_consequence[c].str,strlen(e_consequence[c].str)))
-						{
-							cons=consequence[c].t;
-							break;
-						}
-					}
-				if (c==E_NCONSEQUENCETYPES)
+						cons=getConsequenceType(e_consequence[c].str,1);
+						if (cons==-1)
 						{
 							dcerror(1,"Could not recognise this consequence: %s",tempRecord.ensemblConsequence);
 							return 0;
 						}
+					}
+					locusWeight[locusCount]=e_consequence[cons].weight;
+					if (cons<spec.consequenceThreshold)
+						useLocus[locusCount]=0;
 				}
-				locusWeight[locusCount]=e_consequence[c].weight;
-				if(spec.consequenceThreshold!=0)
-					useLocus[locusCount]=(cons>=spec.consequenceThreshold)?1:0;
-				}
-			else if (spec.useConsequenceWeights)
-			{
-				if (tempRecord.quickConsequence[0]=='\0')
-					cons=NULL_CONSEQUENCE;
 				else
 				{
-				for (c=0;c<NCONSEQUENCETYPES;++c)
+					if (tempRecord.quickConsequence[0]=='\0')
+						cons=NULL_CONSEQUENCE;
+					else
 					{
-						if (!strncmp(tempRecord.quickConsequence,consequence[c].str,strlen(consequence[c].str)))
+						cons=getConsequenceType(tempRecord.quickConsequence,0);
+						if (cons==-1)
 						{
-							cons=consequence[c].t;
-							break;
-						}
-					}
-				if (c==NCONSEQUENCETYPES)
-						{
-							dcerror(1,"Could not recognise this consequence: %s",tempRecord.ensemblConsequence);
+							dcerror(1,"Could not recognise this consequence: %s",tempRecord.quickConsequence);
 							return 0;
 						}
+					}
+					locusWeight[locusCount]=consequence[cons].weight;
+					if (cons<spec.consequenceThreshold)
+						useLocus[locusCount]=0;
 				}
-				locusWeight[locusCount]=consequence[c].weight;
-				if(spec.consequenceThreshold!=0)
-					useLocus[locusCount]=(cons>=spec.consequenceThreshold)?1:0;
 			}
-			}
-		}
-		if (excludeParser.size())
-		{	
-			double rv;
-			geneVarParser::thisLocus=&tempRecord;
-			geneVarParser::thisWeight=locusWeight[locusCount];
-			for(std::list<geneVarParser *>::iterator it=excludeParser.begin();it!=excludeParser.end();++it)
+			if (spec.weightExpression[0] && spec.useConsequenceWeights)
 			{
-				rv=*((*it)->eval());
-				if(rv!=0)
-					useLocus[locusCount]=0;
-				break;
+				geneVarParser::thisLocus=&tempRecord;
+				locusWeight[locusCount]=(double)(*weightParser.eval());
+			}
+			if (excludeParser.size() && useLocus[locusCount])
+			{
+				double rv;
+				geneVarParser::thisLocus=&tempRecord;
+				geneVarParser::thisWeight=locusWeight[locusCount];
+				for (std::list<geneVarParser *>::iterator it=excludeParser.begin();it!=excludeParser.end();++it)
+				{
+					rv=*((*it)->eval());
+					if (rv!=0)
+						useLocus[locusCount]=0;
+					break;
+				}
 			}
 		}
 		++locusCount;
