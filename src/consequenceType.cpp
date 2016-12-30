@@ -95,13 +95,17 @@ const char* getConsequenceString(int t,int use_ensembl)
 int getConsequenceType(const char *name,int use_ensembl)
 {
 	if (use_ensembl)
+	{
 		for (int i=0;i<E_NCONSEQUENCETYPES;++i)
 			if (!strncmp(e_consequence[i].str,name,strlen(e_consequence[i].str)))
 				return e_consequence[i].t;
-			else
-				for (int i=0;i<NCONSEQUENCETYPES;++i)
-					if (!strcmp(consequence[i].str,name))
-						return consequence[i].t;
+	}
+	else
+	{
+		for (int i=0;i<NCONSEQUENCETYPES;++i)
+			if (!strncmp(consequence[i].str,name,strlen(consequence[i].str)))
+				return consequence[i].t;
+	}
 	return -1;
 }
 
