@@ -106,7 +106,7 @@ char exclusionStr[20][200];
 char triosFn[200];
 char alleleFreqStr[100],alleleNumberStr[100],alleleCountStr[100];
 char weightExpression[1000];
-char vepCommand[100];
+char vepCommand[1000];
 std::list<std::string> excludeExpressions;
 };
 
