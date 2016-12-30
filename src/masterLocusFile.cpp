@@ -435,6 +435,7 @@ if (recPos!=0L)
 	fp=fopen("predictorOutput.txt","rb"); // binary mode can use fseek/ftell
 	if (fp==NULL)
 	{
+		dcerror.kill();
 		dcerror(1,"Could not open output file predictorOutput.txt from variant_effect_predictor.pl");
 		return 0;
 	}
@@ -442,6 +443,7 @@ if (recPos!=0L)
 		fPos=FTELL(fp);
 		if (!fgets(line,999,fp))
 		{
+			dcerror.kill();
 			dcerror(1,"Could not read any valid line from predictorOutput.txt");
 			return 0;
 		}
@@ -871,6 +873,7 @@ if (recPos!=0L)
 						cons=getConsequenceType(e_consequence[c].str,1);
 						if (cons==-1)
 						{
+							dcerror.kill();
 							dcerror(1,"Could not recognise this consequence: %s",tempRecord.ensemblConsequence);
 							return 0;
 						}
@@ -888,6 +891,7 @@ if (recPos!=0L)
 						cons=getConsequenceType(tempRecord.quickConsequence,0);
 						if (cons==-1)
 						{
+							dcerror.kill();
 							dcerror(1,"Could not recognise this consequence: %s",tempRecord.quickConsequence);
 							return 0;
 						}
