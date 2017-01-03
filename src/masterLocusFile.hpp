@@ -290,6 +290,7 @@ public:
 	int writeAltSubs(char *fn,analysisSpecs &spec);
 	int gotoFirstInRange(analysisSpecs &spec);
 	int gotoNextInRange(analysisSpecs &spec);
+	int countNumberInRange(analysisSpecs &spec);
 	int currentChr() { return tempRecord.chr; }
 	FILEPOSITION currentPos() { return tempRecord.pos; }
 	int currentIsSNP() { return tempRecord.isSNP(); }

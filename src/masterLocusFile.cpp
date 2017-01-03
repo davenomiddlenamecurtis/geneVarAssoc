@@ -511,7 +511,7 @@ int masterLocusFile::writeScoreAssocFiles(masterLocusFile &subFile,char *root, f
 	char fn[100],buff[MAXALL*MAXALLLENGTH],buff2[1000],comment[MAXALL*MAXALLLENGTH],*ptr,alleles[MAXSTR+1],commandString[1000];
 	allelePair **a;
 	probTriple **p;
-	int totalSub,lc,s,l,ss,i,c;
+	int totalSub,lc,s,l,ss,i,c,nValid;
 	FILE *fp;
 	FILEPOSITION recPos;
 	const char *testKey;
@@ -533,17 +533,18 @@ int masterLocusFile::writeScoreAssocFiles(masterLocusFile &subFile,char *root, f
 // hereOK();
 	subFile.outputSubNames(subName,spec);
 // hereOK();
+	nValid=countNumberInRange(spec);
 	if (spec.useProbs)
 	{
-		assert((p = (probTriple **)calloc(MAXLOCIINSCOREASSOCFILE, sizeof(probTriple*))) != 0);
-		for (l = 0; l < MAXLOCIINSCOREASSOCFILE; ++l)
+		assert((p = (probTriple **)calloc(nValid, sizeof(probTriple*))) != 0);
+		for (l = 0; l < nValid; ++l)
 			p[l] = (probTriple *)calloc(totalSub, sizeof(probTriple));
 		lc = outputProbs(p, spec);
 	}
 	else
 	{
-		assert((a = (allelePair **)calloc(MAXLOCIINSCOREASSOCFILE, sizeof(allelePair*))) != 0);
-		for (l = 0; l < MAXLOCIINSCOREASSOCFILE; ++l)
+		assert((a = (allelePair **)calloc(nValid, sizeof(allelePair*))) != 0);
+		for (l = 0; l < nValid; ++l)
 			a[l] = (allelePair *)calloc(totalSub, sizeof(allelePair));
 		lc = outputAlleles(a, spec);
 	}
@@ -726,13 +727,13 @@ int masterLocusFile::writeScoreAssocFiles(masterLocusFile &subFile,char *root, f
 	fclose(fp);
 	if (spec.useProbs)
 	{
-		for (l = 0; l < MAXLOCIINSCOREASSOCFILE; ++l)
+		for (l = 0; l < nValid; ++l)
 			free(p[l]);
 		free(p);
 	}
 	else
 	{
-		for (l = 0; l < MAXLOCIINSCOREASSOCFILE; ++l)
+		for (l = 0; l < nValid; ++l)
 			free(a[l]);
 		free(a);
 	}
@@ -1016,6 +1017,17 @@ int masterLocusFile::outputProbs(probTriple **prob, analysisSpecs &spec)
 	return locusCount;
 }
 
+int masterLocusFile::countNumberInRange(analysisSpecs &spec)
+{
+	int nValid=0;
+	if (gotoFirstInRange(spec))
+		do
+		{
+			++nValid;
+		} while (gotoNextInRange(spec));
+	return nValid;
+}
+
 int masterLocusFile::outputAlleles(allelePair **all, analysisSpecs &spec)
 {
 	int locusCount, subCount;
@@ -1030,7 +1042,7 @@ int masterLocusFile::outputAlleles(allelePair **all, analysisSpecs &spec)
 	{
 // hereOK();
 		outputCurrentAlleles(all[locusCount++], spec);
-		if(locusCount>MAXLOCIINSCOREASSOCFILE)
+		if (locusCount>MAXLOCIINSCOREASSOCFILE)
 		{
 			dcerror.kill();
 			dcerror(1,"Number of variants exceeds MAXLOCIINSCOREASSOCFILE (%d) in masterLocusFile::outputAlleles()\nNeed to increase MAXLOCIINSCOREASSOCFILE and recompile\n",MAXLOCIINSCOREASSOCFILE);
