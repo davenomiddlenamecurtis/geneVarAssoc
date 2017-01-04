@@ -6,6 +6,29 @@
 
 std::map<std::string,weightTable*> weightTableList;
 
+int weightTable::readFromFile(char *fn,char *n)
+{
+	char line[1001],buff[1001];
+	float w;
+	int l;
+	FILE *fp;
+	fp=fopen(fn,"r");
+	if (fp==0)
+	{
+		dcerror(1,"Could not open weight table file: %s\n",fn);
+		return 0;
+	}
+	tableName=n;
+	for (l=0;fgets(line,1000,fp)&&sscanf(line,"%s %f",buff,w)==2;++l)
+	{
+		weightMap[buff]=w;
+	}
+	if (l==0)
+		dcerror(1,"No valid lines in weight table file: %s\n",fn);
+	return l;
+}
+
+
 void weightTable::init(char *n,consequenceReport consequence[],int nConsequence)
 {
 	int c;
@@ -110,13 +133,19 @@ dcexpr_val *getWeight_func(dcvnode* b1,dcvnode *b2)
 	dcexpr_double *rv=new dcexpr_double(0);
 	weightTable* tab;
 	std::map<std::string,weightTable*>::const_iterator tableIter=weightTableList.find((char*)(*r2));
-	if(tableIter==weightTableList.end())
-	{
-		dcerror(1,"Could not find a weight table named %s\n",(char*)(*r2));
-	}
+	if (tableIter!=weightTableList.end())
+		tab=tableIter->second;
 	else
 	{
-		tab=tableIter->second;
+		char *fn=(char*)(*r2);
+		tab=new weightTable;
+		if (tab->readFromFile(fn,fn)) // will write error if problem
+			weightTableList[fn]=tab;
+		else
+			tab=0;
+	}
+	if (tab!=0)
+	{
 		std::map<std::string,float>::const_iterator weightIter=tab->weightMap.find((char*)(*r1));
 		if(weightIter==tab->weightMap.end())
 		{

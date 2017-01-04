@@ -20,7 +20,7 @@ int main(int argc,char *argv[])
 	FILE *fp;
 	gvaParams gp;
 	analysisSpecs spec;
-	weightTable wt;
+	weightTable *wt;
 
 #if 1
 	printf("%s %s\nRunning ",PROGRAM,GVAVERSION);
@@ -28,8 +28,12 @@ int main(int argc,char *argv[])
 		printf("%s ",argv[i]);
 	printf("\n");
 #endif
-	wt.init("DEFAULTWEIGHTS",consequence,NCONSEQUENCETYPES);
-	wt.init("VEPWEIGHTS",e_consequence,E_NCONSEQUENCETYPES);
+	wt=new weightTable;
+	wt->init("DEFAULTWEIGHTS",consequence,NCONSEQUENCETYPES);
+	weightTableList[wt->tableName]=wt;
+	wt=new weightTable;
+	wt->init("VEPWEIGHTS",e_consequence,E_NCONSEQUENCETYPES);
+	weightTableList[wt->tableName]=wt;
 
 	dcerror.warn();
 #if 0

@@ -24,7 +24,7 @@ public:
 	std::map<std::string,float> weightMap;
 	weightTable() { ; }
 	~weightTable() { ; }
-	int readFromFile(char *n);
+	int readFromFile(char *fn,char *n);
 	void init(char *n,consequenceReport consequence[],int nConsequence);
 };
 
