@@ -19,7 +19,7 @@ int weightTable::readFromFile(char *fn,char *n)
 		return 0;
 	}
 	tableName=n;
-	for (l=0;fgets(line,1000,fp)&&sscanf(line,"%s %f",buff,w)==2;++l)
+	for (l=0;fgets(line,1000,fp)&&sscanf(line,"%s %f",buff,&w)==2;++l)
 	{
 		weightMap[buff]=w;
 	}

@@ -566,7 +566,8 @@ const char *express::vbracket(const char*s,dcvnode **br)
      {
      if ((s=get_next(s))==NULL) return NULL;
      if ((s=vbin_op(s,br,0))==NULL) return NULL;
-     if (strcmp(")",token)) { dcerror(1,"expected \')\': %s",(char *)token); return NULL; }
+     if (strcmp(")",token))
+	 { dcerror(1,"expected \')\': %s",(char *)token); return NULL; }
      if ((s=get_next(s))==NULL) return NULL;
      }
     else s=vprimitive(s,br);
@@ -598,7 +599,7 @@ const char *express::vprimitive(const char *s,dcvnode **br)
 	 c=token[0];
 	 if((c!='.')&&!isdigit(c))
 	 {
-		 dcerror(1,"Syntax error: %s",(char*)token);
+		 dcerror(1,"Syntax error in \"%s\": %s",s,(char*)token);
 		 return NULL;
 	 }
 	 if(*br==NULL) { dcerror(ENOMEM); return NULL; }

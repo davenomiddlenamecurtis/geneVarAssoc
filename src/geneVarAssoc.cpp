@@ -120,7 +120,7 @@ int main(int argc,char *argv[])
 	else
 		sprintf(fn,"gva.%s",geneName);
 #else
-	sprintf(fn,"%s.%s",(gp.analysisName[0]?gp.analysisName:"gva"),geneName);
+	sprintf(fn,"%s.%s",(gp.testName[0]?gp.testName:"gva"),geneName);
 #endif
 	if (extractedOK)
 	{

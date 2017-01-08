@@ -869,9 +869,9 @@ if (recPos!=0L)
 				{
 					if (tempRecord.ensemblConsequence[0]=='\0')
 						cons=NULL_CONSEQUENCE;
-					else
+					else // should change below to do this with tables in the same way as the parser does
 					{
-						cons=getConsequenceType(e_consequence[c].str,1);
+						cons=getConsequenceType(tempRecord.ensemblConsequence,1);
 						if (cons==-1)
 						{
 							dcerror.kill();
