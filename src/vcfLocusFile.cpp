@@ -282,7 +282,7 @@ int vcfLocalLocus::outputAlleles(allelePair *all,FILE *f,FILEPOSITION filePos,in
 			all[s][0] = all[s][1] = 1;
 		else if (allStr[0]=='.' || gq<spec.GQThreshold)
 			all[s][0]=all[s][1]=0;
-		else if(spec.hetDevThresholdSq!=-1 && allStr[0]!=allStr[2]) // heterozygous
+		else if (spec.hetDevThresholdSq!=-1 && allStr[0]!=allStr[2]) // heterozygous
 		{
 			ptr2=ptr;
 			for(i=0;i<ADpos;++i)
