@@ -16,17 +16,17 @@ xmlns="http://www.w3.org/TR/REC-html40">
   <o:Author>David Curtis</o:Author>
   <o:Template>B436C3BA.dotm</o:Template>
   <o:LastAuthor>Dave Curtis</o:LastAuthor>
-  <o:Revision>20</o:Revision>
-  <o:TotalTime>1732</o:TotalTime>
-  <o:Created>2016-06-06T09:58:00Z</o:Created>
-  <o:LastSaved>2016-11-11T13:57:00Z</o:LastSaved>
-  <o:Pages>1</o:Pages>
-  <o:Words>2642</o:Words>
-  <o:Characters>15064</o:Characters>
+  <o:Revision>2</o:Revision>
+  <o:TotalTime>1791</o:TotalTime>
+  <o:Created>2017-01-10T08:28:00Z</o:Created>
+  <o:LastSaved>2017-01-10T08:28:00Z</o:LastSaved>
+  <o:Pages>16</o:Pages>
+  <o:Words>2956</o:Words>
+  <o:Characters>14855</o:Characters>
   <o:Company>UCL</o:Company>
-  <o:Lines>125</o:Lines>
+  <o:Lines>123</o:Lines>
   <o:Paragraphs>35</o:Paragraphs>
-  <o:CharactersWithSpaces>17671</o:CharactersWithSpaces>
+  <o:CharactersWithSpaces>17776</o:CharactersWithSpaces>
   <o:Version>16.00</o:Version>
  </o:DocumentProperties>
  <o:OfficeDocumentSettings>
@@ -38,8 +38,10 @@ xmlns="http://www.w3.org/TR/REC-html40">
 <!--[if gte mso 9]><xml>
  <w:WordDocument>
   <w:View>Print</w:View>
+  <w:Zoom>BestFit</w:Zoom>
   <w:SpellingState>Clean</w:SpellingState>
-  <w:TrackMoves>false</w:TrackMoves>
+  <w:GrammarState>Clean</w:GrammarState>
+  <w:TrackMoves/>
   <w:TrackFormatting/>
   <w:ValidateAgainstSchemas/>
   <w:SaveIfXMLInvalid>false</w:SaveIfXMLInvalid>
@@ -1038,6 +1040,9 @@ span.QuoteChar
 span.SpellE
 	{mso-style-name:"";
 	mso-spl-e:yes;}
+span.GramE
+	{mso-style-name:"";
+	mso-gram-e:yes;}
 .MsoChpDefault
 	{mso-style-type:export-only;
 	mso-default-props:yes;
@@ -1143,7 +1148,8 @@ called <span class=SpellE><i style='mso-bidi-font-style:normal'>geneVarAssoc</i>
 and <span class=SpellE><i style='mso-bidi-font-style:normal'>intVarAssoc</i></span>,
 which should then be copied to the directory assigned to <i style='mso-bidi-font-style:
 normal'>DCBIN</i> in <i style='mso-bidi-font-style:normal'>geneVarAssoc.mak</i>,
-by default called ../<i style='mso-bidi-font-style:normal'>bin</i>.<o:p></o:p></span></p>
+by default called<span class=GramE> ..</span>/<i style='mso-bidi-font-style:
+normal'>bin</i>.<o:p></o:p></span></p>
 
 <p class=MsoNormal><span style='mso-fareast-font-family:"Times New Roman";
 mso-fareast-theme-font:minor-fareast'>Solution and project files are provided
@@ -1175,12 +1181,13 @@ number to extract the relevant variants for a particular gene. </p>
 class=SpellE><i style='mso-bidi-font-style:normal'>vcf</i></span> files
 containing control genotypes and one or more <span class=SpellE><i
 style='mso-bidi-font-style:normal'>vcf</i></span> files containing case
-genotypes. However one may also work with only allele frequencies, rather than
-genotypes, for controls and/or cases. If the control and case genotypes are in
-the same <span class=SpellE><i style='mso-bidi-font-style:normal'>vcf</i></span>
-file then the phenotypes are specified with a<span
-style='mso-spacerun:yes'>&nbsp; </span>separate file. If the subjects consist
-of trios then a separate file is used to define the pedigree relationships. </p>
+genotypes. <span class=GramE>However</span> one may also work with only allele
+frequencies, rather than genotypes, for controls and/or cases. If the control
+and case genotypes are in the same <span class=SpellE><i style='mso-bidi-font-style:
+normal'>vcf</i></span> file then the phenotypes are specified with <span
+class=GramE>a<span style='mso-spacerun:yes'>&nbsp; </span>separate</span> file.
+If the subjects consist of trios then a separate file is used to define the
+pedigree relationships. </p>
 
 <p class=MsoNormal>In order to run <span class=SpellE><i style='mso-bidi-font-style:
 normal'>geneVarAssoc</i></span> you will need the following:</p>
@@ -1194,14 +1201,15 @@ and ten control files. If separate case and control files are not used then a
 single file can hold all the subjects, in which case a separate file specifying
 phenotypes must be provided. If the subjects consist of sets of trios then no
 phenotypes need be provided and it is assumed that the children are all
-affected. Generally the <span class=SpellE><i style='mso-bidi-font-style:normal'>vcf</i></span>
-files will contain genotypes but they can instead contain genotype
-probabilities as output by IMPUTE2. If individual level data is not available
-then instead a file of allele frequencies for cases or controls or both can be
-provided, e.g. from 1KG or <span class=SpellE>ExAC</span>. If this is done, the
-number of subjects used to produce these frequencies must also be given. There
-can be a separate <span class=SpellE><i style='mso-bidi-font-style:normal'>vcf</i></span>
-file for each chromosome or else all chromosomes can be combined.</p>
+affected. <span class=GramE>Generally</span> the <span class=SpellE><i
+style='mso-bidi-font-style:normal'>vcf</i></span> files will contain genotypes
+but they can instead contain genotype probabilities as output by IMPUTE2. If
+individual level data is not available then instead a file of allele
+frequencies for cases or controls or both can be provided, e.g. from 1KG or <span
+class=SpellE>ExAC</span>. If this is done, the number of subjects used to
+produce these frequencies must also be given. There can be a separate <span
+class=SpellE><i style='mso-bidi-font-style:normal'>vcf</i></span> file for each
+chromosome or else all chromosomes can be combined.</p>
 
 <p class=MsoListParagraphCxSpMiddle><o:p>&nbsp;</o:p></p>
 
@@ -1232,11 +1240,11 @@ normal'>scoreassoc</i></span> data files for valid variants and produces
 weights according to the annotations. Then it runs <span class=SpellE><i
 style='mso-bidi-font-style:normal'>scoreassoc</i></span>.</p>
 
-<p class=MsoNormal>Typically a parameter file specified by <i style='mso-bidi-font-style:
-normal'>--<span class=SpellE>arg</span>-file</i> would contain the
-specifications for the analyses and the locations of the data and reference
-files and then the <i style='mso-bidi-font-style:normal'>--gene</i> argument
-would specify the gene to be analysed. Two example parameter files are
+<p class=MsoNormal><span class=GramE>Typically</span> a parameter file
+specified by <i style='mso-bidi-font-style:normal'>--<span class=SpellE>arg</span>-file</i>
+would contain the specifications for the analyses and the locations of the data
+and reference files and then the <i style='mso-bidi-font-style:normal'>--gene</i>
+argument would specify the gene to be analysed. Two example parameter files are
 provided. In <span class=SpellE><i style='mso-bidi-font-style:normal'>exampleContFreqFile.arg</i></span>,
 a 1KG file is used to provide allele frequencies based on 195 subjects and the
 case genotypes would be in files called <i style='mso-bidi-font-style:normal'>BP_chr1.vcf.gz</i>,
@@ -1245,8 +1253,8 @@ style='mso-bidi-font-style:normal'>gva.SSS.ct08.rare.arg</i>, all the case and
 control genotypes are in <i style='mso-bidi-font-style:normal'>scz-only-exome-all-nozeros.vcf.gz</i>
 and the phenotypes are specified in <i style='mso-bidi-font-style:normal'>SSSPhenotypes.txt</i>.</p>
 
-<p class=MsoNormal>Because of the identifiable nature of sequence data, it is
-not possible to provide example data files.</p>
+<p class=MsoNormal>Because of the identifiable nature of sequence data, it is not
+possible to provide example data files.</p>
 
 <p class=MsoNormal>When trying to get the program running, one can inspect the
 temporary files which are produced in order to elucidate problems. The most
@@ -1275,6 +1283,29 @@ then to enter:</p>
 font-family:"Courier New"'> --<span class=SpellE>arg</span>-file options.txt
 --gene DRD2<o:p></o:p></span></p>
 
+<h3>--ref-gene-file filename<o:p></o:p></h3>
+
+<p class=MsoNormal>Specifies a file in <span class=SpellE>refseq</span> format,
+with first line beginning:<o:p></o:p></p>
+
+<p class=MsoNormal><span style='font-size:14.0pt;font-family:"Courier New"'>#bin<span
+style='mso-spacerun:yes'>&nbsp;&nbsp;&nbsp; </span>name<span
+style='mso-spacerun:yes'>&nbsp;&nbsp;&nbsp; </span><span class=SpellE>chrom</span><span
+style='mso-spacerun:yes'>&nbsp;&nbsp; </span><span class=GramE>strand<span
+style='mso-spacerun:yes'>&nbsp; </span><span class=SpellE>txStart</span></span>
+. . .</span><span style='mso-spacerun:yes'>&nbsp; </span><o:p></o:p></p>
+
+<p class=MsoNormal>The file must have been sorted on the gene name to bring all
+transcripts for each gene together. E.g<i style='mso-bidi-font-style:normal'>.
+refseqgenesorted101115.txt</i>, which is provided in the <span class=SpellE><i
+style='mso-bidi-font-style:normal'>exampleFiles</i></span> directory.<o:p></o:p></p>
+
+<h3>--reference-path pathname<o:p></o:p></h3>
+
+<p class=MsoNormal>Provides the name of the folder containing the reference
+genome files, needed if the inbuilt annotation functions are to be used, having
+names such as chr17.fa, etc.<o:p></o:p></p>
+
 <h3>--<span class=SpellE>cont</span>-file filename</h3>
 
 <p class=MsoNormal>Provides the name of a <span class=SpellE><i
@@ -1286,46 +1317,49 @@ subject genotypes. There can be more than one of these.</p>
 <p class=MsoNormal>Provides the name of a <span class=SpellE><i
 style='mso-bidi-font-style:normal'>vcf</i></span> file containing case subject
 genotypes. There can be more than one of these. If case and control subjects
-are in the same file then this should be specified as the case file and the
-phenotype status should be specified using the <i style='mso-bidi-font-style:
-normal'>--phenotype-file</i> option. If trios are used then it is assumed that
-the child in each trio is affected and the <span class=SpellE><i
-style='mso-bidi-font-style:normal'>vcf</i></span> file containing all subjects
-is specified using <i style='mso-bidi-font-style:normal'>--case-file</i> while
-the trio structure is defined using <i style='mso-bidi-font-style:normal'>--trio-file</i>.</p>
+are in the same <span class=GramE>file</span> then this should be specified as
+the case file and the phenotype status should be specified using the <i
+style='mso-bidi-font-style:normal'>--phenotype-file</i> option. If trios are <span
+class=GramE>used</span> then it is assumed that the child in each trio is
+affected and the <span class=SpellE><i style='mso-bidi-font-style:normal'>vcf</i></span>
+file containing all subjects is specified using <i style='mso-bidi-font-style:
+normal'>--case-file</i> while the trio structure is defined using <i
+style='mso-bidi-font-style:normal'>--trio-file</i>.</p>
 
 <h3>--phenotype-file filename</h3>
 
 <p class=MsoNormal>Specifies the name of a file which provides phenotypes of
 the subjects in the <span class=SpellE><i style='mso-bidi-font-style:normal'>vcf</i></span>
-file(s). There is one row per subject, consisting of a 0 or 1 (for case or
-control) or -1 (to omit this subject from the analysis). The rows must exactly
-match the order of subjects in the <span class=SpellE><i style='mso-bidi-font-style:
-normal'>vcf</i></span> file(s). This option can be used if one does not have
-separate <span class=SpellE><i style='mso-bidi-font-style:normal'>vcf</i></span>
-files for cases and controls. Typically one would use it with just a single <span
+file(s). There is one row per subject, consisting of either 0 or 1, for case or
+control, or any other number, in which case the subject will be omitted from
+the analysis. The rows must exactly match the order of subjects in the <span
+class=SpellE><i style='mso-bidi-font-style:normal'>vcf</i></span> file(s). This
+option can be used if one does not have separate <span class=SpellE><i
+style='mso-bidi-font-style:normal'>vcf</i></span> files for cases and controls.
+<span class=GramE>Typically</span> one would use it with just a single <span
 class=SpellE><i style='mso-bidi-font-style:normal'>vcf</i></span> file.
 However, if for some reason one does wish to use this option with multiple <span
 class=SpellE><i style='mso-bidi-font-style:normal'>vcf</i></span> files please
-note that any<span style='mso-spacerun:yes'>&nbsp; </span>control files will be
-read in before any case files, regardless of which are specified first. So the
-phenotype file must have phenotypes for the subjects in the control files
-before those in the case files. This aside, the <span class=SpellE><i
-style='mso-bidi-font-style:normal'>vcf</i></span> files are read in in the
-order in which they are specified. The phenotypes in this file will then
-override the control or case file specification. (A possible application of
-this would be if one wished to perform some kind of permutation testing.)</p>
+note that any control files will be read in before any case files, regardless
+of which are specified first. So the phenotype file must have phenotypes for
+the subjects in the control files before those in the case files. This aside,
+the <span class=SpellE><i style='mso-bidi-font-style:normal'>vcf</i></span>
+files are read in in the order in which they are specified. The phenotypes in
+this file will then override the control or case file specification. (A
+possible application of this would be if one wished to perform some kind of
+permutation testing.)</p>
 
-<h3>--ID-and-phenotype-file filename<o:p></o:p></h3>
+<h3>--ID-and-phenotype-file filename</h3>
 
 <p class=MsoNormal>Specifies the name of a file which provides phenotypes of
 the subjects in the <span class=SpellE><i style='mso-bidi-font-style:normal'>vcf</i></span>
 file(s). There is one row per subject, consisting of the subject ID as in the <span
 class=SpellE><i style='mso-bidi-font-style:normal'>vcf</i></span> file followed
-by a space then a 0 or 1 (for case or control) or -1 (to be ignored). The order
-does not need to match the order in the <span class=SpellE><i style='mso-bidi-font-style:
-normal'>vcf</i></span> file(s). If a subject has phenotype -1 or if there is no
-entry for a subject then it will not be included in analysis.</p>
+by a space then a 0 or 1 (for case or control) or any other number (to be
+ignored). The order does not need to match the order in the <span class=SpellE><i
+style='mso-bidi-font-style:normal'>vcf</i></span> file(s). If a subject has
+phenotype other than 0 or 1 or if there is no entry for a <span class=GramE>subject</span>
+then it will not be included in analysis.</p>
 
 <h3>--use-<span class=SpellE>probs</span></h3>
 
@@ -1342,42 +1376,16 @@ must match that of the subjects in the <span class=SpellE><i style='mso-bidi-fon
 normal'>vcf</i></span> file(s), as described for the <i style='mso-bidi-font-style:
 normal'>--phenotype-file</i> option.</p>
 
-<h3>--gene name</h3>
-
-<p class=MsoNormal>Provide the name of the gene to be extracted and analysed.</p>
-
-<h3>--ref-gene-file filename</h3>
-
-<p class=MsoNormal>Specifies a file in <span class=SpellE>refseq</span> format,
-with first line beginning:</p>
-
-<p class=MsoNormal><span style='font-size:14.0pt;font-family:"Courier New"'>#bin<span
-style='mso-spacerun:yes'>&nbsp;&nbsp;&nbsp; </span>name<span
-style='mso-spacerun:yes'>&nbsp;&nbsp;&nbsp; </span><span class=SpellE>chrom</span><span
-style='mso-spacerun:yes'>&nbsp;&nbsp; </span>strand<span
-style='mso-spacerun:yes'>&nbsp; </span><span class=SpellE>txStart</span> . . .</span><span
-style='mso-spacerun:yes'>&nbsp; </span></p>
-
-<p class=MsoNormal>The file must have been sorted on the gene name to bring all
-transcripts for each gene together. E.g<i style='mso-bidi-font-style:normal'>.
-refseqgenesorted101115.txt</i>, which is provided in the <span class=SpellE><i
-style='mso-bidi-font-style:normal'>exampleFiles</i></span> directory.</p>
-
-<h3>--reference-path pathname</h3>
-
-<p class=MsoNormal>Provides the name of the folder containing the reference
-genome files, used for annotation, having names such as chr17.fa, etc.</p>
-
 <h3>--trio-file filename</h3>
 
-<p class=MsoNormal>Indicates that the subjects consist of sets of trios as
-defined in the file specified. Each subject to be used occupies one row. The
-first entry is the ID of the subject, as in the <span class=SpellE><i
+<p class=MsoNormal>Indicates that the subjects consist of sets of trios as defined
+in the file specified. Each subject to be used occupies one row. The first
+entry is the ID of the subject, as in the <span class=SpellE><i
 style='mso-bidi-font-style:normal'>vcf</i></span> file. If the subject has
-parents then their IDs are given next, father then mother. If the subject is a
-parent then the parental IDs are given as 0 0. Subjects in the <span
-class=SpellE><i style='mso-bidi-font-style:normal'>vcf</i></span> file but not
-in this file will be ignored.</p>
+parents then their IDs are given next, father then mother. If the subject is a <span
+class=GramE>parent</span> then the parental IDs are given as 0 0. Subjects in
+the <span class=SpellE><i style='mso-bidi-font-style:normal'>vcf</i></span>
+file but not in this file will be ignored.</p>
 
 <h3>--<span class=SpellE>cont</span>-<span class=SpellE>freq</span>-file
 filename</h3>
@@ -1408,6 +1416,10 @@ frequencies, i.e. the total number of cases genotyped. The number of successful
 genotypes may vary slightly between variants but the maximum number should be
 given here.</p>
 
+<h3>--gene name<o:p></o:p></h3>
+
+<p class=MsoNormal>Provide the name of the gene to be extracted and analysed.<o:p></o:p></p>
+
 <h3>--allele-<span class=SpellE>freq</span>-<span class=SpellE>str</span>
 string</h3>
 
@@ -1415,9 +1427,9 @@ string</h3>
 class=SpellE><i style='mso-bidi-font-style:normal'>vcf</i></span> file which is
 used to provide allele frequencies for cases or controls. If the <span
 class=SpellE><i style='mso-bidi-font-style:normal'>vcf</i></span> file contains
-entries such as &#8230;;EUR_AF=0.42;&#8230; then one would specify <i
-style='mso-bidi-font-style:normal'>--allele-<span class=SpellE>freq</span>-<span
-class=SpellE>str</span> EUR_AF</i></p>
+entries such as <span class=GramE>&#8230;;EUR</span>_AF=0.42;&#8230; then one
+would specify <i style='mso-bidi-font-style:normal'>--allele-<span
+class=SpellE>freq</span>-<span class=SpellE>str</span> EUR_AF</i></p>
 
 <h3>--allele-number-<span class=SpellE>str</span> <span class=SpellE>str</span></h3>
 
@@ -1425,9 +1437,9 @@ class=SpellE>str</span> EUR_AF</i></p>
 class=SpellE><i style='mso-bidi-font-style:normal'>vcf</i></span> file which is
 used to provide allele frequencies for cases or controls. If the <span
 class=SpellE><i style='mso-bidi-font-style:normal'>vcf</i></span> file contains
-entries such as &#8230;;EUR_AN=2414;&#8230; then one would specify <i
-style='mso-bidi-font-style:normal'>--allele-number-<span class=SpellE>str</span>
-EUR_AN</i></p>
+entries such as <span class=GramE>&#8230;;EUR</span>_AN=2414;&#8230; then one
+would specify <i style='mso-bidi-font-style:normal'>--allele-number-<span
+class=SpellE>str</span> EUR_AN</i></p>
 
 <h3>--allele-count-<span class=SpellE>str</span> <span class=SpellE>str</span></h3>
 
@@ -1435,17 +1447,18 @@ EUR_AN</i></p>
 a <span class=SpellE><i style='mso-bidi-font-style:normal'>vcf</i></span> file
 which is used to provide allele frequencies for cases or controls. If the <span
 class=SpellE><i style='mso-bidi-font-style:normal'>vcf</i></span> file contains
-entries such as &#8230;;EUR_AC=27;&#8230; then one would specify <i
-style='mso-bidi-font-style:normal'>--allele-number-<span class=SpellE>str</span>
-EUR_AC</i>. If there is no allele frequency field then the frequency will be
-calculated as the count divided by the number (as in <span class=SpellE>ExAC</span>).</p>
+entries such as <span class=GramE>&#8230;;EUR</span>_AC=27;&#8230; then one
+would specify <i style='mso-bidi-font-style:normal'>--allele-number-<span
+class=SpellE>str</span> EUR_AC</i>. If there is no allele frequency <span
+class=GramE>field</span> then the frequency will be calculated as the count
+divided by the number (as in <span class=SpellE>ExAC</span>).</p>
 
 <h3>--bait-file filename</h3>
 
-<p class=MsoNormal>File containing coordinates for the baits. If this is
-specified then they will be used to determine the coordinates of exomes to
-extract rather than relying only on the gene coordinates in the <span
-class=SpellE>refseq</span> file.</p>
+<p class=MsoNormal>File containing coordinates for the baits. If this is <span
+class=GramE>specified</span> then they will be used to determine the
+coordinates of exomes to extract rather than relying only on the gene
+coordinates in the <span class=SpellE>refseq</span> file.</p>
 
 <h3>--upstream number</h3>
 
@@ -1469,8 +1482,8 @@ allele frequency.</p>
 
 <p class=MsoNormal>If 1, use <span class=SpellE><i style='mso-bidi-font-style:
 normal'>ensembl</i></span> to carry out annotation, otherwise use the
-program&#8217;s own internal annotation routines. In order to use this, you
-must have the <span class=SpellE><i style='mso-bidi-font-style:normal'>perl</i></span>
+program&#8217;s own internal annotation routines. In order to use this, you must
+have the <span class=SpellE><i style='mso-bidi-font-style:normal'>perl</i></span>
 version of <i style='mso-bidi-font-style:normal'>variant effect predictor </i>(<i
 style='mso-bidi-font-style:normal'>VEP</i>) set up so that commands such as the
 following can run:</p>
@@ -1548,13 +1561,13 @@ genotype quality score and treat others as unknown.</p>
 <p class=MsoNormal>If 1, treat a variant which has no entry in a <span
 class=SpellE><i style='mso-bidi-font-style:normal'>vcf</i></span> file as
 having unknown genotype for all subjects in that file. If 0, treat all subjects
-in that file as being wild type. If 1 and a frequency file is used then any
-variants missing from the frequency file will be omitted from the analysis. If
-0 they will be treated as having frequency of 0 (i.e. all wild type). The
-assumption then is that the variant was adequately covered but did not appear
-in the <span class=SpellE><i style='mso-bidi-font-style:normal'>vcf</i></span>
-file because no <i style='mso-bidi-font-style:normal'>alt</i> alleles were
-seen. Default value is 0.</p>
+in that file as being wild type. If 1 and a frequency file is <span
+class=GramE>used</span> then any variants missing from the frequency file will
+be omitted from the analysis. If 0 they will be treated as having frequency of
+0 (i.e. all wild type). The assumption then is that the variant was adequately
+covered but did not appear in the <span class=SpellE><i style='mso-bidi-font-style:
+normal'>vcf</i></span> file because no <i style='mso-bidi-font-style:normal'>alt</i>
+alleles were seen. Default value is 0.</p>
 
 <h3>--wild-if-unknown 0 or 1</h3>
 
@@ -1606,15 +1619,15 @@ they contain, and can be useful for debugging. Default value is 0.</p>
 
 <h3>--do-not-run 0 or 1</h3>
 
-<p class=MsoNormal>If 1, set up all the files for the analysis but do not actually
-run <span class=SpellE><i style='mso-bidi-font-style:normal'>scoreassoc</i></span>.
+<p class=MsoNormal>If 1, set up all the files for the analysis but do not
+actually run <span class=SpellE><i style='mso-bidi-font-style:normal'>scoreassoc</i></span>.
 A bash script or, under MSDOS, a batch file will be created which can be run to
 perform the analysis. Can be useful for debugging. Default value is 0.</p>
 
 <h3>--sequence-path pathname</h3>
 
-<p class=MsoNormal>This can be used to provide the name of the folder containing
-the main <span class=SpellE><i style='mso-bidi-font-style:normal'>vcf</i></span>
+<p class=MsoNormal>This can be used to provide the name of the folder
+containing the main <span class=SpellE><i style='mso-bidi-font-style:normal'>vcf</i></span>
 files. If this is specified, then rather than providing the full path for each <span
 class=SpellE><i style='mso-bidi-font-style:normal'>vcf</i></span> file one
 would specify just the file name. This potentially allows different analyses to
@@ -1639,9 +1652,9 @@ specify new case files from scratch.</p>
 
 <p class=MsoNormal>Reads exclusions a line at a time and passes them unchanged
 to <span class=SpellE><i style='mso-bidi-font-style:normal'>scoreassoc</i></span>.
-If instead of<span style='mso-spacerun:yes'>&nbsp; </span>a filename -- is
-specified then the exclusions will be read from the current file until the end
-of file is reached.</p>
+If instead <span class=GramE>of<span style='mso-spacerun:yes'>&nbsp; </span>a</span>
+filename -- is specified then the exclusions will be read from the current file
+until the end of file is reached.</p>
 
 <h2>Options to be used by other programs</h2>
 
@@ -1661,14 +1674,15 @@ class=SpellE><i style='mso-bidi-font-style:normal'>intVarAssoc</i></span>.</p>
 class=SpellE><i style='mso-bidi-font-style:normal'>intVarAssoc</i></span> will
 extract variables and perform a <span class=SpellE><i style='mso-bidi-font-style:
 normal'>scoreassoc</i></span> analysis. Intervals are in format <span
-class=SpellE><i style='mso-bidi-font-style:normal'>chr:start-end</i></span>,
-e.g. 5:140000-240000.</p>
+class=SpellE><span class=GramE><i style='mso-bidi-font-style:normal'>chr:start</i></span><i
+style='mso-bidi-font-style:normal'>-end</i></span>, e.g. 5:140000-240000.</p>
 
-<h3>--position <span class=SpellE>chr:pos</span></h3>
+<h3>--position <span class=SpellE><span class=GramE>chr:pos</span></span></h3>
 
 <p class=MsoNormal>A coordinate is given consisting of a chromosome followed by
 a colon and then base position, to be used by related programs, not <span
-class=SpellE><i style='mso-bidi-font-style:normal'>geneVarAssoc</i></span> itself.</p>
+class=SpellE><i style='mso-bidi-font-style:normal'>geneVarAssoc</i></span>
+itself.</p>
 
 <h2><span style='mso-fareast-font-family:"Times New Roman";mso-fareast-theme-font:
 minor-fareast'>Contact details<o:p></o:p></span></h2>

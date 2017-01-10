@@ -44,6 +44,7 @@ int main(int argc,char *argv[])
 	fclose(fp);
 	strcpy(geneName,argv[2]);
 #else
+	strcpy(gp.testName,"gva");
 	if (!gp.readParms(argc,argv,spec))
 		exit(1);
 
@@ -120,7 +121,7 @@ int main(int argc,char *argv[])
 	else
 		sprintf(fn,"gva.%s",geneName);
 #else
-	sprintf(fn,"%s.%s",(gp.testName[0]?gp.testName:"gva"),geneName);
+	sprintf(fn,"%s.%s",gp.testName,geneName);
 #endif
 	if (extractedOK)
 	{

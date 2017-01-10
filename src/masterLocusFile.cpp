@@ -572,7 +572,8 @@ int masterLocusFile::writeScoreAssocFiles(masterLocusFile &subFile,char *root, f
 	for (s=0,i=0;i<subFile.nLocusFiles;++i)
 	for (ss=0;ss<subFile.nSubs[i];++s,++ss)
 	{
-		if(spec.phenotypes&&spec.phenotypes[s]==-1)
+		int ccc=spec.phenotypes&&spec.phenotypes[s];
+		if (ccc!=0 && ccc!=1)
 			continue;
 		fprintf(fp,"%s\t%d\t",subName[s],spec.phenotypes?spec.phenotypes[s]:subFile.cc[i]);
 		for (l=0;l<lc;++l)
