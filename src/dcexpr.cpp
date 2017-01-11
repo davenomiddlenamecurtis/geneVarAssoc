@@ -50,7 +50,19 @@ return rv;
 dcexpr_val::~dcexpr_val() {;}
 
 int dcexpr_double::is_string_really() { return 0; }
-dcexpr_double::operator char*() { sprintf(buff,"%f",val); return buff; }
+dcexpr_double::operator char*() 
+{ 
+	char *ptr;
+	sprintf(buff,"%f",val); // default is to 6 decimal places
+	ptr=buff;
+	while (*ptr)
+		++ptr;
+	while (*(--ptr)=='0') // stripping trailing zeros and decimal point
+		*ptr='\0';
+	if (*ptr=='.')
+		*ptr='\0';
+	return buff;
+}
 dcexpr_double::operator double() { return val; }
 dcexpr_double::~dcexpr_double() {;}
 dcexpr_double::dcexpr_double(double v) { val=v; }
@@ -726,6 +738,7 @@ add_bin_op_next("POW",pow_op);
 
 add_un_op("-",negate_op);
 add_un_op("!",not_op);
+add_un_op("NOT",not_op);
 add_un_op("ABS",abs_op);
 add_un_op("LOG",log_op);
 add_un_op("LN",ln_op);

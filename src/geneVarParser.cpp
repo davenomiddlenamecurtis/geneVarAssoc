@@ -149,7 +149,7 @@ dcexpr_val *getWeight_func(dcvnode* b1,dcvnode *b2)
 		std::map<std::string,float>::const_iterator weightIter=tab->weightMap.find((char*)(*r1));
 		if(weightIter==tab->weightMap.end())
 		{
-			dcerror(1,"Could not find effect %s in weight table named %s\n",(char*)(*r1),(char*)(*r2));
+			dcerror(1,"Could not find annotation %s in weight table named %s\n",(char*)(*r1),(char*)(*r2));
 		}
 		else
 			*rv=weightIter->second;
@@ -160,12 +160,21 @@ dcexpr_val *getWeight_func(dcvnode* b1,dcvnode *b2)
 
 dcexpr_val *strcat_func(dcvnode* b1,dcvnode *b2)
 {
-dcexpr_val *r1,*r2;
-EVAL_BOTH;
-dcexpr_string *rv=new dcexpr_string((char*)(*r1),strlen((char*)(*r1))+strlen((char*)(*r2)));
-strcat((char*)rv,(char*)(*r2));
-delete r1; delete r2;
-return rv;
+	dcexpr_val *r1,*r2;
+	EVAL_BOTH;
+	dcexpr_string *rv=new dcexpr_string((char*)(*r1),strlen((char*)(*r1))+strlen((char*)(*r2)));
+	strcat((char*)rv,(char*)(*r2));
+	delete r1; delete r2;
+	return rv;
+}
+
+dcexpr_val *startsWith_func(dcvnode* b1,dcvnode *b2)
+{
+	dcexpr_val *r1,*r2;
+	EVAL_BOTH;
+	dcexpr_double *rv=new dcexpr_double(strncmp((char*)(*r1),(char*)(*r2),strlen((char*)(*r2)))?0:1);
+	delete r1; delete r2;
+	return rv;
 }
 
 dcexpr_val *annot_func(dcvnode *b1)
@@ -206,12 +215,34 @@ dcexpr_val *attrib_func(dcvnode *b1)
 {
 	dcexpr_val *r1;
 	EVAL_R1;
+	char buff[100];
 	char *attrib_type=(char*)(*r1);
 	dcexpr_val *rv;
 	if (!strcmp(attrib_type,"WEIGHT"))
 		rv=new dcexpr_double(geneVarParser::thisWeight);
 	else if (!strcmp(attrib_type,"POS"))
-		rv=new dcexpr_double(geneVarParser::thisLocus->getPos());
+	{
+		sprintf(buff,"%ld",geneVarParser::thisLocus->getPos());
+		rv=new dcexpr_string(buff);
+	}
+	else if (!strcmp(attrib_type,"CHR"))
+	{
+		sprintf(buff,"%d",geneVarParser::thisLocus->getChr());
+		rv=new dcexpr_string(buff);
+	}
+	else if (!strcmp(attrib_type,"COORD"))
+	{
+		sprintf(buff,"%d:%ld",geneVarParser::thisLocus->getChr(),geneVarParser::thisLocus->getPos());
+		rv=new dcexpr_string(buff);
+	}
+	else if (!strcmp(attrib_type,"ID"))
+	{
+		rv=new dcexpr_string(geneVarParser::thisLocus->getID());
+	}
+	else if (!strcmp(attrib_type,"ISSNP"))
+	{
+		rv=new dcexpr_double((double)geneVarParser::thisLocus->isSNP());
+	}
 	else
 	{
 		dcerror(1,"The ATTRIB function cannot accept %s as its argument",attrib_type);
@@ -221,22 +252,12 @@ dcexpr_val *attrib_func(dcvnode *b1)
 	return rv;
 }
 
-int initGeneVarParser()
-{
-	add_bin_op_next("STRCAT",strcat_func);
-	add_bin_op_next("GETWEIGHT",getWeight_func);
-	add_bin_op_same("VCFLOOKUP",vcfLookup_func);
-	add_bin_op_same("VCFADDCHRLOOKUP",vcfAddChrLookup_func);
-	add_un_op("ANNOT",annot_func);
-	add_un_op("ATTRIB",attrib_func);
-	return 1;
-}
-
 bool geneVarParser::parserIsInited=0;
 masterLocus *geneVarParser::thisLocus;
 refseqGeneInfo *geneVarParser::thisGene;
 double geneVarParser::thisWeight;
 std::map<std::string,std::string> geneVarParser::queryCache;
+extern int initGeneVarParser();
 
 geneVarParser::geneVarParser()
 {
@@ -250,14 +271,26 @@ geneVarParser::geneVarParser()
 dcexpr_val *geneVarParser::eval()
 {
 	dcexpr_val *rv;
-	if(express::debugFile)
+	if (express::debugFile)
 	{
 		fprintf(express::debugFile,"Evaluating expression using gene %s and this locus:\n",geneVarParser::thisGene->getGene());
 		geneVarParser::thisLocus->print(express::debugFile);
 	}
 	rv=express::eval();
-	if(express::debugFile)
+	if (express::debugFile)
 		fprintf(express::debugFile,"Final result: %s\n",(char*)(*rv));
 	return rv;
+}
+
+int initGeneVarParser()
+{
+	add_bin_op_next("STARTSWITH",startsWith_func);
+	add_bin_op_same("STRCAT",strcat_func);
+	add_bin_op_same("GETWEIGHT",getWeight_func);
+	add_bin_op_same("VCFLOOKUP",vcfLookup_func);
+	add_bin_op_same("VCFADDCHRLOOKUP",vcfAddChrLookup_func);
+	add_un_op("ANNOT",annot_func);
+	add_un_op("ATTRIB",attrib_func);
+	return 1;
 }
 
