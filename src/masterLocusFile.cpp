@@ -1251,7 +1251,7 @@ int masterLocus::print(FILE *fp)
 	fprintf(fp,"nAlls = %d: ",nAlls);
 	for (a=0;a<nAlls;++a)
 		fprintf(fp,"%s ",alls[a]);
-	fprintf(fp,"\nMapping:\n");
+	fprintf(fp,"\nAllele mapping:\n");
 
 	for (f=0;f<nLocusFiles;++f)
 	{

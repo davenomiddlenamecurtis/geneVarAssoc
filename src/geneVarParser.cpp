@@ -81,20 +81,27 @@ dcexpr_val *performTabixQuery(const char *fn,int addChr,char *lookupStr)
 	}
 	if (strncmp(lineBuff,"NOVCFLINE",strlen("NOVCFLINE")))
 	{
-		sprintf(tempBuff,";%s",lookupStr);
-		tptr=lineBuff;
-		while ((ptr=strstr(tptr,tempBuff))!=0) // possible multiple occurrences, e.g. of AF
+		if (!strncmp(lookupStr,lineBuff,strlen(lookupStr)) && lineBuff[strlen(lookupStr)]=='=') // first entry in info field
+			ptr=lineBuff+strlen(lookupStr)+1;
+		else
 		{
-			if (ptr[strlen(tempBuff)]=='=')
-				break;
-			else
-				tptr=ptr+strlen(tempBuff);
+			sprintf(tempBuff,";%s",lookupStr);
+			tptr=lineBuff;
+			while ((ptr=strstr(tptr,tempBuff))!=0) // possible multiple occurrences, e.g. of AF
+			{
+				if (ptr[strlen(tempBuff)]=='=')
+				{
+					ptr+=strlen(tempBuff)+1; // include = sign
+					break;
+				}
+				else
+					tptr=ptr+strlen(tempBuff);
+			}
 		}
 		if (ptr==0)
 			sprintf(lineBuff,"NOVCFENTRY_%s_%ld_%s",chrStr,geneVarParser::thisLocus->getPos(),lookupStr);
 		else
 		{
-			ptr+=strlen(tempBuff)+1;
 			tptr=tempBuff;
 			while(*ptr && *ptr!=';')
 				*tptr++=*ptr++;
@@ -204,7 +211,7 @@ dcexpr_val *annot_func(dcvnode *b1)
 	}
 	else
 	{
-		dcerror(1,"The ANNOT function cannot accept %s as its argument",annot_type);
+		dcerror(1,"The ANNOT function cannot accept %s as its argument\n",annot_type);
 		rv=new dcexpr_string("UNIMPLEMENTEDANNOTATION");
 	}
 	delete r1;
@@ -245,7 +252,7 @@ dcexpr_val *attrib_func(dcvnode *b1)
 	}
 	else
 	{
-		dcerror(1,"The ATTRIB function cannot accept %s as its argument",attrib_type);
+		dcerror(1,"The ATTRIB function cannot accept %s as its argument\n",attrib_type);
 		rv=new dcexpr_string("UNIMPLEMENTEDATTRIBUTE");
 	}
 	delete r1;
@@ -272,13 +279,11 @@ dcexpr_val *geneVarParser::eval()
 {
 	dcexpr_val *rv;
 	if (express::debugFile)
-	{
-		fprintf(express::debugFile,"Evaluating expression using gene %s and this locus:\n",geneVarParser::thisGene->getGene());
-		geneVarParser::thisLocus->print(express::debugFile);
-	}
+		fprintf(express::debugFile,"Evaluating expression using gene %s and variant at %d:%ld:\n",
+			geneVarParser::thisLocus->getChr(),geneVarParser::thisLocus->getPos());
 	rv=express::eval();
 	if (express::debugFile)
-		fprintf(express::debugFile,"Final result: %s\n",(char*)(*rv));
+		fprintf(express::debugFile,"Final result of expression evaluation: %s\n",(char*)(*rv));
 	return rv;
 }
 

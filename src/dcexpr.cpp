@@ -157,7 +157,7 @@ dcexpr_val *vnvun_op::eval()
 {
 if (branch[0]==NULL) return NULL;
 dcexpr_val *rv=func(branch[0]);
-if(express::debugFile)
+if (express::debugFile)
 	fprintf(express::debugFile,"%s\t",(char*)(*rv));
 return rv;
 }
