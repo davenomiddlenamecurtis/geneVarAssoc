@@ -17,17 +17,17 @@ xmlns="http://www.w3.org/TR/REC-html40">
   <o:Author>David Curtis</o:Author>
   <o:Template>B436C3BA.dotm</o:Template>
   <o:LastAuthor>Dave Curtis</o:LastAuthor>
-  <o:Revision>31</o:Revision>
-  <o:TotalTime>2480</o:TotalTime>
+  <o:Revision>33</o:Revision>
+  <o:TotalTime>2503</o:TotalTime>
   <o:Created>2017-01-10T14:45:00Z</o:Created>
-  <o:LastSaved>2017-01-12T17:49:00Z</o:LastSaved>
-  <o:Pages>32</o:Pages>
-  <o:Words>5999</o:Words>
-  <o:Characters>34197</o:Characters>
+  <o:LastSaved>2017-01-12T18:12:00Z</o:LastSaved>
+  <o:Pages>34</o:Pages>
+  <o:Words>6400</o:Words>
+  <o:Characters>36486</o:Characters>
   <o:Company>UCL</o:Company>
-  <o:Lines>284</o:Lines>
-  <o:Paragraphs>80</o:Paragraphs>
-  <o:CharactersWithSpaces>40116</o:CharactersWithSpaces>
+  <o:Lines>304</o:Lines>
+  <o:Paragraphs>85</o:Paragraphs>
+  <o:CharactersWithSpaces>42801</o:CharactersWithSpaces>
   <o:Version>16.00</o:Version>
  </o:DocumentProperties>
  <o:OfficeDocumentSettings>
@@ -4030,7 +4030,7 @@ style='mso-fareast-font-family:"Times New Roman";mso-fareast-theme-font:minor-fa
 mso-fareast-theme-font:minor-fareast'>This file was used to analyse whole
 genome sequence data for 99 bipolar subjects against allele frequencies
 reported in <span class=SpellE>ExAC</span> non-Finish European subjects. To use
-this, one would enter e.g.<o:p></o:p></span></p>
+this, one would enter e.g.:<o:p></o:p></span></p>
 
 <p class=command><span class=SpellE><span style='mso-fareast-font-family:"Times New Roman";
 mso-fareast-theme-font:minor-fareast'>geneVarAssoc</span></span><span
@@ -4276,6 +4276,11 @@ class=SpellE><i style='mso-bidi-font-style:normal'>chr</i></span><i
 style='mso-bidi-font-style:normal'>*.fa</i> files, which contain the entire
 reference genome.</p>
 
+<p class=command>--GQ-threshold 30<o:p></o:p></p>
+
+<p class=MsoNormal>Only variants with a <i style='mso-bidi-font-style:normal'>GQ</i>
+(genotype quality) entry of at least 30 are used.</p>
+
 <p class=commandCxSpFirst>--exclusion-list -<o:p></o:p></p>
 
 <p class=commandCxSpMiddle><span class=SpellE>freq</span>(0)=0 &amp; <span
@@ -4327,6 +4332,212 @@ commoner than the heterozygous genotypes in both cases and controls.<o:p></o:p><
 <p class=MsoNormal><span style='mso-fareast-font-family:"Times New Roman";
 mso-fareast-theme-font:minor-fareast'>The case sample contains 99 subjects.
 This line excludes variants successfully genotyped in fewer than 97 subjects.<o:p></o:p></span></p>
+
+<h3><span style='mso-fareast-font-family:"Times New Roman";mso-fareast-theme-font:
+minor-fareast'>gva.SSS2.ct08.single.arg<o:p></o:p></span></h3>
+
+<p class=MsoNormal><span style='mso-fareast-font-family:"Times New Roman";
+mso-fareast-theme-font:minor-fareast'>This was set up to analyse a sample of
+10000 exomes from cases and controls with schizophrenia. Only single variants,
+which occur only once in this sample and never in <span class=SpellE>ExAC</span>
+are considered. The file contains the following entries:<o:p></o:p></span></p>
+
+<p class=commandCxSpFirst><span style='mso-fareast-font-family:"Times New Roman";
+mso-fareast-theme-font:minor-fareast'>--ID-and-phenotype-file ../<span
+class=SpellE>vcf</span>/SSS2/SSS2SZphenosNoFinns10.txt<o:p></o:p></span></p>
+
+<p class=commandCxSpMiddle><span style='mso-fareast-font-family:"Times New Roman";
+mso-fareast-theme-font:minor-fareast'>--case-file ../<span class=SpellE>vcf</span>/SSS2/swe.vcf.gz<o:p></o:p></span></p>
+
+<p class=commandCxSpMiddle><span style='mso-fareast-font-family:"Times New Roman";
+mso-fareast-theme-font:minor-fareast'>--ref-gene-file
+../reference/refseqgenesorted101115.txt <o:p></o:p></span></p>
+
+<p class=commandCxSpMiddle><span style='mso-fareast-font-family:"Times New Roman";
+mso-fareast-theme-font:minor-fareast'>--reference-path ../reference<o:p></o:p></span></p>
+
+<p class=commandCxSpMiddle><span style='mso-fareast-font-family:"Times New Roman";
+mso-fareast-theme-font:minor-fareast'>--margin 0<o:p></o:p></span></p>
+
+<p class=commandCxSpMiddle><span style='mso-fareast-font-family:"Times New Roman";
+mso-fareast-theme-font:minor-fareast'>--upstream 0 <o:p></o:p></span></p>
+
+<p class=commandCxSpMiddle><span style='mso-fareast-font-family:"Times New Roman";
+mso-fareast-theme-font:minor-fareast'>--downstream 0<o:p></o:p></span></p>
+
+<p class=commandCxSpMiddle><span style='mso-fareast-font-family:"Times New Roman";
+mso-fareast-theme-font:minor-fareast'>--weight-factor 10.0 <o:p></o:p></span></p>
+
+<p class=commandCxSpMiddle><span style='mso-fareast-font-family:"Times New Roman";
+mso-fareast-theme-font:minor-fareast'>--use-<span class=SpellE>ensembl</span> 0
+<o:p></o:p></span></p>
+
+<p class=commandCxSpMiddle><span style='mso-fareast-font-family:"Times New Roman";
+mso-fareast-theme-font:minor-fareast'>--consequence-threshold 8 <o:p></o:p></span></p>
+
+<p class=commandCxSpMiddle><span style='mso-fareast-font-family:"Times New Roman";
+mso-fareast-theme-font:minor-fareast'>--use-consequence-weights 1 <o:p></o:p></span></p>
+
+<p class=commandCxSpMiddle><span style='mso-fareast-font-family:"Times New Roman";
+mso-fareast-theme-font:minor-fareast'>--only-use-SNPs 1 <o:p></o:p></span></p>
+
+<p class=commandCxSpMiddle><span style='mso-fareast-font-family:"Times New Roman";
+mso-fareast-theme-font:minor-fareast'>--write-comments 1 <o:p></o:p></span></p>
+
+<p class=commandCxSpMiddle><span style='mso-fareast-font-family:"Times New Roman";
+mso-fareast-theme-font:minor-fareast'>--write-score-file 1<o:p></o:p></span></p>
+
+<p class=commandCxSpMiddle><span style='mso-fareast-font-family:"Times New Roman";
+mso-fareast-theme-font:minor-fareast'>--do-recessive-test 0 <o:p></o:p></span></p>
+
+<p class=commandCxSpMiddle><span style='mso-fareast-font-family:"Times New Roman";
+mso-fareast-theme-font:minor-fareast'>--weight-threshold 80<o:p></o:p></span></p>
+
+<p class=commandCxSpMiddle><span style='mso-fareast-font-family:"Times New Roman";
+mso-fareast-theme-font:minor-fareast'>--LD-threshold 0.9<o:p></o:p></span></p>
+
+<p class=commandCxSpMiddle><span style='mso-fareast-font-family:"Times New Roman";
+mso-fareast-theme-font:minor-fareast'>--add-<span class=SpellE>chr</span> 0<o:p></o:p></span></p>
+
+<p class=commandCxSpMiddle><span style='mso-fareast-font-family:"Times New Roman";
+mso-fareast-theme-font:minor-fareast'>--unknown-if-<span class=SpellE>untyped</span>
+0<o:p></o:p></span></p>
+
+<p class=commandCxSpMiddle><span style='mso-fareast-font-family:"Times New Roman";
+mso-fareast-theme-font:minor-fareast'>--unknown-if-no-pass 1<o:p></o:p></span></p>
+
+<p class=commandCxSpMiddle><span style='mso-fareast-font-family:"Times New Roman";
+mso-fareast-theme-font:minor-fareast'>--skip-if-no-pass 1<o:p></o:p></span></p>
+
+<p class=commandCxSpMiddle><span style='mso-fareast-font-family:"Times New Roman";
+mso-fareast-theme-font:minor-fareast'>--ignore-alleles 1<o:p></o:p></span></p>
+
+<p class=commandCxSpMiddle><span style='mso-fareast-font-family:"Times New Roman";
+mso-fareast-theme-font:minor-fareast'>--use-haplotypes 0 <o:p></o:p></span></p>
+
+<p class=commandCxSpMiddle><span style='mso-fareast-font-family:"Times New Roman";
+mso-fareast-theme-font:minor-fareast'>--GQ-threshold 30<o:p></o:p></span></p>
+
+<p class=commandCxSpMiddle><span style='mso-fareast-font-family:"Times New Roman";
+mso-fareast-theme-font:minor-fareast'>--exclude-expression ' ((&quot;AF&quot;
+VCFLOOKUP &quot;/home/<span class=SpellE>rejudcu</span>/sequence/<span
+class=SpellE>ExAC</span>/ExAC.r0.3.nonpsych.sites.vcf.gz&quot;)) &gt; 0'<o:p></o:p></span></p>
+
+<p class=commandCxSpMiddle><span style='mso-fareast-font-family:"Times New Roman";
+mso-fareast-theme-font:minor-fareast'>--exclusion-list -<o:p></o:p></span></p>
+
+<p class=commandCxSpMiddle><span class=SpellE><span style='mso-fareast-font-family:
+"Times New Roman";mso-fareast-theme-font:minor-fareast'>freq</span></span><span
+style='mso-fareast-font-family:"Times New Roman";mso-fareast-theme-font:minor-fareast'>(0)=0
+&amp; <span class=SpellE>freq</span>(1)=0<o:p></o:p></span></p>
+
+<p class=commandCxSpMiddle><span class=SpellE><span style='mso-fareast-font-family:
+"Times New Roman";mso-fareast-theme-font:minor-fareast'>nsub</span></span><span
+style='mso-fareast-font-family:"Times New Roman";mso-fareast-theme-font:minor-fareast'>(0)&lt;5834-583
+| <span class=SpellE>nsub</span>(1)&lt;4225-423<o:p></o:p></span></p>
+
+<p class=commandCxSpMiddle><span style='mso-fareast-font-family:"Times New Roman";
+mso-fareast-theme-font:minor-fareast'>(0 <span class=SpellE>genocount</span> 1)
++ (1 <span class=SpellE>genocount</span> 1) != 1<o:p></o:p></span></p>
+
+<p class=commandCxSpLast><span style='mso-fareast-font-family:"Times New Roman";
+mso-fareast-theme-font:minor-fareast'>(0 <span class=SpellE>genocount</span> 0)
+&gt; (0 <span class=SpellE>genocount</span> 1) &amp; (0 <span class=SpellE>genocount</span>
+2) &gt; (0 <span class=SpellE>genocount</span> 1) &amp; (1 <span class=SpellE>genocount</span>
+0) &gt; (1 <span class=SpellE>genocount</span> 1) &amp; (1 <span class=SpellE>genocount</span>
+2) &gt; (1 <span class=SpellE>genocount</span> 1)<span
+style='mso-spacerun:yes'>&nbsp;&nbsp;&nbsp;&nbsp; </span><o:p></o:p></span></p>
+
+<p class=MsoNormal><span style='mso-fareast-font-family:"Times New Roman";
+mso-fareast-theme-font:minor-fareast'>The following entries are of interest.<o:p></o:p></span></p>
+
+<p class=command><span style='mso-fareast-font-family:"Times New Roman";
+mso-fareast-theme-font:minor-fareast'>--ID-and-phenotype-file ../<span
+class=SpellE>vcf</span>/SSS2/SSS2SZphenosNoFinns10.txt<o:p></o:p></span></p>
+
+<p class=MsoNormal><span style='mso-fareast-font-family:"Times New Roman";
+mso-fareast-theme-font:minor-fareast'>The specified file lists the IDs of the
+subjects followed by 0 for a control, 1 for a case and -1 if they are deemed
+not valid because of concerns that they have Finnish ancestry.<o:p></o:p></span></p>
+
+<p class=command><span style='mso-fareast-font-family:"Times New Roman";
+mso-fareast-theme-font:minor-fareast'>--case-file ../<span class=SpellE>vcf</span>/SSS2/swe.vcf.gz<o:p></o:p></span></p>
+
+<p class=MsoNormal><span style='mso-fareast-font-family:"Times New Roman";
+mso-fareast-theme-font:minor-fareast'>A single file contains all the genotypes
+for all the cases and controls.<o:p></o:p></span></p>
+
+<p class=command><span style='mso-fareast-font-family:"Times New Roman";
+mso-fareast-theme-font:minor-fareast'>--skip-if-no-pass 1<o:p></o:p></span></p>
+
+<p class=MsoNormal><span style='mso-fareast-font-family:"Times New Roman";
+mso-fareast-theme-font:minor-fareast'>Variants not having <i style='mso-bidi-font-style:
+normal'>PASS</i> specified are ignored.<o:p></o:p></span></p>
+
+<p class=command><span style='mso-fareast-font-family:"Times New Roman";
+mso-fareast-theme-font:minor-fareast'>--exclude-expression ' ((&quot;AF&quot;
+VCFLOOKUP &quot;/home/<span class=SpellE>rejudcu</span>/sequence/<span
+class=SpellE>ExAC</span>/ExAC.r0.3.nonpsych.sites.vcf.gz&quot;)) &gt; 0'<o:p></o:p></span></p>
+
+<p class=MsoNormal><span style='mso-fareast-font-family:"Times New Roman";
+mso-fareast-theme-font:minor-fareast'>This excludes variant which have an entry
+in the <span class=SpellE>ExAC</span> <i style='mso-bidi-font-style:normal'>VCF</i>
+file, unless the allele frequency is given as zero.<o:p></o:p></span></p>
+
+<p class=commandCxSpFirst><span style='mso-fareast-font-family:"Times New Roman";
+mso-fareast-theme-font:minor-fareast'>--exclusion-list -<o:p></o:p></span></p>
+
+<p class=commandCxSpMiddle><span class=SpellE><span style='mso-fareast-font-family:
+"Times New Roman";mso-fareast-theme-font:minor-fareast'>freq</span></span><span
+style='mso-fareast-font-family:"Times New Roman";mso-fareast-theme-font:minor-fareast'>(0)=0
+&amp; <span class=SpellE>freq</span>(1)=0<o:p></o:p></span></p>
+
+<p class=commandCxSpMiddle><span class=SpellE><span style='mso-fareast-font-family:
+"Times New Roman";mso-fareast-theme-font:minor-fareast'>nsub</span></span><span
+style='mso-fareast-font-family:"Times New Roman";mso-fareast-theme-font:minor-fareast'>(0)&lt;5834-583
+| <span class=SpellE>nsub</span>(1)&lt;4225-423<o:p></o:p></span></p>
+
+<p class=commandCxSpMiddle><span style='mso-fareast-font-family:"Times New Roman";
+mso-fareast-theme-font:minor-fareast'>(0 <span class=SpellE>genocount</span> 1)
++ (1 <span class=SpellE>genocount</span> 1) != 1<o:p></o:p></span></p>
+
+<p class=commandCxSpLast><span style='mso-fareast-font-family:"Times New Roman";
+mso-fareast-theme-font:minor-fareast'>(0 <span class=SpellE>genocount</span> 0)
+&gt; (0 <span class=SpellE>genocount</span> 1) &amp; (0 <span class=SpellE>genocount</span>
+2) &gt; (0 <span class=SpellE>genocount</span> 1) &amp; (1 <span class=SpellE>genocount</span>
+0) &gt; (1 <span class=SpellE>genocount</span> 1) &amp; (1 <span class=SpellE>genocount</span>
+2) &gt; (1 <span class=SpellE>genocount</span> 1)<span
+style='mso-spacerun:yes'>&nbsp;&nbsp;&nbsp;&nbsp; </span><o:p></o:p></span></p>
+
+<p class=MsoNormal><span style='mso-fareast-font-family:"Times New Roman";
+mso-fareast-theme-font:minor-fareast'>These exclusions are passed onto <span
+class=SpellE><i style='mso-bidi-font-style:normal'>scoreAssoc</i></span>. <o:p></o:p></span></p>
+
+<p class=command><span class=SpellE><span style='mso-fareast-font-family:"Times New Roman";
+mso-fareast-theme-font:minor-fareast'>freq</span></span><span style='mso-fareast-font-family:
+"Times New Roman";mso-fareast-theme-font:minor-fareast'>(0)=0 &amp; <span
+class=SpellE>freq</span>(1)=0<o:p></o:p></span></p>
+
+<p class=MsoNormal><span style='mso-fareast-font-family:"Times New Roman";
+mso-fareast-theme-font:minor-fareast'>This does not output any variants having
+zero allele frequency in both cases and controls.<o:p></o:p></span></p>
+
+<p class=command><span class=SpellE><span style='mso-fareast-font-family:"Times New Roman";
+mso-fareast-theme-font:minor-fareast'>nsub</span></span><span style='mso-fareast-font-family:
+"Times New Roman";mso-fareast-theme-font:minor-fareast'>(0)&lt;5834-583 | <span
+class=SpellE>nsub</span>(1)&lt;4225-423<o:p></o:p></span></p>
+
+<p class=MsoNormal><span style='mso-fareast-font-family:"Times New Roman";
+mso-fareast-theme-font:minor-fareast'>This means to exclude any variants not
+successfully genotyped in more than 10% of cases or controls.<o:p></o:p></span></p>
+
+<p class=command><span style='mso-fareast-font-family:"Times New Roman";
+mso-fareast-theme-font:minor-fareast'>(0 <span class=SpellE>genocount</span> 1)
++ (1 <span class=SpellE>genocount</span> 1) != 1<o:p></o:p></span></p>
+
+<p class=MsoNormal><span style='mso-fareast-font-family:"Times New Roman";
+mso-fareast-theme-font:minor-fareast'>This excludes any variant which is not a
+singleton, i.e. the total count across all cases and controls is equal to 1.<o:p></o:p></span></p>
 
 <h2><span style='mso-fareast-font-family:"Times New Roman";mso-fareast-theme-font:
 minor-fareast'>Contact details<o:p></o:p></span></h2>
