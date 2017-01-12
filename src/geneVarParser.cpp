@@ -280,6 +280,7 @@ dcexpr_val *geneVarParser::eval()
 	dcexpr_val *rv;
 	if (express::debugFile)
 		fprintf(express::debugFile,"Evaluating expression using gene %s and variant at %d:%ld:\n",
+			geneVarParser::thisGene->getGene(),
 			geneVarParser::thisLocus->getChr(),geneVarParser::thisLocus->getPos());
 	rv=express::eval();
 	if (express::debugFile)
