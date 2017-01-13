@@ -309,7 +309,7 @@ int masterLocus::writePredictorQuery(FILE *fp)
 	end=pos+strlen(alls[0])-1; // does this work if first allele is - ?
 #endif
 	if (chr==23)
-		strcpy(chrStr,"");
+		strcpy(chrStr,"X");
 	else
 		sprintf(chrStr,"%d",chr);
 	fprintf(fp,"%s\t%ld\t%ld\t%s/%s\t+\n",chrStr,start,end,alls[0],alls[1]);
