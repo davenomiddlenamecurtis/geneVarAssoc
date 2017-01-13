@@ -160,6 +160,30 @@ consequenceReport findWorstConsequence(char *s,consequenceReport *r,int n) // th
 	return r[0];
 }
 
+dcexpr_val *extract_sift_func(dcvnode *b1)
+{
+	dcexpr_val *r1;
+	EVAL_R1;
+	char *ptr;
+	char *CSQEntry=(char*)(*r1);
+	dcexpr_string *rv;
+	rv=new dcexpr_string(findWorstConsequence(CSQEntry,sift_consequence,NSIFTCONSEQUENCES).str);
+	delete r1;
+	return rv;
+}
+
+dcexpr_val *extract_polyphen_func(dcvnode *b1)
+{
+	dcexpr_val *r1;
+	EVAL_R1;
+	char *ptr;
+	char *CSQEntry=(char*)(*r1);
+	dcexpr_string *rv;
+	rv=new dcexpr_string(findWorstConsequence(CSQEntry,polyphen_consequence,NPOLYPHENCONSEQUENCES).str);
+	delete r1;
+	return rv;
+}
+
 dcexpr_val *getWeight_func(dcvnode* b1,dcvnode *b2)
 {
 	dcexpr_val *r1,*r2;
@@ -340,6 +364,8 @@ int initGeneVarParser()
 	add_bin_op_same("VCFADDCHRLOOKUP",vcfAddChrLookup_func);
 	add_un_op("ANNOT",annot_func);
 	add_un_op("ATTRIB",attrib_func);
+	add_un_op("GETPOLYPHEN",extract_polyphen_func);
+	add_un_op("GETSIFT",extract_sift_func);
 	return 1;
 }
 
