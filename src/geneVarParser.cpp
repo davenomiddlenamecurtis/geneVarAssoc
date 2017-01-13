@@ -118,7 +118,7 @@ dcexpr_val *performTabixQuery(const char *fn,int addChr,char *lookupStr)
 		else
 		{
 			tptr=tempBuff;
-			while(*ptr && *ptr!=';')
+			while(*ptr && *ptr!=';' && !isspace(*ptr))
 				*tptr++=*ptr++;
 			*tptr=0;
 			strcpy(lineBuff,tempBuff);
