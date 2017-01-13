@@ -285,6 +285,7 @@ int masterLocus::readQueryOutput(FILE *fp)
 int masterLocus::writePredictorQuery(FILE *fp)
 {
 	long start,end;
+	char chrStr[20];
 	if (alls[0][0]=='N')
 		return 1; // predictor produces no output for these
 	if (nAlls<2)
@@ -307,7 +308,11 @@ int masterLocus::writePredictorQuery(FILE *fp)
 	start=pos;
 	end=pos+strlen(alls[0])-1; // does this work if first allele is - ?
 #endif
-	fprintf(fp,"%d\t%ld\t%ld\t%s/%s\t+\n",chr,start,end,alls[0],alls[1]);
+	if (chr==23)
+		strcpy(chrStr,"");
+	else
+		sprintf(chrStr,"%d",chr);
+	fprintf(fp,"%s\t%ld\t%ld\t%s/%s\t+\n",chrStr,start,end,alls[0],alls[1]);
 	return 1;
 }
 
