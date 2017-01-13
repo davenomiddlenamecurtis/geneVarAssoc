@@ -1,10 +1,25 @@
 #include "geneVarParser.hpp"
 
-#include <stdlib.h>q
+#include <stdlib.h>
 
 // this will mainly be to parse annotations, assign weights
 
 std::map<std::string,weightTable*> weightTableList;
+enum { NSIFTCONSEQUENCES=3 };
+consequenceReport sift_consequence[]={
+	{ 0, "sift_missing", 1.0 },
+	{ 1, "tolerated", 10.0 },
+	{ 2, "deleterious", 20.0 }
+};
+
+enum { NPOLYPHENCONSEQUENCES=5 };
+consequenceReport polyphen_consequence[]={
+	{ 0, "polyphen_missing", 1.0 },
+	{ 1, "benign", 5.0 },
+	{ 2, "unknown", 10.0 },
+	{ 3, "possibly_damaging", 20.0 },
+	{ 4, "probably_damaging", 20.0 }
+};
 
 int weightTable::readFromFile(char *fn,char *n)
 {
@@ -133,6 +148,18 @@ dcexpr_val *vcfLookup_func(dcvnode* b1,dcvnode *b2)
 	return rv;
 }
 
+consequenceReport findWorstConsequence(char *s,consequenceReport *r,int n) // this will be used by the function which uses the CSQ entry
+{
+	int c;
+	char *ptr;
+	for (c=n-1;c>0;--c)
+	{
+		if ((ptr=strstr(s,r[c].str))!=0)
+			return r[c];
+	}
+	return r[0];
+}
+
 dcexpr_val *getWeight_func(dcvnode* b1,dcvnode *b2)
 {
 	dcexpr_val *r1,*r2;
@@ -222,7 +249,8 @@ dcexpr_val *attrib_func(dcvnode *b1)
 {
 	dcexpr_val *r1;
 	EVAL_R1;
-	char buff[100];
+	char buff[100],chrStr[20];
+	int chr;
 	char *attrib_type=(char*)(*r1);
 	dcexpr_val *rv;
 	if (!strcmp(attrib_type,"WEIGHT"))
@@ -234,12 +262,19 @@ dcexpr_val *attrib_func(dcvnode *b1)
 	}
 	else if (!strcmp(attrib_type,"CHR"))
 	{
-		sprintf(buff,"%d",geneVarParser::thisLocus->getChr());
-		rv=new dcexpr_string(buff);
+		if ((chr=geneVarParser::thisLocus->getChr())==23)
+			strcpy(chrStr,"X");
+		else
+			sprintf(chrStr,"%d",chr);
+		rv=new dcexpr_string(chrStr);
 	}
 	else if (!strcmp(attrib_type,"COORD"))
 	{
-		sprintf(buff,"%d:%ld",geneVarParser::thisLocus->getChr(),geneVarParser::thisLocus->getPos());
+		if ((chr=geneVarParser::thisLocus->getChr())==23)
+			strcpy(chrStr,"X");
+		else
+			sprintf(chrStr,"%d",chr);
+		sprintf(buff,"%s:%ld",chrStr,geneVarParser::thisLocus->getPos());
 		rv=new dcexpr_string(buff);
 	}
 	else if (!strcmp(attrib_type,"ID"))
@@ -290,6 +325,14 @@ dcexpr_val *geneVarParser::eval()
 
 int initGeneVarParser()
 {
+	weightTable *wt;
+	wt=new weightTable;
+	wt->init("SIFTWEIGHTS",sift_consequence,NSIFTCONSEQUENCES);
+	weightTableList[wt->tableName]=wt;
+	wt=new weightTable;
+	wt->init("POLYPHENWEIGHTS",polyphen_consequence,NPOLYPHENCONSEQUENCES);
+	weightTableList[wt->tableName]=wt;
+
 	add_bin_op_next("STARTSWITH",startsWith_func);
 	add_bin_op_same("STRCAT",strcat_func);
 	add_bin_op_same("GETWEIGHT",getWeight_func);
