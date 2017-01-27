@@ -55,7 +55,7 @@ void weightTable::init(char *n,consequenceReport consequence[],int nConsequence)
 
 dcexpr_val *performTabixQuery(const char *fn,int addChr,char *lookupStr)
 {
-	char fnBuff[1000],*ptr,*tptr,queryBuff[1000],lineBuff[10000],tempBuff[1000],chrStr[10];
+	char fnBuff[1000],*ptr,*tptr,queryBuff[1000],lineBuff[10000],tempBuff[10000],chrStr[10];
 	dcexpr_val *rv;
 	FILE *fq;
 	strcpy(fnBuff,fn);
