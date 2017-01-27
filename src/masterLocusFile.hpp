@@ -93,6 +93,7 @@ public:
 		debug=0;
 		*alleleFreqStr=*alleleNumberStr=*alleleCountStr='\0';
 		*weightExpression='\0';
+		wf=10;
 	} 
 int onlycc01,unknownIfUntyped,unknownIfNoPass,altIsCommon,sc,ec,skipIfNoPass,useConsequenceWeights,onlyUseSNPs,nExc,doRecessiveTest,addChrInVCF[MAXVCFFILES],useHaplotypes,count_hom_as_het,useTrios,ignoreAlleles,useProbs,wildIfUnknown,debug;
 int useEnsembl,willNeedEnsemblConsequence,willNeedInbuiltConsequence;
@@ -100,7 +101,7 @@ int *phenotypes;
 TStrIntMap subPhenos;
 long sp,ep;
 float GQThreshold,proportionCalledToPass,hetDevThreshold,hetDevThresholdSq;
-float weightThreshold,LDThreshold;
+float weightThreshold,LDThreshold,wf;
 consequenceType consequenceThreshold;
 char exclusionStr[20][200];
 char triosFn[200];

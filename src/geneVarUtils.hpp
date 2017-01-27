@@ -17,7 +17,6 @@ public:
 	int getNextArg(char *nextArg,int argc,char *argv[],FILE *fp[MAXDEPTH],int *depth,int *argNum);
 	int upstream,downstream,margin;
 	int firstGeneNum,lastGeneNum;
-	float wf;
 };
 
 #define hereOK() fprintf(stderr,"Got to line %d in %s OK\n",__LINE__,__FILE__)

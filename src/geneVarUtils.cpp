@@ -33,7 +33,7 @@ int gvaParams::readParms(int argc,char *argv[],analysisSpecs &spec)
 	upstream=1000;
 	downstream=0;
 	margin=0;
-	wf=10.0;
+	spec.wf=10.0;
 	writeScoreFile=0;
 	*addChrStr='\0';
 	spec.useTrios=0;
@@ -164,7 +164,7 @@ int gvaParams::readParms(int argc,char *argv[],analysisSpecs &spec)
 		else if (FILLARG("--margin"))
 			margin=atoi(arg);
 		else if (FILLARG("--weight-factor"))
-			wf=atof(arg);
+			spec.wf=atof(arg);
 		else if (FILLARG("--use-ensembl"))
 			spec.useEnsembl=atoi(arg);
 		else if (FILLARG("--consequence-threshold"))

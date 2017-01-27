@@ -723,9 +723,10 @@ int masterLocusFile::writeScoreAssocFiles(masterLocusFile &subFile,char *root, f
 		sprintf(strchr(commandString,'\0')," --filterfile %s",fn);
 	}
 	sprintf(strchr(commandString,'\0')," --outfile %s.sao",root);
-	checkSystem();
 	if (writeScorefile)
 		sprintf(strchr(commandString,'\0')," --scorefile %s.sco",root);
+	sprintf(strchr(commandString,'\0')," --weightfactor %f",spec.wf);
+	checkSystem();
 #ifndef MSDOS
 	sprintf(fn,"%s.sh",root);
 #else
