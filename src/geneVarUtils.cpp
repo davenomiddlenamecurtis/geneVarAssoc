@@ -336,7 +336,7 @@ int gvaParams::readParms(int argc,char *argv[],analysisSpecs &spec)
 #endif
 				strcpy(ccFn[i][f],line);
 			}
-	if (spec.consequenceThreshold || spec.useConsequenceWeights)
+	if (spec.consequenceThreshold || (spec.useConsequenceWeights && spec.weightExpression[0]=='\0'))
 	{
 		if (spec.useEnsembl)
 			spec.willNeedEnsemblConsequence=1;

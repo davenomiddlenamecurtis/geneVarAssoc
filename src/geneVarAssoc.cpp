@@ -104,7 +104,7 @@ int main(int argc,char *argv[])
 		{
 		if (spec.willNeedInbuiltConsequence)
 		{
-			printf("Annotating using inbuit routines...\n");
+			printf("Annotating using inbuilt routines...\n");
 			vf.getQuickConsequences(r,spec);
 		}
 		if (spec.willNeedEnsemblConsequence)

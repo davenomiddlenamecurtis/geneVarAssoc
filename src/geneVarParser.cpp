@@ -55,7 +55,7 @@ void weightTable::init(char *n,consequenceReport consequence[],int nConsequence)
 
 dcexpr_val *performTabixQuery(const char *fn,int addChr,char *lookupStr)
 {
-	char fnBuff[1000],*ptr,*tptr,queryBuff[1000],lineBuff[5000],tempBuff[1000],chrStr[10];
+	char fnBuff[1000],*ptr,*tptr,queryBuff[1000],lineBuff[10000],tempBuff[1000],chrStr[10];
 	dcexpr_val *rv;
 	FILE *fq;
 	strcpy(fnBuff,fn);
@@ -86,7 +86,7 @@ dcexpr_val *performTabixQuery(const char *fn,int addChr,char *lookupStr)
 		fq=fopen("tabixQueryOutput.txt","r");
 		if (fq==0 || fscanf(fq,"%*s %*s %*s %*s %*s %*s %*s %s",lineBuff)!=1)
 			sprintf(lineBuff,"NOVCFLINE_%s_%ld",chrStr,geneVarParser::thisLocus->getPos());
-		if(fq)
+		if (fq)
 			fclose(fq);
 		geneVarParser::queryCache[queryBuff]=lineBuff;
 	}
