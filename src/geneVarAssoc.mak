@@ -24,7 +24,6 @@ all:
 	echo copied executables to ${DCBIN} ; \
 	cd ../src
 endif
-# unless you have a folder on path called $DCBIN you should delete that line to copy the executables to it
 
 clean:
 	cd ../obj ; \
