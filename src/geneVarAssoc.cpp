@@ -32,7 +32,7 @@ int main(int argc,char *argv[])
 	wt->init("DEFAULTWEIGHTS",consequence,NCONSEQUENCETYPES);
 	weightTableList[wt->tableName]=wt;
 	wt=new weightTable;
-	wt->init("VEPWEIGHTS",e_consequence,E_NCONSEQUENCETYPES);
+	wt->init("DEFAULTVEPWEIGHTS",e_consequence,E_NCONSEQUENCETYPES);
 	weightTableList[wt->tableName]=wt;
 
 	dcerror.warn();

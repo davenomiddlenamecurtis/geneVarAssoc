@@ -94,7 +94,7 @@ dcexpr_val *performTabixQuery(const char *fn,int addChr,char *lookupStr)
 			c=fgetc(fq);
 			while (c!=EOF && isspace(c))
 				c=fgetc(fq);
-			for (f=0;f<8;++f)
+			for (f=0;f<7;++f)
 			{
 					while (c!=EOF && !isspace(c))
 						c=fgetc(fq);
@@ -382,10 +382,10 @@ int initGeneVarParser()
 {
 	weightTable *wt;
 	wt=new weightTable;
-	wt->init("SIFTWEIGHTS",sift_consequence,NSIFTCONSEQUENCES);
+	wt->init("DEFAULTSIFTWEIGHTS",sift_consequence,NSIFTCONSEQUENCES);
 	weightTableList[wt->tableName]=wt;
 	wt=new weightTable;
-	wt->init("POLYPHENWEIGHTS",polyphen_consequence,NPOLYPHENCONSEQUENCES);
+	wt->init("DEFAULTPOLYPHENWEIGHTS",polyphen_consequence,NPOLYPHENCONSEQUENCES);
 	weightTableList[wt->tableName]=wt;
 
 	add_bin_op_next("STARTSWITH",startsWith_func);
