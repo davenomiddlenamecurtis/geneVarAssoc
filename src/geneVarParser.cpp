@@ -53,11 +53,13 @@ void weightTable::init(char *n,consequenceReport consequence[],int nConsequence)
 	weightTableList[tableName]=this;
 }
 
-char lineBuff[20000],tempBuff[20000]; // need these to be big for e.g. VEP on TTN
+#define MAXINFOLENGTH 20000
+char lineBuff[MAXINFOLENGTH+1],tempBuff[MAXINFOLENGTH+1]; // need these to be big for e.g. VEP on TTN
 
 dcexpr_val *performTabixQuery(const char *fn,int addChr,char *lookupStr)
 {
 	char fnBuff[1000],*ptr,*tptr,queryBuff[1000],chrStr[10];
+	int noEntry,c,f,l;
 	dcexpr_val *rv;
 	FILE *fq;
 	strcpy(fnBuff,fn);
@@ -86,10 +88,37 @@ dcexpr_val *performTabixQuery(const char *fn,int addChr,char *lookupStr)
 			dcerror(1,"Could not execute %s, failed with error %d\n",lineBuff,stest);
 		}
 		fq=fopen("tabixQueryOutput.txt","r");
-		if (fq==0 || fscanf(fq,"%*s %*s %*s %*s %*s %*s %*s %s",lineBuff)!=1)
-			sprintf(lineBuff,"NOVCFLINE_%s_%ld",chrStr,geneVarParser::thisLocus->getPos());
+		noEntry=1;
 		if (fq)
+		{
+			c=fgetc(fq);
+			while (c!=EOF && isspace(c))
+				c=fgetc(fq);
+			for (f=0;f<8;++f)
+			{
+					while (c!=EOF && !isspace(c))
+						c=fgetc(fq);
+					while (c!=EOF && isspace(c))
+						c=fgetc(fq);
+			}
+			if (c!=EOF)
+			{
+				noEntry=0;
+				ptr=lineBuff;
+				l=0;
+				while (c!=EOF && !isspace(c))
+				{
+					*ptr++=c;
+					if (++l>=MAXINFOLENGTH)
+						break;
+					c=fgetc(fq);
+				}
+				*ptr='\0';
+			}
 			fclose(fq);
+		}
+		if (noEntry)
+			sprintf(lineBuff,"NOVCFLINE_%s_%ld",chrStr,geneVarParser::thisLocus->getPos());
 		geneVarParser::queryCache[queryBuff]=lineBuff;
 	}
 	else
