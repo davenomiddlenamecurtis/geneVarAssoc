@@ -750,12 +750,12 @@ int geneExtractor::downloadGene(refseqGeneInfo &g,char *outFn)
 	return g.tbiExtractGene(tbiFn,outFn);
 }
 
-int geneExtractor::extractGene(refseqGeneInfo &g,char *outFn,int appendToOld,int addChrInVCF)
+int geneExtractor::extractVariants(refseqGeneInfo &g,char *outFn,int appendToOld,int addChrInVCF)
 // extract vcf file from local tbi file
 {
 	if (variantFileName[0]=='\0')
 	{
-		dcerror(1,"Need to give name for local vcf file in geneExtractor::extractGene()");
+		dcerror(1,"Need to give name for local vcf file in geneExtractor::extractVariants()");
 		return 0;
 	}
 	else 

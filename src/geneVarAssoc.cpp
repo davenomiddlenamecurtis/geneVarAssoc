@@ -9,7 +9,7 @@
 // SSS uses .:.:.:.:. to mean unknown??
 
 #define PROGRAM "geneVarAassoc"
-#define GVAVERSION "1.2"
+#define GVAVERSION "1.4"
 
 int main(int argc,char *argv[])
 {
@@ -76,13 +76,11 @@ int main(int argc,char *argv[])
 		{
 			gcont.setVariantFileName(gp.ccFn[0][i]);
 			sprintf(fn,"gva.%s.cont.%d.vcf",geneName,i+1);
-			if (gp.dontExtractGene)
-				printf("Will not attempt to produce %s because --dont-extract-gene was set",fn);
-			else if (!gcont.extractGene(r,fn,0,spec.addChrInVCF[ff++]))
+			if (gp.dontExtractVariants)
+				printf("Will not attempt to produce %s because --dont-extract-variants was set",fn);
+			else if (!gcont.extractVariants(r,fn,0,spec.addChrInVCF[ff++]))
 				extractedOK=0;
 			vf.addLocusFile(fn,VCFFILE);
-			if (gp.useFreqs[0])
-				vf.setHoldsFreqs(0,1);
 			if (!vf.readLocusFileEntries(fn,spec,0))
 				extractedOK=0;
 		}
@@ -90,13 +88,11 @@ int main(int argc,char *argv[])
 		{
 			gcase.setVariantFileName(gp.ccFn[1][i]);
 			sprintf(fn,"gva.%s.case.%d.vcf",geneName,i+1);
-			if (gp.dontExtractGene)
-				printf("Will not attempt to produce %s because --dont-extract-gene was set",fn);
-			else if (!gcase.extractGene(r,fn,0,spec.addChrInVCF[ff++]))
+			if (gp.dontExtractVariants)
+				printf("Will not attempt to produce %s because --dont-extract-variants was set",fn);
+			else if (!gcase.extractVariants(r,fn,0,spec.addChrInVCF[ff++]))
 				extractedOK=0;
 			vf.addLocusFile(fn,VCFFILE);
-			if (gp.useFreqs[1])
-				vf.setHoldsFreqs(gp.nCc[1],1);
 			if (!vf.readLocusFileEntries(fn,spec,1))
 				extractedOK=0;
 		}
@@ -158,7 +154,7 @@ int main(int argc,char *argv[])
 	{
 		vf.closeFiles();
 		vf.closeLocusFiles();
-		if (!gp.dontExtractGene)
+		if (!gp.dontExtractVariants)
 		{
 			for (i = 0; i < gp.nCc[0]; ++i)
 			{

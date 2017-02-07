@@ -119,7 +119,7 @@ public:
 	geneExtractor() { variantFileName[0]='\0'; }
 	void setVariantFileName(char *s) { strcpy(variantFileName,s); }
 	int downloadGene(refseqGeneInfo &r,char *outFn); // from 1000 genomes
-	int extractGene(refseqGeneInfo &r,char *outFn,int appendToOld=0,int addChrInVCF=0); // from local file
+	int extractVariants(refseqGeneInfo &r,char *outFn,int appendToOld=0,int addChrInVCF=0); // from local file
 };
 
 #if 0

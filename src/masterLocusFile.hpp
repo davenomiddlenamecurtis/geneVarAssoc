@@ -247,7 +247,6 @@ class masterLocusFile  {
 	FILEPOSITION currentRecPos;
 public:
 	void setFileType(int i, locusFileType t) { fileTypes[i] = t; }
-	void setHoldsFreqs(int i, int val) { holdsFreqs[i] = val; }
 	int providesFreqs(int i) { return holdsFreqs[i]; }
 	locusFileType getFileType(int i) { return fileTypes[i]; }
 	masterLocusFile(int nLF);

@@ -57,7 +57,7 @@ int gvaParams::readParms(int argc,char *argv[],analysisSpecs &spec)
 	*referencePath=*sequencePath=*posName='\0';
 	*spec.alleleFreqStr=*spec.alleleNumberStr=*spec.alleleCountStr='\0';
 	spec.nExc=0;
-	dontExtractGene=0;
+	dontExtractVariants=0;
 	keepTempFiles=0;
 	doNotRun=0;
 	spec.debug=0;
@@ -199,8 +199,8 @@ int gvaParams::readParms(int argc,char *argv[],analysisSpecs &spec)
 			spec.useHaplotypes=atoi(arg);
 		else if (FILLARG("--use-probs"))
 			spec.useProbs=atoi(arg);
-		else if (FILLARG("--dont-extract-gene"))
-			dontExtractGene=atoi(arg);
+		else if (FILLARG("--dont-extract-variants"))
+			dontExtractVariants=atoi(arg);
 		else if (FILLARG("--keep-temp-files"))
 			keepTempFiles=atoi(arg);
 		else if(FILLARG("--do-not-run"))

@@ -168,7 +168,9 @@
     <ClCompile Include="..\..\src\btree.c" />
     <ClCompile Include="..\..\src\consequenceType.cpp" />
     <ClCompile Include="..\..\src\dcerror.cpp" />
+    <ClCompile Include="..\..\src\dcexpr.cpp" />
     <ClCompile Include="..\..\src\dcindex.cpp" />
+    <ClCompile Include="..\..\src\geneVarParser.cpp" />
     <ClCompile Include="..\..\src\geneVarUtils.cpp" />
     <ClCompile Include="..\..\src\getGeneFuncs.cpp" />
     <ClCompile Include="..\..\src\getSequenceFuncs.cpp" />
