@@ -1,6 +1,6 @@
 --weight-expression ' ( GETPOLYPHEN ("CSQ" VCFLOOKUP "../vcf/SSS2/SSS2.vars.annot.vcf.gz") ) GETWEIGHT "../reference/POLYPHENWEIGHTS.txt"  '
 --ID-and-phenotype-file ../vcf/SSS2/SSS2SZphenosNoFinns10.txt
---test-name gva.NF.single.sift
+--test-name gva.NF.single.polyphen
 --case-file /home/rejudcu/vcf/SSS2/notCopied/swe.vcf.gz
 --ref-gene-file ../reference/refseqgenesorted101115.txt 
 --reference-path ../reference
@@ -15,8 +15,6 @@
 --write-comments 1 
 --write-score-file 1
 --do-recessive-test 0 
---weight-threshold 80
---LD-threshold 0.9
 --add-chr 0
 --unknown-if-untyped 0
 --unknown-if-no-pass 1
