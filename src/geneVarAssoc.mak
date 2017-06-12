@@ -11,16 +11,16 @@ CC = g++
 CFLAGS = $(OURFLAGS) 
 
 HEADERS = btree.h consequenceType.hpp dcerror.hpp dcindex.hpp geneVarUtils.hpp getGene.hpp getSequence.hpp intervalList.h masterLocusFile.hpp vcfLocusFile.hpp hapsLocusFile.hpp geneVarParser.hpp dcexpr.hpp
-
+EXE = geneVarAssoc intVarAssoc
 ifdef INOBJ
-all: geneVarAssoc intVarAssoc
+all: ${EXE}
 else
 all:
 	if [ ! -e ../obj ] ; then mkdir ../obj ; fi ; \
 	if [ ! -e ${DCBIN} ] ; then mkdir ${DCBIN} ; fi ; \
 	cd ../obj; \
 	make -f ../src/geneVarAssoc.mak INOBJ=INOBJ CFLAGS=$(CFLAGS) ; \
-	cp geneVarAssoc  ${DCBIN} ; \
+	cp ${EXE} ${DCBIN} ; \
 	echo copied executables to ${DCBIN} ; \
 	cd ../src
 endif
@@ -60,7 +60,7 @@ geneVarAssocSome: geneVarAssocSome.o btree.o consequenceType.o dcerror.o dcindex
 	$(CC) -o geneVarAssocSome geneVarAssocSome.o btree.o consequenceType.o dcerror.o dcindex.o geneVarUtils.o getGeneFuncs.o getSequenceFuncs.o intervalList.o vcfLocusFile.o vcfWriteVars.o masterLocusFile.o hapsLocusFile.o
 
 intVarAssoc: intVarAssoc.o btree.o consequenceType.o dcerror.o dcindex.o geneVarUtils.o getGeneFuncs.o getSequenceFuncs.o intervalList.o vcfLocusFile.o vcfWriteVars.o masterLocusFile.o hapsLocusFile.o geneVarParser.o dcexpr.o
-	$(CC) -o intVarAssoc geneVarAssoc.o btree.o consequenceType.o dcerror.o dcindex.o geneVarUtils.o getGeneFuncs.o getSequenceFuncs.o intervalList.o vcfLocusFile.o vcfWriteVars.o masterLocusFile.o hapsLocusFile.o geneVarParser.o dcexpr.o
+	$(CC) -o intVarAssoc intVarAssoc.o btree.o consequenceType.o dcerror.o dcindex.o geneVarUtils.o getGeneFuncs.o getSequenceFuncs.o intervalList.o vcfLocusFile.o vcfWriteVars.o masterLocusFile.o hapsLocusFile.o geneVarParser.o dcexpr.o
 
 SNPVarAssoc: SNPVarAssoc.o btree.o consequenceType.o dcerror.o dcindex.o geneVarUtils.o getGeneFuncs.o getSequenceFuncs.o intervalList.o vcfLocusFile.o vcfWriteVars.o masterLocusFile.o hapsLocusFile.o
 	$(CC) -o SNPVarAssoc SNPVarAssoc.o btree.o consequenceType.o dcerror.o dcindex.o geneVarUtils.o getGeneFuncs.o getSequenceFuncs.o intervalList.o vcfLocusFile.o vcfWriteVars.o masterLocusFile.o hapsLocusFile.o
