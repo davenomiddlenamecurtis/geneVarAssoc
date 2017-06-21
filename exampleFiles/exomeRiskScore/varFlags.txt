@@ -1,0 +1,8 @@
+anyVariant 1
+maybeRegulatoryOrIntron 2
+alsoUTR 4
+coding 8
+nonsynonymous 16
+LOF 32
+polyphenProbablyOrPossiblyDamaging 64
+SIFTDeleterious 128
