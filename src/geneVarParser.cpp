@@ -215,6 +215,18 @@ dcexpr_val *extract_polyphen_func(dcvnode *b1)
 	return rv;
 }
 
+dcexpr_val *extract_vep_func(dcvnode *b1)
+{
+	dcexpr_val *r1;
+	EVAL_R1;
+	char *ptr;
+	char *CSQEntry=(char*)(*r1);
+	dcexpr_string *rv;
+	rv=new dcexpr_string(findWorstConsequence(CSQEntry,e_consequence,E_NCONSEQUENCETYPES).str);
+	delete r1;
+	return rv;
+}
+
 dcexpr_val *getWeight_func(dcvnode* b1,dcvnode *b2)
 {
 	dcexpr_val *r1,*r2;
@@ -397,6 +409,7 @@ int initGeneVarParser()
 	add_un_op("ATTRIB",attrib_func);
 	add_un_op("GETPOLYPHEN",extract_polyphen_func);
 	add_un_op("GETSIFT",extract_sift_func);
+	add_un_op("GETVEP",extract_vep_func);
 	return 1;
 }
 
