@@ -80,7 +80,7 @@ dcexpr_val *performTabixQuery(const char *fn,int addChr,char *lookupStr)
 	if (queryIter==geneVarParser::queryCache.end())
 	{
 		int stest;
-		unlink("tabixQueryOutput.txt");
+		remove("tabixQueryOutput.txt");
 		sprintf(lineBuff,"%s > tabixQueryOutput.txt",queryBuff);
 		checkSystem();
 		if ((stest=system(lineBuff))!=0)
