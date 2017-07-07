@@ -101,7 +101,7 @@ int main(int argc,char *argv[])
 		if (spec.willNeedInbuiltConsequence)
 		{
 			if (spec.weightExpression[0]=='\0')
-				strcpy(spec.weightExpression,"ANNOT(\"DEFAULT\")GETWEIGHT(\"DEFAULTWEIGHTS\")");
+				strcpy(spec.weightExpression,"ANNOT(\"INBUILT\")GETWEIGHT(\"DEFAULTWEIGHTS\")");
 			// default behaviour is to use these weights unless told not to
 			printf("Annotating using inbuilt routines...\n");
 			vf.getQuickConsequences(r,spec);
