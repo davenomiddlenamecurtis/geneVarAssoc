@@ -103,8 +103,8 @@ int gvaParams::readParms(int argc,char *argv[],analysisSpecs &spec)
 		else if (FILLARG("--exclude-expression"))
 		{
 			spec.excludeExpressions.push_back(arg);
-			if(strstr(arg,"VEP"))
-				spec.willNeedEnsemblConsequence=1;
+//			if(strstr(arg,"VEP"))
+//				spec.willNeedEnsemblConsequence=1;
 			if(strstr(arg,"INBUILT"))
 				spec.willNeedInbuiltConsequence=1;
 		}
