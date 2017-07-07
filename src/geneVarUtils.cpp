@@ -94,8 +94,9 @@ int gvaParams::readParms(int argc,char *argv[],analysisSpecs &spec)
 		else if (FILLARG("--weight-expression"))
 		{
 			strcpy(spec.weightExpression,arg);
-			if (strstr(arg,"VEP"))
-				spec.willNeedEnsemblConsequence=1;
+			// this was just a guess and not needed if e.g. GETVEP is used to read from *.annot.vcf.gz
+//			if (strstr(arg,"VEP"))
+//				spec.willNeedEnsemblConsequence=1;
 			if (strstr(arg,"INBUILT"))
 				spec.willNeedInbuiltConsequence=1;
 		}
