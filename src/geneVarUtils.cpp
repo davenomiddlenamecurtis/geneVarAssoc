@@ -42,14 +42,14 @@ int gvaParams::readParms(int argc,char *argv[],analysisSpecs &spec)
 	spec.consequenceThreshold=NULL_CONSEQUENCE;
 	spec.useConsequenceWeights=0;
 	spec.onlyUseSNPs=0;
-	writeComments=0;
+	writeComments=1;
 	writeScoreFile=0;
 	spec.doRecessiveTest=0;
 	spec.weightThreshold=0;
 	spec.LDThreshold=1.0;
 	spec.unknownIfUntyped=0;
 	spec.skipIfNoPass=0;
-	spec.unknownIfNoPass=1;
+	spec.unknownIfNoPass=0;
 	spec.useHaplotypes=0;
 	spec.GQThreshold=0;
 	spec.hetDevThreshold=spec.hetDevThresholdSq=-1;

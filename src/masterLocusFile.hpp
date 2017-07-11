@@ -69,7 +69,7 @@ public:
 	analysisSpecs() 
 	{ 
 		unknownIfUntyped=1; // if there are no calls for a variant in the VCF file assume it has not been covered rather than all wildtype
-		unknownIfNoPass=1; altIsCommon=0; 
+		unknownIfNoPass=0; altIsCommon=0; 
 		wildIfUnknown=0;
 		onlycc01=1; // do not use subject unless cc status is 0 or 1
 		sc=0; sp=0L; ec=25; ep=0L;
