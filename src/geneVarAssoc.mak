@@ -7,8 +7,9 @@ DCBIN = ../bin
 
 C = gcc
 CC = g++
-
-CFLAGS = $(OURFLAGS) 
+MAXVCFFILES = 10
+MAXSUB = 20000
+CFLAGS = $(OURFLAGS) -DMAXSUB=${MAXSUB} -DMAXVCFFILES=${MAXVCFFILES}
 
 HEADERS = btree.h consequenceType.hpp dcerror.hpp dcindex.hpp geneVarUtils.hpp getGene.hpp getSequence.hpp intervalList.h masterLocusFile.hpp vcfLocusFile.hpp hapsLocusFile.hpp geneVarParser.hpp dcexpr.hpp
 EXE = geneVarAssoc intVarAssoc
