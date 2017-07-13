@@ -3,7 +3,7 @@
 #include "getGene.hpp"
 #include "masterLocusFile.hpp"
 
-#define MAXVCFPERCC 10
+#define MAXVCFPERCC MAXVCFFILES
 #define MAXDEPTH 5
 
 class gvaParams {
