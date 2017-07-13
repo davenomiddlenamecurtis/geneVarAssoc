@@ -9,7 +9,7 @@ C = gcc
 CC = g++
 MAXVCFFILES = 10
 MAXSUB = 20000
-CFLAGS = $(OURFLAGS) -DMAXSUB=${MAXSUB} -DMAXVCFFILES=${MAXVCFFILES}
+CFLAGS = $(OURFLAGS) 
 
 HEADERS = btree.h consequenceType.hpp dcerror.hpp dcindex.hpp geneVarUtils.hpp getGene.hpp getSequence.hpp intervalList.h masterLocusFile.hpp vcfLocusFile.hpp hapsLocusFile.hpp geneVarParser.hpp dcexpr.hpp
 EXE = geneVarAssoc intVarAssoc
@@ -20,7 +20,7 @@ all:
 	if [ ! -e ../obj ] ; then mkdir ../obj ; fi ; \
 	if [ ! -e ${DCBIN} ] ; then mkdir ${DCBIN} ; fi ; \
 	cd ../obj; \
-	make -f ../src/geneVarAssoc.mak INOBJ=INOBJ CFLAGS=$(CFLAGS) ; \
+	make -f ../src/geneVarAssoc.mak INOBJ=INOBJ CFLAGS=$(CFLAGS) MAXSUB=${MAXSUB} MAXVCFFILES=${MAXVCFFILES} ; \
 	cp ${EXE} ${DCBIN} ; \
 	echo copied executables to ${DCBIN} ; \
 	cd ../src
@@ -34,10 +34,10 @@ clean:
 VPATH=../src
 	
 %.o: ../src/%.cpp $(HEADERS)
-	$(CC) $(OURFLAGS) -c $< -o ../obj/$@
+	$(CC) $(CFLAGS) -DMAXSUB=${MAXSUB} -DMAXVCFFILES=${MAXVCFFILES} -c $< -o ../obj/$@
 	
 %.o: ../src/%.c $(HEADERS)
-	$(C) $(OURFLAGS) -c $< -o ../obj/$@
+	$(C) $(CFLAGS) -DMAXSUB=${MAXSUB} -DMAXVCFFILES=${MAXVCFFILES} -c $< -o ../obj/$@
 
 groupGetGenotypes: groupGetGenotypes.o btree.o consequenceType.o dcerror.o dcindex.o geneVarUtils.o getGeneFuncs.o getSequenceFuncs.o intervalList.o vcfLocusFile.o vcfWriteVars.o masterLocusFile.o hapsLocusFile.o outputGenotypes.o 
 	$(CC) -o groupGetGenotypes groupGetGenotypes.o  btree.o consequenceType.o dcerror.o dcindex.o geneVarUtils.o getGeneFuncs.o getSequenceFuncs.o intervalList.o vcfLocusFile.o vcfWriteVars.o masterLocusFile.o hapsLocusFile.o outputGenotypes.o 
