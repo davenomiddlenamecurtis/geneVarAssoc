@@ -12,7 +12,9 @@
 // 30/12/15 I am increasing this to 1000 to see if this fixes a problem I have
 // when I do this I get a segmentation fault
 
+#ifndef MAXVCFFILES
 #define MAXVCFFILES 10
+#endif
 #define MAXFILENAMELENGTH 100
 #define BUFFSIZE 900000 // maximum length of e.g. line read in from VCF file
 #define VCFFIELDLENGTH 2000 // maximum length for e.g. quality, format fields
