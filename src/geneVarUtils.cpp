@@ -2,7 +2,9 @@
 #include <ctype.h>
 #include <assert.h>
 
+#ifndef MAXSUB
 #define MAXSUB 20000
+#endif
 
 #define isArgType(a) (a[0]=='-' && a[1]=='-')
 #define FILLARG(str) (strcmp(arg,str) ? 0 : ((getNextArg(arg, argc, argv, fp,&depth, &argNum) && !isArgType(arg)) ? 1 : (dcerror(1,"No value provided for argument: %s\n",str), 0)))
@@ -10,12 +12,12 @@
 int gvaParams::readParms(int argc,char *argv[],analysisSpecs &spec)
 {
 	FILE *fp[MAXDEPTH],*ef;
-	int argNum,i,s,usePhenotypes,f,depth;
-	char arg[2000],line[2000],addChrStr[MAXVCFFILES+1],phenotypeFileName[200],IDsAndPhenotypeFileName[200],samplesFileName[200];
+	int argNum,i,s,usePhenotypes,f,depth,nPhenotypeFile,nIDsAndPhenotypeFile,nSamplesFile;
+	char arg[2000],line[2000],addChrStr[MAXVCFFILES+1],phenotypeFileName[MAXVCFFILES][100];
 	depth=-1;
 	argNum=1;
 	FILE *phenotypeFile;
-	*IDsAndPhenotypeFileName=*phenotypeFileName=*samplesFileName='\0';
+	nPhenotypeFile=nIDsAndPhenotypeFile=nSamplesFile=0;
 	geneListFn[0]=baitFn[0]=ccFn[2][MAXVCFPERCC][0]=referencePath[0]=geneName[0]=sequencePath[0]=posName[0]=intervalListFn[0]='\0';
 	// testName can be set by calling function, e.g. default "gva" for geneVarAssoc
 	strcpy(spec.vepCommand,"perl variant_effect_predictor.pl");
@@ -110,15 +112,21 @@ int gvaParams::readParms(int argc,char *argv[],analysisSpecs &spec)
 		}
 		else if (FILLARG("--phenotype-file"))
 		{
-			strcpy(phenotypeFileName,arg);
+			if (nIDsAndPhenotypeFile||nSamplesFile)
+				dcerror(1,"Can only have one of --phenotype-file, --ID-and-phenotype-file and --samples-file");
+			strcpy(phenotypeFileName[nPhenotypeFile++],arg);
 		}
 		else if (FILLARG("--ID-and-phenotype-file"))
 		{
-			strcpy(IDsAndPhenotypeFileName,arg);
+			if (nPhenotypeFile||nSamplesFile)
+				dcerror(1,"Can only have one of --phenotype-file, --ID-and-phenotype-file and --samples-file");
+			strcpy(phenotypeFileName[nIDsAndPhenotypeFile++],arg);
 		}
 		else if (FILLARG("--samples-file"))
 		{
-			strcpy(samplesFileName,arg);
+			if (nIDsAndPhenotypeFile||nPhenotypeFile)
+				dcerror(1,"Can only have one of --phenotype-file, --ID-and-phenotype-file and --samples-file");
+			strcpy(phenotypeFileName[nSamplesFile++],arg);
 		}
 		else if (FILLARG("--trio-file"))
 		{
@@ -269,34 +277,40 @@ int gvaParams::readParms(int argc,char *argv[],analysisSpecs &spec)
 		}
 		;
 	}
-	if (phenotypeFileName[0] || samplesFileName[0] || IDsAndPhenotypeFileName[0])
+	if (nPhenotypeFile || nIDsAndPhenotypeFile || nSamplesFile)
 	{
 		spec.phenotypes = (int*)malloc(sizeof(int)*MAXSUB);
-		if (phenotypeFileName[0])
+		s=0;
+		if (nPhenotypeFile)
+			for (i=0;i<nPhenotypeFile;++i)
 		{
-		phenotypeFile = fopen(phenotypeFileName, "r");
+		phenotypeFile = fopen(phenotypeFileName[i], "r");
 		if (phenotypeFile == NULL)
-				dcerror(1, "Could not open phenotype file: %s\n", phenotypeFileName);
+				dcerror(1, "Could not open phenotype file: %s\n",phenotypeFileName[i]);
 			nCc[0] = 0;
-			for (s = 0; fgets(line, 1999, phenotypeFile) && sscanf(line, "%d", &spec.phenotypes[s]) == 1; ++s)
+			for (; fgets(line, 1999, phenotypeFile) && sscanf(line, "%d", &spec.phenotypes[s]) == 1; ++s)
 				;
+		fclose(phenotypeFile);
 		}
-		else if(IDsAndPhenotypeFileName[0])
+		else if (nIDsAndPhenotypeFile)
+			for (i=0;i<nIDsAndPhenotypeFile;++i)
 		{
 			char ID[100];
 			int phen;
-			phenotypeFile = fopen(IDsAndPhenotypeFileName, "r");
+			phenotypeFile = fopen(phenotypeFileName[i], "r");
 			if (phenotypeFile == NULL)
-				dcerror(1,"Could not open ID and phenotype file: %s\n",IDsAndPhenotypeFileName);
+				dcerror(1,"Could not open ID and phenotype file: %s\n",phenotypeFileName[i]);
 			nCc[0] = 0;
-			for(s = 0; fgets(line,1999,phenotypeFile) && sscanf(line,"%s %d",ID,&phen) == 2; ++s)
+			for (; fgets(line,1999,phenotypeFile) && sscanf(line,"%s %d",ID,&phen) == 2; ++s)
 				spec.subPhenos.insert(TStrIntPair(ID,phen));
-		}
+			fclose(phenotypeFile);
+			}
 		else
-		{
+			for (i=0;i<nSamplesFile;++i)
+			{
 			int col,c;
 			char *ptr;
-			assert((phenotypeFile = fopen(samplesFileName, "r"))!=0);
+			assert((phenotypeFile = fopen(phenotypeFileName[i], "r"))!=0);
 			fgets(line, 1999, phenotypeFile);
 			for (col = 0, ptr = line; toupper(ptr[0]) != 'P'&&toupper(ptr[0]) != 'H'; ++col)
 			{
@@ -304,7 +318,7 @@ int gvaParams::readParms(int argc,char *argv[],analysisSpecs &spec)
 				while (isspace(*ptr)) ++ptr;
 			}
 			fgets(line, 1999, phenotypeFile); //junk
-			for (s=0;fgets(line, 1999, phenotypeFile) && !isspace(line[0]);++s) // breaks if somebody wants to start their sample file with spaces
+			for (;fgets(line, 1999, phenotypeFile) && !isspace(line[0]);++s) // breaks if somebody wants to start their sample file with spaces
 			{
 				for (c = 0,ptr=line; c < col; ++c)
 				{
@@ -313,8 +327,8 @@ int gvaParams::readParms(int argc,char *argv[],analysisSpecs &spec)
 				}
 				spec.phenotypes[s]=*ptr-'0';
 			}
-		}
-		fclose(phenotypeFile);
+			fclose(phenotypeFile);
+			}
 	}
 	int len;
 	if (*addChrStr != '\0')
