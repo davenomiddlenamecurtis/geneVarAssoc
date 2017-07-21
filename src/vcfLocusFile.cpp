@@ -336,7 +336,7 @@ int vcfLocusFile::readHeaderInfo()
 	do {
 		if (!fgets(locusFile::buff,BUFFSIZE-1,fp))
 		{
-			dcerror(99,"Could not find line beginning #CHROM in VCF file");
+			dcerror(99,"Could not find line beginning #CHROM in VCF file\n");
 			return 0;
 		}
 	} while (strncmp(locusFile::buff,"#CHROM",strlen("#CHROM")));

@@ -98,9 +98,11 @@ int main(int argc,char *argv[])
 		}
 	if (extractedOK)
 		{
+		if (spec.useEnsembl)
+			spec.willNeedEnsemblConsequence=1; // I cannot think why useEnsembl would be set unless needed to get these
 		if (spec.willNeedInbuiltConsequence)
 		{
-			if (spec.weightExpression[0]=='\0')
+			if (spec.weightExpression[0]=='\0' && ! spec.willNeedEnsemblConsequence)
 				strcpy(spec.weightExpression,"ANNOT(\"INBUILT\")GETWEIGHT(\"DEFAULTWEIGHTS\")");
 			// default behaviour is to use these weights unless told not to
 			printf("Annotating using inbuilt routines...\n");
@@ -108,6 +110,8 @@ int main(int argc,char *argv[])
 		}
 		if (spec.willNeedEnsemblConsequence)
 		{
+			if (spec.weightExpression[0]=='\0')
+				strcpy(spec.weightExpression,"ANNOT(\"VEP\")GETWEIGHT(\"DEFAULTWEIGHTS\")");
 			printf("Annotating using VEP...\n");
 			vf.getEnsemblConsequences(spec);
 		}
