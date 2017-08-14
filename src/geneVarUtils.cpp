@@ -177,7 +177,7 @@ int gvaParams::readParms(int argc,char *argv[],analysisSpecs &spec)
 		else if (FILLARG("--use-ensembl"))
 			spec.useEnsembl=atoi(arg);
 		else if (FILLARG("--consequence-threshold"))
-			spec.consequenceThreshold=(consequenceType)atoi(arg);
+			spec.consequenceThreshold=atof(arg);
 		else if (FILLARG("--use-consequence-weights"))
 			spec.useConsequenceWeights=atoi(arg);
 		else if (FILLARG("--only-use-SNPs"))

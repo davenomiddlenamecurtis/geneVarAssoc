@@ -104,7 +104,7 @@ TStrIntMap subPhenos;
 long sp,ep;
 float GQThreshold,proportionCalledToPass,hetDevThreshold,hetDevThresholdSq;
 float weightThreshold,LDThreshold,wf;
-consequenceType consequenceThreshold;
+float consequenceThreshold;
 char exclusionStr[20][200];
 char triosFn[200];
 char alleleFreqStr[100],alleleNumberStr[100],alleleCountStr[100];

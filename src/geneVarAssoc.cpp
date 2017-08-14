@@ -36,20 +36,11 @@ int main(int argc,char *argv[])
 	weightTableList[wt->tableName]=wt;
 
 	dcerror.warn();
-#if 0
-	fp = fopen(argv[1], "r");
-	if (fp == NULL)
-		{ dcerror(1, "Could not open file %s", argv[1]); exit(1); }
-	gp.input(fp,spec);
-	fclose(fp);
-	strcpy(geneName,argv[2]);
-#else
 	strcpy(gp.testName,"gva");
 	if (!gp.readParms(argc,argv,spec))
 		exit(1);
 
 	strcpy(geneName,gp.geneName);
-#endif
 	masterLocusFile vf(gp.nCc[0]+gp.nCc[1]);
 	
 	r.setListFile(gp.geneListFn);
