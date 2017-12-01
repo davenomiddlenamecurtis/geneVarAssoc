@@ -358,6 +358,8 @@ int gvaParams::readParms(int argc,char *argv[],analysisSpecs &spec)
 		else
 			spec.willNeedInbuiltConsequence=1;
 	}
+	if (spec.useEnsembl)
+		spec.willNeedEnsemblConsequence = 1; // I cannot think why useEnsembl would be set unless needed to get these
 	return 1;
 }
 

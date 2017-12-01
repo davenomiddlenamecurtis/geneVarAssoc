@@ -89,8 +89,6 @@ int main(int argc,char *argv[])
 		}
 	if (extractedOK)
 		{
-		if (spec.useEnsembl)
-			spec.willNeedEnsemblConsequence=1; // I cannot think why useEnsembl would be set unless needed to get these
 		if (spec.willNeedInbuiltConsequence)
 		{
 			if (spec.weightExpression[0]=='\0' && ! spec.willNeedEnsemblConsequence)
