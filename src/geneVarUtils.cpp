@@ -93,6 +93,10 @@ int gvaParams::readParms(int argc,char *argv[],analysisSpecs &spec)
 				}
 			}
 		}
+		else if (FILLARG("--comment-expression"))
+		{
+			strcpy(spec.commentExpression, arg);
+		}
 		else if (FILLARG("--weight-expression"))
 		{
 			strcpy(spec.weightExpression,arg);

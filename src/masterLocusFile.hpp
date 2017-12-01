@@ -94,7 +94,7 @@ public:
 		ignoreAlleles=0;
 		debug=0;
 		*alleleFreqStr=*alleleNumberStr=*alleleCountStr='\0';
-		*weightExpression='\0';
+		*commentExpression=*weightExpression='\0';
 		wf=10;
 	} 
 int onlycc01,unknownIfUntyped,unknownIfNoPass,altIsCommon,sc,ec,skipIfNoPass,useConsequenceWeights,onlyUseSNPs,nExc,doRecessiveTest,addChrInVCF[MAXVCFFILES],useHaplotypes,count_hom_as_het,useTrios,ignoreAlleles,useProbs,wildIfUnknown,debug;
@@ -109,6 +109,7 @@ char exclusionStr[20][200];
 char triosFn[200];
 char alleleFreqStr[100],alleleNumberStr[100],alleleCountStr[100];
 char weightExpression[1000];
+char commentExpression[1000];
 char vepCommand[1000];
 std::list<std::string> excludeExpressions;
 };

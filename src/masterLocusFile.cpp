@@ -520,7 +520,10 @@ int masterLocusFile::writeScoreAssocFiles(masterLocusFile &subFile,char *root, f
 	FILE *fp;
 	FILEPOSITION recPos;
 	const char *testKey;
+	geneVarParser commentParser;
 	strEntry *subName;
+	if (spec.commentExpression[0])
+		commentParser.parse(spec.commentExpression); // only have to parse once
 	if (nLocusFiles==1)
 		nSubs[0]=subFile.getTotalSubs();
 	else if (nLocusFiles==subFile.nLocusFiles)
@@ -679,7 +682,14 @@ int masterLocusFile::writeScoreAssocFiles(masterLocusFile &subFile,char *root, f
 			if (c==spec.ec && atol(testKey+3)>spec.ep)
 				break;
 			load(tempRecord,recPos);
-			if (tempRecord.ensemblConsequence[0]!='\0')
+			if (spec.commentExpression[0])
+			{
+				geneVarParser::thisLocus = &tempRecord;
+				dcexpr_val*rv= commentParser.eval();
+				sprintf(comment, "%d:%ld:%s:%s", tempRecord.chr, tempRecord.pos, tempRecord.getID(), (char*)rv);
+				delete rv;
+			}
+			else if (tempRecord.ensemblConsequence[0]!='\0')
 				sprintf(comment,"%d:%ld:%s:%s",tempRecord.chr,tempRecord.pos,tempRecord.getID(),tempRecord.ensemblConsequence);
 			else if (tempRecord.quickConsequence[0]!='\0')
 				sprintf(comment,"%d:%ld:%s:%s",tempRecord.chr,tempRecord.pos,tempRecord.getID(),tempRecord.quickConsequence);
@@ -837,7 +847,7 @@ if (recPos!=0L)
 {
 	if (spec.weightExpression[0])
 		weightParser.parse(spec.weightExpression); // only have to parse once
-											// it is essential that geneVarParser::thisGene has been set!!
+												   // it is essential that geneVarParser::thisGene has been set!!
 	if (spec.excludeExpressions.size())
 	{
 		for (std::list<std::string>::const_iterator it=spec.excludeExpressions.begin();it!=spec.excludeExpressions.end();++it)
@@ -914,18 +924,23 @@ if (recPos!=0L)
 			}
 			if (spec.weightExpression[0] && spec.useConsequenceWeights)
 			{
-				geneVarParser::thisLocus=&tempRecord;
-				locusWeight[locusCount]=(double)(*weightParser.eval());
+				geneVarParser::thisLocus = &tempRecord;
+				dcexpr_val *rv = weightParser.eval();
+				locusWeight[locusCount] = *(double*)(rv);
+				delete rv;
 			}
 			if (excludeParser.size() && useLocus[locusCount])
 			{
-				double rv;
+				double val;
+				dcexpr_val *rv;
 				geneVarParser::thisLocus=&tempRecord;
 				geneVarParser::thisWeight=locusWeight[locusCount];
 				for (std::list<geneVarParser *>::iterator it=excludeParser.begin();it!=excludeParser.end();++it)
 				{
-					rv=*((*it)->eval());
-					if (rv!=0)
+					rv=(*it)->eval();
+					val = *(double*)(rv);
+					delete rv;
+					if (val!=0)
 						useLocus[locusCount]=0;
 					break;
 				}
