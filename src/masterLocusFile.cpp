@@ -686,7 +686,7 @@ int masterLocusFile::writeScoreAssocFiles(masterLocusFile &subFile,char *root, f
 			{
 				geneVarParser::thisLocus = &tempRecord;
 				dcexpr_val*rv= commentParser.eval();
-				sprintf(comment, "%d:%ld:%s:%s", tempRecord.chr, tempRecord.pos, tempRecord.getID(), (char*)rv);
+				sprintf(comment, "%d:%ld:%s:%s", tempRecord.chr, tempRecord.pos, tempRecord.getID(), (char*)(*rv));
 				delete rv;
 			}
 			else if (tempRecord.ensemblConsequence[0]!='\0')
