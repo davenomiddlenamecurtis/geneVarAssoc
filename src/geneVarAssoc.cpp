@@ -68,7 +68,7 @@ int main(int argc,char *argv[])
 			gcont.setVariantFileName(gp.ccFn[0][i]);
 			sprintf(fn,"gva.%s.cont.%d.vcf",geneName,i+1);
 			if (gp.dontExtractVariants)
-				printf("Will not attempt to produce %s because --dont-extract-variants was set",fn);
+				printf("Will not attempt to produce %s because --dont-extract-variants was set\n",fn);
 			else if (!gcont.extractVariants(r,fn,0,spec.addChrInVCF[ff++]))
 				extractedOK=0;
 			vf.addLocusFile(fn,VCFFILE);
@@ -80,7 +80,7 @@ int main(int argc,char *argv[])
 			gcase.setVariantFileName(gp.ccFn[1][i]);
 			sprintf(fn,"gva.%s.case.%d.vcf",geneName,i+1);
 			if (gp.dontExtractVariants)
-				printf("Will not attempt to produce %s because --dont-extract-variants was set",fn);
+				printf("Will not attempt to produce %s because --dont-extract-variants was set\n",fn);
 			else if (!gcase.extractVariants(r,fn,0,spec.addChrInVCF[ff++]))
 				extractedOK=0;
 			vf.addLocusFile(fn,VCFFILE);

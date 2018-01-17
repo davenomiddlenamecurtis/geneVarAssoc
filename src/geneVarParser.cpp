@@ -131,18 +131,9 @@ dcexpr_val *performTabixQuery(const char *fn,int addChr,char *lookupStr)
 			ptr=lineBuff+strlen(lookupStr)+1;
 		else
 		{
-			sprintf(tempBuff,";%s",lookupStr);
-			tptr=lineBuff;
-			while ((ptr=strstr(tptr,tempBuff))!=0) // possible multiple occurrences, e.g. of AF
-			{
-				if (ptr[strlen(tempBuff)]=='=')
-				{
-					ptr+=strlen(tempBuff)+1; // include = sign
-					break;
-				}
-				else
-					tptr=ptr+strlen(tempBuff);
-			}
+			sprintf(tempBuff,";%s=",lookupStr);
+			if ((ptr=strstr(lineBuff,tempBuff))!=0)
+				ptr+=strlen(tempBuff);
 		}
 		if (ptr==0)
 			sprintf(lineBuff,"NOVCFENTRY_%s_%ld_%s",chrStr,geneVarParser::thisLocus->getPos(),lookupStr);

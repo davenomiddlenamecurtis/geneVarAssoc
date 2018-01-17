@@ -55,7 +55,7 @@ int main(int argc,char *argv[])
 	vf.openFiles(fn,fn2);
 	first=1;
 	if (gp.dontExtractVariants)
-		printf("Will not attempt to produce %s because --dont-extract-variants was set",fn);
+		printf("Will not attempt to produce %s because --dont-extract-variants was set\n",fn);
 	else
 		while (fgets(line,999,fi) && sscanf(line,"%s",intStr)==1)
 	{
