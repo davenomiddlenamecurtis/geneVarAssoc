@@ -523,7 +523,7 @@ int masterLocusFile::writeScoreAssocFiles(masterLocusFile &subFile,char *root, f
 	geneVarParser commentParser;
 	strEntry *subName;
 	if (spec.commentExpression[0])
-		commentParser.parse(spec.commentExpression); // only have to pagdb se once
+		commentParser.parse(spec.commentExpression); // only have to parse once
 	if (nLocusFiles==1)
 		nSubs[0]=subFile.getTotalSubs();
 	else if (nLocusFiles==subFile.nLocusFiles)
@@ -686,7 +686,7 @@ int masterLocusFile::writeScoreAssocFiles(masterLocusFile &subFile,char *root, f
 			{
 				geneVarParser::thisLocus = &tempRecord;
 				dcexpr_val*rv= commentParser.eval();
-				sprintf(comment, "%d:%ld:%s:%s", tempRecord.chr, tempRecord.pos, tempRecord.getID(), (char*)rv);
+				sprintf(comment, "%d:%ld:%s:%s", tempRecord.chr, tempRecord.pos, tempRecord.getID(), (char*)(*rv));
 				delete rv;
 			}
 			else if (tempRecord.ensemblConsequence[0]!='\0')
