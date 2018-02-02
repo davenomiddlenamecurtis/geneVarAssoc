@@ -737,7 +737,7 @@ int masterLocusFile::writeScoreAssocFiles(masterLocusFile &subFile,char *root, f
 		sprintf(strchr(commandString,'\0')," --scorefile %s.sco",root);
 	sprintf(strchr(commandString,'\0')," --weightfactor %f",spec.wf);
 	for (l = 0; l < spec.nScoreassocArgs; ++l)
-		sprintf(strchr(commandString, '\0'), " --%s %s", spec.scoreassocArgs[l][0], spec.scoreassocArgs[l][1]);
+		sprintf(strchr(commandString, '\0'), " %s %s", spec.scoreassocArgs[l][0], spec.scoreassocArgs[l][1]);
 	checkSystem();
 #ifndef MSDOS
 	sprintf(fn,"%s.sh",root);
