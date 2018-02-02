@@ -18,6 +18,7 @@ int gvaParams::readParms(int argc,char *argv[],analysisSpecs &spec)
 	argNum=1;
 	FILE *phenotypeFile;
 	nPhenotypeFile=nIDsAndPhenotypeFile=nSamplesFile=0;
+	spec.nScoreassocArgs = 0;
 	geneListFn[0]=baitFn[0]=ccFn[2][MAXVCFPERCC][0]=referencePath[0]=geneName[0]=sequencePath[0]=posName[0]=intervalListFn[0]='\0';
 	// testName can be set by calling function, e.g. default "gva" for geneVarAssoc
 	strcpy(spec.vepCommand,"perl variant_effect_predictor.pl");
@@ -75,6 +76,12 @@ int gvaParams::readParms(int argc,char *argv[],analysisSpecs &spec)
 		{
 			dcerror(1,"Expected argument beginning -- but got this: %s\n",arg);
 			return 0;
+		}
+		else if (!strcmp(arg, "dottest") || !strcmp(arg, "lrttest") || !strcmp(arg, "varfile") || !strcmp(arg, "testfile"))
+		{
+			strcpy(spec.scoreassocArgs[spec.nScoreassocArgs][0], arg);
+			getNextArg(arg, argc, argv, fp, &depth, &argNum);
+			strcpy(spec.scoreassocArgs[spec.nScoreassocArgs][1], arg);
 		}
 		else if (FILLARG("--arg-file"))
 		{
