@@ -278,8 +278,9 @@ int gvaParams::readParms(int argc,char *argv[],analysisSpecs &spec)
 					return 0;
 				}
 			}
-			for (;fgets(line,1999,ef) && sscanf(line,"%[^\n]",spec.exclusionStr[spec.nExc])==1;++spec.nExc)
-				;
+			while (fgets(line, 1999, ef))
+				if (sscanf(line, "%[^\n]", spec.exclusionStr[spec.nExc]) == 1)
+					++spec.nExc;
 			fclose(ef);
 		}
 		else
