@@ -100,7 +100,7 @@ int main(int argc,char *argv[])
 		if (spec.willNeedEnsemblConsequence)
 		{
 			if (spec.weightExpression[0]=='\0')
-				strcpy(spec.weightExpression,"ANNOT(\"VEP\")GETWEIGHT(\"DEFAULTWEIGHTS\")");
+				strcpy(spec.weightExpression,"ANNOT(\"VEP\")GETWEIGHT(\"DEFAULTVEPWEIGHTS\")");
 			printf("Annotating using VEP...\n");
 			vf.getEnsemblConsequences(spec);
 		}
