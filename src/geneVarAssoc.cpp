@@ -9,7 +9,7 @@
 // SSS uses .:.:.:.:. to mean unknown??
 
 #define PROGRAM "geneVarAassoc"
-#define GVAVERSION "1.5"
+#define GVAVERSION "5.0"
 
 int main(int argc,char *argv[])
 {
