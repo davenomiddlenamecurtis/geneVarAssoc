@@ -19,7 +19,7 @@
 #define BUFFSIZE 900000 // maximum length of e.g. line read in from VCF file
 #define VCFFIELDLENGTH 2000 // maximum length for e.g. quality, format fields
 // even 3000 was too short for a UK10K gene with many PolyPhen entries
-#define MAXSCOREASSOCARGS 10
+#define MAXSCOREASSOCARGS 50
 
 #include "dcindex.hpp"
 #include "dcerror.hpp"
