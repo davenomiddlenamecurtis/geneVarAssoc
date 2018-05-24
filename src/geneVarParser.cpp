@@ -56,7 +56,7 @@ void weightTable::init(char *n,consequenceReport consequence[],int nConsequence)
 #define MAXINFOLENGTH 20000
 char lineBuff[MAXINFOLENGTH+1],tempBuff[MAXINFOLENGTH+1]; // need these to be big for e.g. VEP on TTN
 
-dcexpr_val *performTabixQuery(const char *fn,int addChr,char *lookupStr)
+dcexpr_val *performTabixQuery(const char *fn,int addChr,int lower,char *lookupStr)
 {
 	char fnBuff[1000],*ptr,*tptr,queryBuff[1000],chrStr[10];
 	int noEntry,c,f,l;
@@ -75,7 +75,7 @@ dcexpr_val *performTabixQuery(const char *fn,int addChr,char *lookupStr)
 		ptr=strchr(lineBuff,'*');
 		strcat(fnBuff,lineBuff);
 	}
-	sprintf(queryBuff,"tabix %s %s%s:%ld-%ld",fnBuff,addChr?"CHR":"",chrStr,geneVarParser::thisLocus->getPos(),geneVarParser::thisLocus->getPos());
+	sprintf(queryBuff,"tabix %s %s%s:%ld-%ld",fnBuff,addChr?lower?"chr":"CHR":"",chrStr,geneVarParser::thisLocus->getPos(),geneVarParser::thisLocus->getPos());
 	std::map<std::string,std::string>::const_iterator queryIter=geneVarParser::queryCache.find(queryBuff);
 	if (queryIter==geneVarParser::queryCache.end())
 	{
@@ -150,12 +150,22 @@ dcexpr_val *performTabixQuery(const char *fn,int addChr,char *lookupStr)
 	return rv;
 }
 
-dcexpr_val *vcfAddChrLookup_func(dcvnode* b1,dcvnode *b2)
+dcexpr_val *vcfAddChrLookup_func(dcvnode* b1, dcvnode *b2)
 {
-	dcexpr_val *r1,*r2;
+	dcexpr_val *r1, *r2;
 	EVAL_BOTH;
 	dcexpr_val *rv;
-	rv=performTabixQuery((char*)(*r2),1,(char*)(*r1));
+	rv = performTabixQuery((char*)(*r2), 1, 0, (char*)(*r1));
+	delete r1; delete r2;
+	return rv;
+}
+
+dcexpr_val *vcfAddChrLowerLookup_func(dcvnode* b1, dcvnode *b2)
+{
+	dcexpr_val *r1, *r2;
+	EVAL_BOTH;
+	dcexpr_val *rv;
+	rv = performTabixQuery((char*)(*r2), 1, 1, (char*)(*r1));
 	delete r1; delete r2;
 	return rv;
 }
@@ -165,7 +175,7 @@ dcexpr_val *vcfLookup_func(dcvnode* b1,dcvnode *b2)
 	dcexpr_val *r1,*r2;
 	EVAL_BOTH;
 	dcexpr_val *rv;
-	rv=performTabixQuery((char*)(*r2),0,(char*)(*r1));
+	rv=performTabixQuery((char*)(*r2),0,0,(char*)(*r1));
 	delete r1; delete r2;
 	return rv;
 }
@@ -395,7 +405,8 @@ int initGeneVarParser()
 	add_bin_op_same("STRCAT",strcat_func);
 	add_bin_op_same("GETWEIGHT",getWeight_func);
 	add_bin_op_same("VCFLOOKUP",vcfLookup_func);
-	add_bin_op_same("VCFADDCHRLOOKUP",vcfAddChrLookup_func);
+	add_bin_op_same("VCFADDCHRLOOKUP", vcfAddChrLookup_func);
+	add_bin_op_same("VCFADDLOWERCHRLOOKUP", vcfAddLowerChrLookup_func);
 	add_un_op("ANNOT",annot_func);
 	add_un_op("ATTRIB",attrib_func);
 	add_un_op("GETPOLYPHEN",extract_polyphen_func);
