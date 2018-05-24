@@ -160,7 +160,7 @@ dcexpr_val *vcfAddChrLookup_func(dcvnode* b1, dcvnode *b2)
 	return rv;
 }
 
-dcexpr_val *vcfAddChrLowerLookup_func(dcvnode* b1, dcvnode *b2)
+dcexpr_val *vcfAddLowerChrLookup_func(dcvnode* b1, dcvnode *b2)
 {
 	dcexpr_val *r1, *r2;
 	EVAL_BOTH;
