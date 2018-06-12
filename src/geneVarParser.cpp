@@ -181,6 +181,7 @@ dcexpr_val *vcfLookup_func(dcvnode* b1,dcvnode *b2)
 }
 
 consequenceReport findWorstConsequence(char *s,consequenceReport *r,int n) // this will be used by the function which uses the CSQ entry
+// depends on consequences being listed in order from least to most severe
 {
 	int c;
 	char *ptr;
@@ -192,15 +193,64 @@ consequenceReport findWorstConsequence(char *s,consequenceReport *r,int n) // th
 	return r[0];
 }
 
+dcexpr_string *getAlleleAnnotation(dcexpr_val *r1)
+{
+	const char *altAllStr;
+	char *ptr,*sptr;
+	char *CSQEntry = (char*)(*r1);
+	dcexpr_string *rv;
+	altAllStr = geneVarParser::thisLocus->getAll(geneVarParser::thisAltAllele);
+	// allele identifier looks like this CSQ=T| or this ,T| and there can be multiple entries for each allele
+	lineBuff[0] = '\0';
+	sprintf(tempBuff, "%s|", altAllStr);
+	if (!strncmp(CSQEntry, altAllStr,strlen(altAllStr)))
+	{
+		ptr = CSQEntry;
+		sptr = lineBuff;
+		while (*ptr && !isspace(*ptr) && *ptr != ',')
+			*sptr++ = *ptr++;
+		*sptr++ = ','; // always append comma, probably won't hurt
+		*sptr = '\0';
+	}
+	sprintf(tempBuff, ",%s|", altAllStr);
+	while ((ptr = strstr(CSQEntry, tempBuff))!=0)
+	{
+		++ptr; // omit comma
+		sptr = strchr(lineBuff,'\0');
+		while (*ptr && !isspace(*ptr) && *ptr != ',')
+			*sptr++ = *ptr++;
+		*sptr++ = ','; // always append comma, probably won't hurt
+		*sptr = '\0';
+	}
+	if (lineBuff[0] == '\0')
+	{
+		dcerror.warn();
+		dcerror(1, "Failed to find annotation for allele %s in this string:\n%s\n\nIf you use --merge-alt-alleles 0 then there must be an allele-specific annotation in the VEP output and you should not use --pick when running VEP. However may be no matching allele for indels so will use whole string.",altAllStr,CSQEntry);
+		strcpy(lineBuff, CSQEntry);
+	}
+	rv = new dcexpr_string(lineBuff);
+	return rv;
+}
+
 dcexpr_val *extract_sift_func(dcvnode *b1)
 {
 	dcexpr_val *r1;
 	EVAL_R1;
 	char *ptr;
-	char *CSQEntry=(char*)(*r1);
+	char *annotation;
+	dcexpr_string *alleleSpecificAnnotation = 0;
+	if (geneVarParser::mergeAltAlleles == 1)
+		annotation = (char*)(*r1);
+	else
+	{
+		alleleSpecificAnnotation = getAlleleAnnotation(r1);
+		annotation = (char*)(*alleleSpecificAnnotation);
+	}
 	dcexpr_string *rv;
-	rv=new dcexpr_string(findWorstConsequence(CSQEntry,sift_consequence,NSIFTCONSEQUENCES).str);
+	rv = new dcexpr_string(findWorstConsequence(annotation, sift_consequence, NSIFTCONSEQUENCES).str);
 	delete r1;
+	if (alleleSpecificAnnotation)
+		delete alleleSpecificAnnotation;
 	return rv;
 }
 
@@ -208,11 +258,20 @@ dcexpr_val *extract_polyphen_func(dcvnode *b1)
 {
 	dcexpr_val *r1;
 	EVAL_R1;
-	char *ptr;
-	char *CSQEntry=(char*)(*r1);
+	char *annotation;
+	dcexpr_string *alleleSpecificAnnotation = 0;
+	if (geneVarParser::mergeAltAlleles == 1)
+		annotation = (char*)(*r1);
+	else
+	{
+		alleleSpecificAnnotation = getAlleleAnnotation(r1);
+		annotation = (char*)(*alleleSpecificAnnotation);
+	}
 	dcexpr_string *rv;
-	rv=new dcexpr_string(findWorstConsequence(CSQEntry,polyphen_consequence,NPOLYPHENCONSEQUENCES).str);
+	rv = new dcexpr_string(findWorstConsequence(annotation, polyphen_consequence, NPOLYPHENCONSEQUENCES).str);
 	delete r1;
+	if (alleleSpecificAnnotation)
+		delete alleleSpecificAnnotation;
 	return rv;
 }
 
@@ -220,11 +279,20 @@ dcexpr_val *extract_vep_func(dcvnode *b1)
 {
 	dcexpr_val *r1;
 	EVAL_R1;
-	char *ptr;
-	char *CSQEntry=(char*)(*r1);
+	char *annotation;
+	dcexpr_string *alleleSpecificAnnotation=0;
+	if (geneVarParser::mergeAltAlleles == 1)
+		annotation = (char*)(*r1);
+	else
+	{
+		alleleSpecificAnnotation = getAlleleAnnotation(r1);
+		annotation = (char*)(*alleleSpecificAnnotation);
+	}
 	dcexpr_string *rv;
-	rv=new dcexpr_string(findWorstConsequence(CSQEntry,e_consequence,E_NCONSEQUENCETYPES).str);
+	rv=new dcexpr_string(findWorstConsequence(annotation,e_consequence,E_NCONSEQUENCETYPES).str);
 	delete r1;
+	if (alleleSpecificAnnotation)
+		delete alleleSpecificAnnotation;
 	return rv;
 }
 
@@ -290,7 +358,7 @@ dcexpr_val *annot_func(dcvnode *b1)
 	{
 		// assume this is already done
 		// geneVarParser::thisLocus->getQuickFeature(*geneVarParser::thisGene);
-		rv=new dcexpr_string(geneVarParser::thisLocus->reportQuickConsequence());
+		rv=new dcexpr_string(geneVarParser::thisLocus->reportQuickConsequence(geneVarParser::thisAltAllele));
 		ptr=(char*)(*rv);
 		while(*ptr && !isspace(*ptr))
 			++ptr;
@@ -298,7 +366,7 @@ dcexpr_val *annot_func(dcvnode *b1)
 	}
 	else if (!strcmp(annot_type,"VEP"))
 	{
-		rv=new dcexpr_string(geneVarParser::thisLocus->reportEnsemblConsequence());
+		rv=new dcexpr_string(geneVarParser::thisLocus->reportEnsemblConsequence(geneVarParser::thisAltAllele));
 		ptr=(char*)(*rv);
 		while(*ptr && !isspace(*ptr))
 			++ptr;
@@ -364,6 +432,8 @@ dcexpr_val *attrib_func(dcvnode *b1)
 
 bool geneVarParser::parserIsInited=0;
 masterLocus *geneVarParser::thisLocus;
+int geneVarParser::thisAltAllele;
+int geneVarParser::mergeAltAlleles;
 refseqGeneInfo *geneVarParser::thisGene;
 double geneVarParser::thisWeight;
 std::map<std::string,std::string> geneVarParser::queryCache;

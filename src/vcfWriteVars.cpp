@@ -5,12 +5,11 @@
 
 #define MAXLOCIINGENE 2000
 
-
-
+#if 0
 int masterLocusFile::writeVars(char *fn,int *useFreqs,analysisSpecs &spec)
 {
 	char buff[1000];
-	int i,l,ll,totalSub,c,lc,*subjectSelector;
+	int i,l,ll,totalSub,c,lc,*subjectSelector,a;
 	FILEPOSITION recPos;
 	const char *testKey;
 	FILE *fp;
@@ -111,6 +110,7 @@ int masterLocusFile::writeVars(char *fn,int *useFreqs,analysisSpecs &spec)
 	free(locusInfo);
 	return 1;
 }
+#endif
 
 int masterLocusFile::outputCalls(strEntry **call,analysisSpecs &spec)
 {

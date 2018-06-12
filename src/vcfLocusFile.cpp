@@ -382,7 +382,6 @@ int vcfLocalLocus::input(FILE *f,FILEPOSITION *locusPosInFile,analysisSpecs cons
 	}
 
 	format[0]='\0';
-	PolyPhen[0]='\0';
 	ptr=locusFile::buff;
 	if (!scanWord(&ptr,chrStr,9))
 		return 0;
@@ -411,9 +410,6 @@ int vcfLocalLocus::input(FILE *f,FILEPOSITION *locusPosInFile,analysisSpecs cons
 //		goto problemReadingLocus;
 // do not make this is a problem, it just means the info field is very long
 
-	if ((qtr=strstr(info,"PolyPhen"))!=0)
-		sscanf(qtr+9,"%[^:\n]",PolyPhen);
-	// this does not work because can be many PolyPhen entries
 	scanWord(&ptr,format,VCFFIELDLENGTH-1); // this one is optional
 	if (*format)
 	{

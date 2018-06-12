@@ -226,8 +226,10 @@ int gvaParams::readParms(int argc,char *argv[],analysisSpecs &spec)
 			keepTempFiles=atoi(arg);
 		else if(FILLARG("--do-not-run"))
 			doNotRun=atoi(arg);
-		else if(FILLARG("--debug"))
-			spec.debug=atoi(arg);
+		else if (FILLARG("--debug"))
+			spec.debug = atoi(arg);
+		else if (FILLARG("--merge-alt-alleles"))
+			spec.mergeAltAlleles = atoi(arg);
 		else if(FILLARG("--reference-path"))
 			strcpy(referencePath,arg);
 		else if(FILLARG("--vep"))

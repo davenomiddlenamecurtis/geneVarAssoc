@@ -18,6 +18,7 @@
 
 char *locusFile::buff;
 
+#if 0
 bool masterLocus::readRiskVarInfo(char *s, int withFreqs)
 {
 	char rest[1000],buff[1000],*ptr,*bptr;
@@ -98,7 +99,9 @@ bool masterLocus::readRiskVarInfo(char *s, int withFreqs)
 		return false;
 	return true;
 }
+#endif
 
+#if 0
 int masterLocus::writeRiskVarInfo(char *s, int withFreqs)
 {
 	char comment[100],*ptr;
@@ -115,6 +118,7 @@ int masterLocus::writeRiskVarInfo(char *s, int withFreqs)
 			genoCcCount[1][0],genoCcCount[1][1],genoCcCount[1][2]);
 	return strlen(s);
 }
+#endif
 
 const char *masterLocus::getID() //access function
 {
@@ -175,7 +179,6 @@ int localLocus::typeSpecificCopy(localLocus *src)
 	SNP=src->SNP;
 	BCOPY(filter,src->filter);
 	AF=src->AF;
-	BCOPY(PolyPhen,src->PolyPhen);
 	return 1;
 }
 
@@ -192,7 +195,6 @@ int localLocus::read(FILE *fp)
 	fread(&SNP,sizeof(SNP),1,fp);
 	BREAD(filter,fp);
 	fread(&AF,sizeof(AF),1,fp);
-	BREAD(PolyPhen,fp);
 	return 1;
 }
 
@@ -209,7 +211,6 @@ int localLocus::write(FILE *fp)
 	fwrite(&SNP,sizeof(SNP),1,fp);
 	BWRITE(filter,fp);
 	fwrite(&AF,sizeof(AF),1,fp);
-	BWRITE(PolyPhen,fp);
 	return 1;
 }
 
@@ -258,34 +259,39 @@ bool scanWord(char **line, char *word, int maxLength, char token)
 	return !tooLong;
 }
 
-int masterLocus::readQueryOutput(FILE *fp)
+int masterLocus::readQueryOutput(FILE *fp, analysisSpecs const &spec )
 {
 	char line[200],CDS_positionStr[100];
+	int all;
 	if (alls[0][0]=='N')
 		return 1; // predictor produces no output for these
 	if (nAlls<2)
 		return 1;
-	if (!fgets(line,199,fp))
+	for (all = 0; all < (spec.mergeAltAlleles ? 1 : nAlls - 1); ++all)
 	{
-		dcerror(1,"Could not read from variant_predictor output");
-		return 0;
+		if (!fgets(line, 199, fp))
+		{
+			dcerror(1, "Could not read from variant_predictor output");
+			return 0;
+		}
+		CDS_positionStr[0] = '-';
+		CDS_positionStr[0] = '\0';
+		if (sscanf(line, "%*s %*s %*s %*s %*s %*s %s %*s %s", ensemblConsequence[all], CDS_positionStr) < 1)
+		{
+			dcerror(1, "Could not find consequence in this line from variant_predictor: \n%s", line);
+			return 0;
+		}
+		if (CDS_positionStr[0] != '-')
+			sprintf(strchr(ensemblConsequence[all], '\0'), " %s", CDS_positionStr);
 	}
-	CDS_positionStr[0]='-';
-	CDS_positionStr[0]='\0';
-	if (sscanf(line,"%*s %*s %*s %*s %*s %*s %s %*s %s",ensemblConsequence,CDS_positionStr)<1)
-	{
-		dcerror(1,"Could not find consequence in this line from variant_predictor: \n%s",line);
-		return 0;
-	}
-	if (CDS_positionStr[0]!='-')
-		sprintf(strchr(ensemblConsequence,'\0')," %s",CDS_positionStr);
 	return 1;
 }
 
-int masterLocus::writePredictorQuery(FILE *fp)
+int masterLocus::writePredictorQuery(FILE *fp, analysisSpecs const &spec )
 {
 	long start,end;
 	char chrStr[20];
+	int all;
 	if (alls[0][0]=='N')
 		return 1; // predictor produces no output for these
 	if (nAlls<2)
@@ -305,18 +311,21 @@ int masterLocus::writePredictorQuery(FILE *fp)
 		end=pos;
 	}
 #else
-	start=pos;
-	end=pos+strlen(alls[0])-1; // does this work if first allele is - ?
+	for (all = 0; all < (spec.mergeAltAlleles ? 1 : nAlls - 1);++all)
+	{
+		start = pos;
+			end = pos + strlen(alls[0]) - 1; // does this work if first allele is - ?
 #endif
-	if (chr==23)
-		strcpy(chrStr,"X");
-	else
-		sprintf(chrStr,"%d",chr);
-	fprintf(fp,"%s\t%ld\t%ld\t%s/%s\t+\n",chrStr,start,end,alls[0],alls[1]);
+			if (chr == 23)
+				strcpy(chrStr, "X");
+			else
+				sprintf(chrStr, "%d", chr);
+			fprintf(fp, "%s\t%ld\t%ld\t%s/%s\t+\n", chrStr, start, end, alls[0], alls[all+1]);
+	}
 	return 1;
 }
 
-int masterLocus::getQuickFeature(refseqGeneInfo &r)
+int masterLocus::getQuickFeature(refseqGeneInfo &r,int a)
 {
 	char thisGeneEffect[100];
 	float oldEffectWeight;
@@ -325,25 +334,25 @@ int masterLocus::getQuickFeature(refseqGeneInfo &r)
 		return 1;
 	if (chr==r.getChrNum())
 	{
-		r.getEffect(pos,alls[0],alls[1]);
-		if (quickConsequence[0] == '\0' || !strncmp(quickConsequence, "NULL", 4) || !strncmp(quickConsequence, "INTER", 5))
+		r.getEffect(pos,alls[0],alls[a]);
+		if (quickConsequence[a][0] == '\0' || !strncmp(quickConsequence[a], "NULL", 4) || !strncmp(quickConsequence[a], "INTER", 5))
 		{
-			strcpy(quickConsequence, r.tellEffect());
-			worstConsequenceType=r.tellWorstConsequence();
+			strcpy(quickConsequence[a], r.tellEffect());
+			worstConsequenceType[a]=r.tellWorstConsequence();
 		}
 		else
 		{
 			strcpy(thisGeneEffect,r.tellEffect());
 			for (e=0;e<NCONSEQUENCETYPES;++e)
-				if (!strncmp(quickConsequence,consequence[e].str,strlen(consequence[e].str)))
+				if (!strncmp(quickConsequence[a],consequence[e].str,strlen(consequence[e].str)))
 				{
 					oldEffectWeight=consequence[e].weight;
 					break;
 				}
 				if (oldEffectWeight < consequence[r.tellWorstConsequence()].weight)
 				{
-					strcpy(quickConsequence, r.tellEffect());
-					worstConsequenceType=r.tellWorstConsequence();
+					strcpy(quickConsequence[a], r.tellEffect());
+					worstConsequenceType[a]=r.tellWorstConsequence();
 				}
 		}
 
@@ -374,7 +383,7 @@ int masterLocusFile::getQuickConsequences(refseqGeneInfo &r,analysisSpecs const 
 	int locusCount;
 	FILEPOSITION recPos;
 	const char *testKey;
-	int c;
+	int c,all;
 	locusCount=0;
 recPos=findFirstInRange(spec);
 if (recPos!=0L)
@@ -387,9 +396,12 @@ if (recPos!=0L)
 		if (c==spec.ec && atol(testKey+3)>spec.ep)
 			break;
 		load(tempRecord,recPos);
-		if (!redo) // may have already been set using a different gene
-			tempRecord.quickConsequence[0]='\0';
-		tempRecord.getQuickFeature(r);
+		for (all = 0; all < (spec.mergeAltAlleles ? 1 : tempRecord.nAlls - 1); ++all)
+		{
+			if (!redo) // may have already been set using a different gene
+				tempRecord.quickConsequence[all][0] = '\0';
+			tempRecord.getQuickFeature(r,all+1);
+		}
 		// some other program calls this and feature may already be set
 		save(tempRecord,recPos);
 		++locusCount;
@@ -425,7 +437,7 @@ if (recPos!=0L)
 		if (c==spec.ec && atol(testKey+3)>spec.ep)
 			break;
 		load(tempRecord,recPos);
-		tempRecord.writePredictorQuery(fp);
+		tempRecord.writePredictorQuery(fp,spec);
 		++locusCount;
 		recPos=index.get_next();
 		if (recPos==0L)
@@ -463,7 +475,7 @@ if (recPos!=0L)
 		if (c==spec.ec && atol(testKey+3)>spec.ep)
 			break;
 		load(tempRecord,recPos);
-		tempRecord.readQueryOutput(fp);
+		tempRecord.readQueryOutput(fp, spec);
 		save(tempRecord,recPos);
 		recPos=index.get_next();
 		if (recPos==0L)
@@ -475,7 +487,6 @@ return locusCount;
 }
 
 // #define MAXLOCIINSCOREASSOCFILE 50000
-#define MAXLOCIINSCOREASSOCFILE 25000
 int useLocus[MAXLOCIINSCOREASSOCFILE];
 float locusWeight[MAXLOCIINSCOREASSOCFILE];
 
@@ -513,14 +524,15 @@ int masterLocusFile::writeScoreAssocFiles(masterLocusFile &subFile,char *root, f
 // allow information about subjects to be provided by a different masterLocusFile 
 // however we are assuming both files refer to identical set of subjects
 {
-	char fn[100],buff[MAXALL*MAXALLLENGTH],buff2[1000],comment[MAXALL*MAXALLLENGTH],*ptr,alleles[MAXSTR+1],commandString[1000];
+	char fn[100],buff[MAXALL*MAXALLLENGTH],buff2[1000],comment[MAXALL*MAXALLLENGTH],*ptr,alleles[MAXSTR+1],commandString[1000],posStr[100];
 	allelePair **a;
 	probTriple **p;
-	int totalSub,lc,s,l,ss,i,c,nValid;
+	int totalSub,lc,s,l,ss,i,c,nValid,all,numSplitLoci;
 	FILE *fp;
 	FILEPOSITION recPos;
 	const char *testKey;
 	geneVarParser commentParser;
+	geneVarParser::mergeAltAlleles = spec.mergeAltAlleles; // need to make sure this gets set
 	strEntry *subName;
 	if (spec.commentExpression[0])
 		commentParser.parse(spec.commentExpression); // only have to parse once
@@ -594,19 +606,34 @@ int masterLocusFile::writeScoreAssocFiles(masterLocusFile &subFile,char *root, f
 			}
 			else
 			{
-				fprintf(fp, "%d %d\t",
-					(a[l][s][0]>1) ? 2 : a[l][s][0],
-					(a[l][s][1] > 1) ? 2 : a[l][s][1]); // force to be biallelic
+				if (spec.mergeAltAlleles)
+				{
+					fprintf(fp, "%d %d\t",
+						(a[l][s][0] > 1) ? 2 : a[l][s][0],
+						(a[l][s][1] > 1) ? 2 : a[l][s][1]); // force to be biallelic
+				}
+				else
+					for (all = 1; all < nAlls[l];++all)
+					{
+						fprintf(fp, "%d %d\t",
+							(a[l][s][0] == all+1) ? 2 : a[l][s][0] == 0 ? 0 : 1,
+							(a[l][s][1] == all+1) ? 2 : a[l][s][1] == 0 ? 0 : 1);
+					}
 			}
 		fprintf(fp,"\n");
 	}
 	fclose(fp);
 	checkSystem();
-	sprintf(commandString,"scoreassoc %s %s --numloci %d",spec.useProbs?"--gendatafile":"--gcdatafile",fn,lc);
+	if (!spec.mergeAltAlleles)
+	{
+		for (numSplitLoci = 0, l = 0; l < lc; ++l)
+			numSplitLoci += nAlls[l] - 1;
+	}
+	sprintf(commandString,"scoreassoc %s %s --numloci %d",spec.useProbs?"--gendatafile":"--gcdatafile",fn,spec.mergeAltAlleles?lc:numSplitLoci);
 	outputSAInfo(useLocus,locusWeight,spec);
 	sprintf(fn,"%s.lf.par",root);
 	fp=fopen(fn,"w");
-	for (l=0;l<lc;++l)
+	for (l=0;l<(spec.mergeAltAlleles ? lc : numSplitLoci);++l)
 			fprintf(fp,"%d ",useLocus[l]);
 	fprintf(fp,"\n");
 	fclose(fp);
@@ -638,7 +665,7 @@ int masterLocusFile::writeScoreAssocFiles(masterLocusFile &subFile,char *root, f
 	{
 		sprintf(fn,"%s.lw.par",root);
 		fp=fopen(fn,"w");
-		for (l=0;l<lc;++l)
+		for (l=0;l<(spec.mergeAltAlleles ? lc : numSplitLoci);++l)
 			fprintf(fp,"%8.5f ",locusWeight[l]);
 		fprintf(fp,"\n");
 		fclose(fp);
@@ -649,6 +676,11 @@ int masterLocusFile::writeScoreAssocFiles(masterLocusFile &subFile,char *root, f
 		if (useFreqs[i])
 		{
 			float *freqs;
+			if (!spec.mergeAltAlleles)
+			{
+				dcerror.kill();
+				dcerror(1,"Must merge alt alleles with --merge-alt-alleles 1 if using allele frequencies rather than counts.\n");
+			}
 			freqs=new float[lc];
 			// outputAltFrequencies(freqs,i,sc,sp,ec,ep);
 			outputEurAltFrequencies(freqs,i,spec);
@@ -682,35 +714,47 @@ int masterLocusFile::writeScoreAssocFiles(masterLocusFile &subFile,char *root, f
 			if (c==spec.ec && atol(testKey+3)>spec.ep)
 				break;
 			load(tempRecord,recPos);
-			if (spec.commentExpression[0])
+			for (all = 0; all < (spec.mergeAltAlleles ? 1 : tempRecord.nAlls - 1); ++all)
 			{
-				geneVarParser::thisLocus = &tempRecord;
-				dcexpr_val*rv= commentParser.eval();
-				sprintf(comment, "%d:%ld:%s:%s", tempRecord.chr, tempRecord.pos, tempRecord.getID(), (char*)(*rv));
-				delete rv;
+				if (spec.mergeAltAlleles || tempRecord.nAlls == 2)
+					sprintf(posStr, "%d:%ld", tempRecord.chr, tempRecord.pos);
+				else
+					sprintf(posStr, "%d:%ld.%d", tempRecord.chr, tempRecord.pos,all+1);
+				if (spec.commentExpression[0])
+				{
+					geneVarParser::thisLocus = &tempRecord;
+					geneVarParser::thisAltAllele = all + 1;
+					dcexpr_val*rv = commentParser.eval();
+					if (spec.mergeAltAlleles||tempRecord.nAlls==2)
+						sprintf(comment, "%s:%s:%s", posStr, tempRecord.getID(), (char*)(*rv));
+					else
+						sprintf(comment, "%s:%s:%s", posStr, tempRecord.getID(), (char*)(*rv));
+					delete rv;
+				}
+				else if (tempRecord.ensemblConsequence[0] != '\0')
+					sprintf(comment, "%s:%s:%s", posStr, tempRecord.getID(), tempRecord.ensemblConsequence);
+				else if (tempRecord.quickConsequence[0] != '\0')
+					sprintf(comment, "%s:%s:%s", posStr, tempRecord.getID(), tempRecord.quickConsequence);
+				else
+					sprintf(comment, "%s:%s:", posStr, tempRecord.getID());
+				for (ptr = comment; *ptr; ++ptr)
+					if (isspace(*ptr))
+						*ptr = '_';
+				strcat(comment, "-");
+				buff[0] = '\0';
+				for (i = 0; i < tempRecord.nAlls; ++i)
+					if (spec.mergeAltAlleles)
+						sprintf(strchr(buff, '\0'), "%s%s", ((i ==0) ? "" : "/"),tempRecord.alls[i] );
+					else
+					{
+						if (i==0 || i==all+1)
+							sprintf(strchr(buff, '\0'), "%s%s", ((i == 0) ? "" : "/"), tempRecord.alls[i] );
+					}
+				strncpy(alleles, buff, MAXSTR);
+				alleles[MAXSTR] = '\0';
+				strcat(comment, alleles);
+				fprintf(fp, "%s ", comment);
 			}
-			else if (tempRecord.ensemblConsequence[0]!='\0')
-				sprintf(comment,"%d:%ld:%s:%s",tempRecord.chr,tempRecord.pos,tempRecord.getID(),tempRecord.ensemblConsequence);
-			else if (tempRecord.quickConsequence[0]!='\0')
-				sprintf(comment,"%d:%ld:%s:%s",tempRecord.chr,tempRecord.pos,tempRecord.getID(),tempRecord.quickConsequence);
-			else
-				sprintf(comment,"%d:%ld:%s:",tempRecord.chr,tempRecord.pos,tempRecord.getID());
-			for (ptr=comment;*ptr;++ptr)
-				if (isspace(*ptr))
-					*ptr='_';
-			strcat(comment,"-");
-			buff[0]='\0';
-			for (i=0;i<tempRecord.nAlls;++i)
-				sprintf(strchr(buff,'\0'),"%s%c",tempRecord.alls[i],i==tempRecord.nAlls-1?'\0':'/');
-			strncpy(alleles,buff,MAXSTR);
-			alleles[MAXSTR]='\0';
-			strcat(comment,alleles);
-			if (tempRecord.PolyPhen[0])
-			{
-				strcat(comment,":PolyPhen:");
-				strcat(comment,tempRecord.PolyPhen);
-			}
-			fprintf(fp,"%s ",comment);
 			recPos=index.get_next();
 			if (recPos==0L)
 				break;
@@ -834,16 +878,16 @@ return locusCount;
 
 int masterLocusFile::outputSAInfo(int *useLocus,float *locusWeight,analysisSpecs const &spec)
 {
-	int locusCount;
+	int locusCount,splitLocusCount;
 	FILEPOSITION recPos;
 	const char *testKey;
-	int c,i,doNotUseUntypedFreqfile;
+	int c,i,doNotUseUntypedFreqfile,all;
 	int cons;
 	geneVarParser weightParser;
 	std::list<geneVarParser *> excludeParser;
 	if (spec.debug)
 		weightParser.debug(stdout); // will set debug for both parsers
-	locusCount=0;
+	splitLocusCount=locusCount=0; // keep track of split loci, when alt alleles are not merged
 	recPos=findFirstInRange(spec);
 if (recPos!=0L)
 {
@@ -866,87 +910,93 @@ if (recPos!=0L)
 			break;
 		if (c==spec.ec && atol(testKey+3)>spec.ep)
 			break;
-		locusWeight[locusCount]=1.0; // default if nothing else changes it
-		useLocus[locusCount]=1;
-		load(tempRecord,recPos);
-		doNotUseUntypedFreqfile=0;
-		if (spec.unknownIfUntyped)
+		for (all = 0; all < (spec.mergeAltAlleles?1:tempRecord.nAlls - 1); ++all)
 		{
-				for (i=0;i<nLocusFiles;++i)
-					if (holdsFreqs[i] && !strcmp(tempRecord.myLocalLocus[i]->filter,"UNTYPED"))
-						doNotUseUntypedFreqfile=1;
-		}
-		if (doNotUseUntypedFreqfile || (tempRecord.isSNP()!=SNP_YES && spec.onlyUseSNPs==1))
-		{
-				locusWeight[locusCount]=0.0;
-				useLocus[locusCount]=0;
-		}
-		else
-		{
-			// we are going to use one of the inbuilt annotations to see if we exceed consequenceThreshold
-			// then if weight funcion specified use that weight instead
-			if (spec.consequenceThreshold || (spec.useConsequenceWeights&&spec.weightExpression[0]=='\0'))
+			locusWeight[splitLocusCount] = 1.0; // default if nothing else changes it
+			useLocus[splitLocusCount] = 1;
+			load(tempRecord, recPos);
+			doNotUseUntypedFreqfile = 0;
+			if (spec.unknownIfUntyped)
 			{
-				if (spec.useEnsembl)
+				for (i = 0; i < nLocusFiles; ++i)
+					if (holdsFreqs[i] && !strcmp(tempRecord.myLocalLocus[i]->filter, "UNTYPED"))
+						doNotUseUntypedFreqfile = 1;
+			}
+			if (doNotUseUntypedFreqfile || (tempRecord.isSNP() != SNP_YES && spec.onlyUseSNPs == 1))
+			{
+				locusWeight[splitLocusCount] = 0.0;
+				useLocus[splitLocusCount] = 0;
+			}
+			else
+			{
+				// we are going to use one of the inbuilt annotations to see if we exceed consequenceThreshold
+				// then if weight funcion specified use that weight instead
+				if (spec.consequenceThreshold || (spec.useConsequenceWeights&&spec.weightExpression[0] == '\0'))
 				{
-					if (tempRecord.ensemblConsequence[0]=='\0')
-						cons=NULL_CONSEQUENCE;
-					else // should change below to do this with tables in the same way as the parser does
+					if (spec.useEnsembl)
 					{
-						cons=getConsequenceType(tempRecord.ensemblConsequence,1);
-						if (cons==-1)
+						if (tempRecord.ensemblConsequence[all][0] == '\0')
+							cons = NULL_CONSEQUENCE;
+						else // should change below to do this with tables in the same way as the parser does
 						{
-							dcerror.kill();
-							dcerror(1,"Could not recognise this consequence: %s",tempRecord.ensemblConsequence);
-							return 0;
+							cons = getConsequenceType(tempRecord.ensemblConsequence[all], 1);
+							if (cons == -1)
+							{
+								dcerror.kill();
+								dcerror(1, "Could not recognise this consequence: %s", tempRecord.ensemblConsequence);
+								return 0;
+							}
 						}
+						locusWeight[splitLocusCount] = e_consequence[cons].weight;
+						if (cons < spec.consequenceThreshold)
+							useLocus[splitLocusCount] = 0;
 					}
-					locusWeight[locusCount]=e_consequence[cons].weight;
-					if (cons<spec.consequenceThreshold)
-						useLocus[locusCount]=0;
-				}
-				else
-				{
-					if (tempRecord.quickConsequence[0]=='\0')
-						cons=NULL_CONSEQUENCE;
 					else
 					{
-						cons=getConsequenceType(tempRecord.quickConsequence,0);
-						if (cons==-1)
+						if (tempRecord.quickConsequence[all][0] == '\0')
+							cons = NULL_CONSEQUENCE;
+						else
 						{
-							dcerror.kill();
-							dcerror(1,"Could not recognise this consequence: %s",tempRecord.quickConsequence);
-							return 0;
+							cons = getConsequenceType(tempRecord.quickConsequence[all], 0);
+							if (cons == -1)
+							{
+								dcerror.kill();
+								dcerror(1, "Could not recognise this consequence: %s", tempRecord.quickConsequence);
+								return 0;
+							}
 						}
+						locusWeight[splitLocusCount] = consequence[cons].weight;
+						if (cons < spec.consequenceThreshold)
+							useLocus[splitLocusCount] = 0;
 					}
-					locusWeight[locusCount]=consequence[cons].weight;
-					if (cons<spec.consequenceThreshold)
-						useLocus[locusCount]=0;
 				}
-			}
-			if (spec.weightExpression[0] && spec.useConsequenceWeights)
-			{
-				geneVarParser::thisLocus = &tempRecord;
-				dcexpr_val *rv = weightParser.eval();
-				locusWeight[locusCount] = double(*rv);
-				delete rv;
-			}
-			if (excludeParser.size() && useLocus[locusCount])
-			{
-				double val;
-				dcexpr_val *rv;
-				geneVarParser::thisLocus=&tempRecord;
-				geneVarParser::thisWeight=locusWeight[locusCount];
-				for (std::list<geneVarParser *>::iterator it=excludeParser.begin();it!=excludeParser.end();++it)
+				if (spec.weightExpression[0] && spec.useConsequenceWeights)
 				{
-					rv=(*it)->eval();
-					val = *(double*)(rv);
+					geneVarParser::thisLocus = &tempRecord;
+					geneVarParser::thisAltAllele = all + 1;
+					dcexpr_val *rv = weightParser.eval();
+					locusWeight[splitLocusCount] = double(*rv);
 					delete rv;
-					if (val!=0)
-						useLocus[locusCount]=0;
-					break;
+				}
+				if (excludeParser.size() && useLocus[splitLocusCount])
+				{
+					double val;
+					dcexpr_val *rv;
+					geneVarParser::thisLocus = &tempRecord;
+					geneVarParser::thisWeight = locusWeight[splitLocusCount];
+					geneVarParser::thisAltAllele = all + 1;
+					for (std::list<geneVarParser *>::iterator it = excludeParser.begin(); it != excludeParser.end(); ++it)
+					{
+						rv = (*it)->eval();
+						val = *(double*)(rv);
+						delete rv;
+						if (val != 0)
+							useLocus[splitLocusCount] = 0;
+						break;
+					}
 				}
 			}
+			++splitLocusCount;
 		}
 		++locusCount;
 		recPos=index.get_next();
@@ -1068,6 +1118,7 @@ int masterLocusFile::outputAlleles(allelePair **all, analysisSpecs &spec)
 	do
 	{
 // hereOK();
+		nAlls[locusCount] = tempRecord.nAlls;
 		outputCurrentAlleles(all[locusCount++], spec);
 		if (locusCount>MAXLOCIINSCOREASSOCFILE)
 		{
@@ -1270,7 +1321,6 @@ int masterLocus::print(FILE *fp)
 		chr,pos,SNP,nLocusFiles,ref,alt);
 	fprintf(fp,"Ensembl consequence: %s\n",ensemblConsequence);	
 	fprintf(fp,"Quick consequence: %s\n",quickConsequence);	
-	fprintf(fp,"PolyPhen: %s\n",PolyPhen);	
 	fprintf(fp,"nAlls = %d: ",nAlls);
 	for (a=0;a<nAlls;++a)
 		fprintf(fp,"%s ",alls[a]);
@@ -1301,7 +1351,7 @@ int masterLocus::printFeatures(FILE *fp,int showFreq)
 			freq+=myLocalLocus[showFreq]->alleleFreq[f];
 		fprintf(fp,"\t%6.4f",freq);
 	}
-	fprintf(fp,"\t%s\t%s\n",quickConsequence,PolyPhen);
+	fprintf(fp,"\t%s\n",quickConsequence);
 return 1;
 }
 
@@ -1509,7 +1559,6 @@ int masterLocusFile::fill(masterLocus &rec,localLocus *loc,FILEPOSITION locusPos
 {
 	char line[MAXALLLENGTH*(MAXALL+1)+1],rest[MAXALLLENGTH*MAXALL+1],*ptr;
 	int i,a;
-	rec.PolyPhen[0]='\0';
 	rec.chr=loc->chr;
 	rec.pos=loc->pos;
 	rec.SNP=loc->isSNP();
@@ -1552,8 +1601,6 @@ int masterLocusFile::fill(masterLocus &rec,localLocus *loc,FILEPOSITION locusPos
 	rec.myLocalLocus[currentLocusFile]->typeSpecificCopy(loc);
 	// assume that loc is same derived class as rec.myLocalLocus[currentLocusFile]
 	// we allocated a localLocus of the right type to deal with the file we are currently reading information from
-	if (loc->PolyPhen[0]!='\0')
-		strcpy(rec.PolyPhen,loc->PolyPhen);
 	for (i = 0; i < nLocusFiles; ++i)
 		if (i != currentLocusFile)
 		{
@@ -1612,8 +1659,6 @@ int masterLocusFile::merge(masterLocus &rec,localLocus *loc,FILEPOSITION locusPo
 		rec.SNP=SNP_NO;
 	rec.locusPosInFile[currentLocusFile]=locusPosInFile;
 	rec.myLocalLocus[currentLocusFile]->typeSpecificCopy(loc);
-	if (rec.PolyPhen[0]=='\0' && loc->PolyPhen[0]!='\0')
-		strcpy(rec.PolyPhen,loc->PolyPhen);
 	return 1;
 }
 
@@ -1685,7 +1730,7 @@ void localLocus::clear()
 		alleleFreq[i]=0;
 	AF=0;
 	strcpy(filter,"UNTYPED");
-	id[0]=ref[0]=alt[0]=PolyPhen[0]='\0';
+	id[0]=ref[0]=alt[0]='\0';
 }
 
 void vcfLocalLocus::clear()
@@ -1732,6 +1777,7 @@ for (i = 0; i < nLF; ++i)
 recordFile=0;
 if (locusFile::buff==0)
 		locusFile::buff=new char[BUFFSIZE]; // This never gets deleted. Oh well.
+nAlls = new int[MAXLOCIINSCOREASSOCFILE];
 tempLocus=0;
 }
 
@@ -1763,6 +1809,7 @@ masterLocusFile::~masterLocusFile()
 	delete[] locusFiles;
 	delete[] fileTypes;
 	delete[] holdsFreqs;
+	delete[] nAlls;
 	if (tempLocus!=0)
 		delete tempLocus;
 }
@@ -1783,7 +1830,6 @@ int masterLocus::read(FILE *fp)
 	fread(ensemblConsequence,sizeof(ensemblConsequence),1,fp);
 	fread(quickConsequence,sizeof(quickConsequence),1,fp);
 	fread(&worstConsequenceType,sizeof(worstConsequenceType),1,fp);
-	fread(PolyPhen,sizeof(PolyPhen),1,fp);
 	for (i=0;i<nLocusFiles;++i)
 		fread(&alleleMapping[i],sizeof(alleleMapping[i]),1,fp);
 	for (i=0;i<nLocusFiles;++i)
@@ -1809,7 +1855,6 @@ int masterLocus::write(FILE *fp)
 	fwrite(ensemblConsequence,sizeof(ensemblConsequence),1,fp);
 	fwrite(quickConsequence,sizeof(quickConsequence),1,fp);
 	fwrite(&worstConsequenceType,sizeof(worstConsequenceType),1,fp);
-	fwrite(PolyPhen,sizeof(PolyPhen),1,fp);
 	for (i=0;i<nLocusFiles;++i)
 		fwrite(&alleleMapping[i],sizeof(alleleMapping[i]),1,fp);
 	for (i=0;i<nLocusFiles;++i)
@@ -1821,7 +1866,7 @@ int masterLocus::write(FILE *fp)
 
 masterLocus::masterLocus(int nLF)
 {
-	int i;
+	int i,all;
 	nLocusFiles=nLF;
 alleleMapping=new alleleMap[nLF];
 locusPosInFile=new FILEPOSITION[nLF];
@@ -1829,8 +1874,11 @@ myLocalLocus=new LOCALLOCUSPTR[nLF];
 for (i=0;i<nLF;++i)
 	myLocalLocus[i]=(LOCALLOCUSPTR) new vcfLocalLocus; 
 // one day will have to allocate localLocus of correct type to these
-ensemblConsequence[0]=quickConsequence[0]=PolyPhen[0]='\0';
-worstConsequenceType=NULL_CONSEQUENCE;
+for (all = 0; all < MAXALL; ++all)
+{
+	ensemblConsequence[all][0] = quickConsequence[all][0] == '\0';
+	worstConsequenceType[all] = NULL_CONSEQUENCE;
+}
 masterID[0]='\0';
 genoCount[0] = genoCount[1] = genoCount[2] = 0;
 }

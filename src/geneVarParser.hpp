@@ -10,11 +10,13 @@ class geneVarParser : public express {
 public:
 	static masterLocus *thisLocus;
 	static refseqGeneInfo *thisGene;
+	static int thisAltAllele;
 	static double thisWeight;
 	static std::map<std::string,std::string> queryCache;
+	static int mergeAltAlleles;
 	geneVarParser();
 	~geneVarParser() { ; }
-	int init(masterLocus &m,refseqGeneInfo &r) { thisLocus=&m; thisGene=&r; }
+	int init(masterLocus &m, refseqGeneInfo &r) { thisLocus = &m; thisGene = &r; thisAltAllele = 0; }
 	dcexpr_val *eval();
 };
 

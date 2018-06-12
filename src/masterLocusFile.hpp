@@ -1,7 +1,7 @@
 #ifndef masterLocusFileHPP
 #define masterLocusFileHPP
 
-#define MAXALL 15 // maximum number of alleles occurring at any locus
+#define MAXALL 10 // maximum number of alleles occurring at any locus
 #define MAXALLLENGTH 200
 // #define MAXALLLENGTH 300 // maximum length of the character string describing each REF allele 
 // or all ALT alleles with commas separating them
@@ -93,13 +93,14 @@ public:
 		count_hom_as_het=0;
 		useTrios=0;
 		ignoreAlleles=0;
+		mergeAltAlleles = 1;
 		debug=0;
 		*alleleFreqStr=*alleleNumberStr=*alleleCountStr='\0';
 		*commentExpression=*weightExpression='\0';
 		wf=10;
 	} 
 int onlycc01,unknownIfUntyped,unknownIfNoPass,altIsCommon,sc,ec,skipIfNoPass,useConsequenceWeights,onlyUseSNPs,nExc,doRecessiveTest,addChrInVCF[MAXVCFFILES],useHaplotypes,count_hom_as_het,useTrios,ignoreAlleles,useProbs,wildIfUnknown,debug;
-int useEnsembl,willNeedEnsemblConsequence,willNeedInbuiltConsequence;
+int useEnsembl,willNeedEnsemblConsequence,willNeedInbuiltConsequence,mergeAltAlleles;
 int *phenotypes;
 TStrIntMap subPhenos;
 long sp,ep;
@@ -143,21 +144,21 @@ protected:
 	long pos;
 	locusSNP SNP;
 	int nLocusFiles;
-	consequenceType worstConsequenceType;
+	consequenceType worstConsequenceType[MAXALL];
 	char masterID[VCFFIELDLENGTH];
 	char ref[MAXALLLENGTH+1];
 	char alt[MAXALLLENGTH*MAXALL];
 	int nAlls;
 	char alls[MAXALL][MAXALLLENGTH+1];
 	alleleMap *alleleMapping; // maps how allele in local file maps to global allele list for that locus
-	char ensemblConsequence[100],quickConsequence[100],PolyPhen[100];
+	char ensemblConsequence[MAXALL][50],quickConsequence[MAXALL][50];
 	int genoCount[3],genoCcCount[2][3]; // may know this sometimes
 	FILEPOSITION *locusPosInFile;
 	LOCALLOCUSPTR *myLocalLocus; // keep a record of each one read in separately
 	int read(FILE *fp);
 	int write(FILE *fp);
-	int writePredictorQuery(FILE *fp);
-	int readQueryOutput(FILE *fp);
+	int writePredictorQuery(FILE *fp, analysisSpecs const &spec);
+	int readQueryOutput(FILE *fp,analysisSpecs const &spec);
 public:
 	masterLocus(int nLF);
 	~masterLocus();
@@ -169,18 +170,19 @@ public:
 	int print(FILE *fp);
 	int printFeatures(FILE* fp,int showFreq=-1);
 	const char *getID(); // get a human readable ID if one of myLocalLocus has one
-	int writeRiskVarInfo(char *s,int withFreqs=0);
-	bool readRiskVarInfo(char *s,int withFreqs=0);
-	consequenceType getWorstConsequenceType() { return worstConsequenceType; }
-	int getQuickFeature(refseqGeneInfo &r);
-	const char *reportQuickConsequence() { return quickConsequence; }
+//	int writeRiskVarInfo(char *s,int withFreqs=0);
+//	bool readRiskVarInfo(char *s,int withFreqs=0);
+	consequenceType getWorstConsequenceType(int a) { return worstConsequenceType[a]; }
+	int getQuickFeature(refseqGeneInfo &r,int a);
+	const char *reportQuickConsequence(int a) { return quickConsequence[a]; }
 	// this is text of worst consequence after call to getQuickFeature()
-	const char *reportEnsemblConsequence() { return ensemblConsequence; }
+	const char *reportEnsemblConsequence(int a) { return ensemblConsequence[a]; }
 	int getGenoCount(int g) { return genoCount[g]; }
 	void setLocusPosInFile(int f,FILEPOSITION l) { locusPosInFile[f] = l; }
 	FILEPOSITION getLocusPosInFile(int f) { return locusPosInFile[f]; }
 	int getChr() { return chr; }
 	long getPos() { return pos; }
+	const char *getAll(int a) { return alls[a]; }
 };
 
 class localLocus {
@@ -198,7 +200,6 @@ protected:
 	locusSNP SNP;
 	char filter[VCFFIELDLENGTH];
 	float AF,AC,AN;
-	char PolyPhen[100];
 	virtual int input(FILE *f, FILEPOSITION *locusPosInFile, analysisSpecs const &spec)=0; // not implemented, only for derived classes
 	// this function is to read in information for the next valid locus, possibly with criterion that it must PASS
 	virtual void clear();
@@ -236,6 +237,7 @@ public:
 
 
 typedef locusFile *LOCUSFILEPTR;
+#define MAXLOCIINSCOREASSOCFILE 25000
 
 class masterLocusFile  {
 	dc_index index;
@@ -245,7 +247,7 @@ class masterLocusFile  {
 	int nLocusFiles;
 	int currentLocusFile;
 	filenamestring *lfFileNames;
-	int *nSubs,*cc;
+	int *nSubs, *cc, *nAlls;
 	LOCUSFILEPTR *locusFiles;
 	locusFileType *fileTypes;
 	int *holdsFreqs; // whether file provides information about allele frequencies
@@ -290,7 +292,7 @@ public:
 	int getQuickConsequences(refseqGeneInfo &r,analysisSpecs const &spec,int redo=0);
 	int writeScoreAssocFiles(char *root,float wf,int *useFreqs,int *suppliedNSubs,int writeNames,int writeComments,int writeScorefile,analysisSpecs &spec);
 	int writeScoreAssocFiles(masterLocusFile &subFile,char *root,float wf,int *useFreqs,int *suppliedNSubs,int writeNames,int writeComments,int writeScorefile,analysisSpecs &spec);
-	int writeVars(char *fn,int *useFreqs,analysisSpecs &spec);
+//	int writeVars(char *fn,int *useFreqs,analysisSpecs &spec);
 	int writeGenos(char *fn,int *useFreqs,analysisSpecs &spec);
 	int writeGenoCounts(FILE *fo[2],char *geneName,long *varNum,analysisSpecs &spec,allelePair **a);
 	int writeAltSubs(char *fn,analysisSpecs &spec);
@@ -305,11 +307,10 @@ public:
 	int getTotalSubs();
 	const char *currentAll(int a) { return tempRecord.alls[a]; }
 	const char *currentID() { return tempRecord.masterID; }
-	const char *currentPolyPhen() { return tempRecord.PolyPhen; }
-	const char *currentQuickConsequence() { return tempRecord.quickConsequence; }
-	consequenceType currentWorstConsequenceType() { return tempRecord.worstConsequenceType; }
-	int writeRiskVarInfo(char *s, int withFreqs = 0) { return tempRecord.writeRiskVarInfo(s, withFreqs); }
-	bool readRiskVarInfo(char *s,int withFreqs=0){ return tempRecord.readRiskVarInfo(s, withFreqs); }
+	const char *currentQuickConsequence(int a) { return tempRecord.quickConsequence[a]; }
+	consequenceType currentWorstConsequenceType(int a) { return tempRecord.worstConsequenceType[a]; }
+//	int writeRiskVarInfo(char *s, int withFreqs = 0) { return tempRecord.writeRiskVarInfo(s, withFreqs); }
+//	bool readRiskVarInfo(char *s,int withFreqs=0){ return tempRecord.readRiskVarInfo(s, withFreqs); }
 
 };
 
