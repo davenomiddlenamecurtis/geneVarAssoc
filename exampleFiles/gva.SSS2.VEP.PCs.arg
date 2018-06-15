@@ -1,0 +1,4 @@
+--arg-file ../pars/gva.SSS2.VEP.arg
+--varfile ../vcf/SSS2/SSS2.pca.eigenvec
+--dolrtest 1
+

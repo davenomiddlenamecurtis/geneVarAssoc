@@ -1,4 +1,23 @@
 #if 0
+Copyright 2018 David Curtis
+
+This file is part of the geneVarAssoc package.
+
+geneVarAssoc is free software : you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+any later version.
+
+geneVarAssoc is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with geneVarAssoc.If not, see <http://www.gnu.org/licenses/>.
+#endif
+
+#if 0
 Essential splice site	In the first 2 or the last 2 basepairs of an intron	splice_acceptor_variant	SO:0001574	splice-3
 splice_donor_variant	SO:0001575	splice-5
 Stop gained	In coding sequence, resulting in the gain of a stop codon	stop_gained	SO:0001587	nonsense

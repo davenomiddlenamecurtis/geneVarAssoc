@@ -1,0 +1,5 @@
+--arg-file ../pars/gva.SSS2.VEP.arg
+--varfile ../vcf/SSS2/SSS2.PRS.txt
+--testfile ../pars/justScore.tst
+--dolrtest 1
+

@@ -165,7 +165,6 @@
     <ClInclude Include="..\..\src\intervalList.h" />
     <ClInclude Include="..\..\src\masterLocusFile.hpp" />
     <ClInclude Include="..\..\src\phasedLocusFile.hpp" />
-    <ClInclude Include="..\..\src\riskLocus.hpp" />
     <ClInclude Include="..\..\src\vcfLocusFile.hpp" />
   </ItemGroup>
   <ItemGroup>
