@@ -39,7 +39,7 @@ public:
 	virtual int read(FILE *fp);
 	virtual int write(FILE *fp);
 	virtual int input(FILE *f, FILEPOSITION *locusPosInFile, analysisSpecs const &spec);
-	vcfLocalLocus() { nFieldsToSkip=DEFAULTNUMVCFFIELDSTOSKIP; }
+	vcfLocalLocus() { nFieldsToSkip = DEFAULTNUMVCFFIELDSTOSKIP; clear(); } // need to call clear() here or only get the localLocus version
 	~vcfLocalLocus() { ; }
 	virtual locusFileType myType() { return VCFFILE; }
 	virtual int typeSpecificCopy(localLocus *src);
