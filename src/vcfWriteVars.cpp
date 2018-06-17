@@ -229,7 +229,6 @@ int masterLocusFile::outputSubNames(strEntry *subName,analysisSpecs &spec)
 {
 	int totalSubs,f;
 	totalSubs=0;
-
 	if (locusFiles[0]->fp==0)
 		openLocusFiles();
 	for (f=0;f<nLocusFiles;++f)

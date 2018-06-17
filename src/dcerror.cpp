@@ -51,7 +51,7 @@ vfprintf(stderr,format,arg_ptr);
 // system("pause");
 return 0;
 }
-
+ 
 int error_object::operator()(int e,char *format,...)
   {
   va_list arg_ptr;

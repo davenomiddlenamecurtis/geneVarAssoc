@@ -295,13 +295,13 @@ int masterLocus::readQueryOutput(FILE *fp, analysisSpecs const &spec )
 		}
 		CDS_positionStr[0] = '-';
 		CDS_positionStr[0] = '\0';
-		if (sscanf(line, "%*s %*s %*s %*s %*s %*s %s %*s %s", ensemblConsequence[all], CDS_positionStr) < 1)
+		if (sscanf(line, "%*s %*s %*s %*s %*s %*s %s %*s %s", ensemblConsequence[all+1], CDS_positionStr) < 1)
 		{
 			dcerror(1, "Could not find consequence in this line from variant_predictor: \n%s", line);
 			return 0;
 		}
 		if (CDS_positionStr[0] != '-')
-			sprintf(strchr(ensemblConsequence[all], '\0'), " %s", CDS_positionStr);
+			sprintf(strchr(ensemblConsequence[all+1], '\0'), " %s", CDS_positionStr);
 	}
 	return 1;
 }
@@ -315,26 +315,10 @@ int masterLocus::writePredictorQuery(FILE *fp, analysisSpecs const &spec )
 		return 1; // predictor produces no output for these
 	if (nAlls<2)
 		return 1;
-#if 0
-	// for now, we will only consider first of alternate alleles
-	if (alls[0][0]!='-')
-	{
-		start=pos;
-		end=pos+strlen(alls[1])-1;
-	}
-	else
-	{
-		// this may not be quite right
-		// assume we have deletion and first allele of alternates gives the length
-		start=pos+strlen(alls[1]);
-		end=pos;
-	}
-#else
 	for (all = 0; all < (spec.mergeAltAlleles ? 1 : nAlls - 1);++all)
 	{
 		start = pos;
-			end = pos + strlen(alls[0]) - 1; // does this work if first allele is - ?
-#endif
+			end = pos + strlen(alls[all+1]) - 1; // does this always work ?
 			if (chr == 23)
 				strcpy(chrStr, "X");
 			else
@@ -418,7 +402,7 @@ if (recPos!=0L)
 		for (all = 0; all < (spec.mergeAltAlleles ? 1 : tempRecord.nAlls - 1); ++all)
 		{
 			if (!redo) // may have already been set using a different gene
-				tempRecord.quickConsequence[all][0] = '\0';
+				tempRecord.quickConsequence[all+1][0] = '\0';
 			tempRecord.getQuickFeature(r,all+1);
 		}
 		// some other program calls this and feature may already be set
@@ -750,10 +734,10 @@ int masterLocusFile::writeScoreAssocFiles(masterLocusFile &subFile,char *root, f
 						sprintf(comment, "%s:%s:%s", posStr, tempRecord.getID(), (char*)(*rv));
 					delete rv;
 				}
-				else if (tempRecord.ensemblConsequence[0] != '\0')
-					sprintf(comment, "%s:%s:%s", posStr, tempRecord.getID(), tempRecord.ensemblConsequence);
-				else if (tempRecord.quickConsequence[0] != '\0')
-					sprintf(comment, "%s:%s:%s", posStr, tempRecord.getID(), tempRecord.quickConsequence);
+				else if (tempRecord.ensemblConsequence[all+1][0] != '\0')
+					sprintf(comment, "%s:%s:%s", posStr, tempRecord.getID(), tempRecord.ensemblConsequence[all+1]);
+				else if (tempRecord.quickConsequence[all+1][0] != '\0')
+					sprintf(comment, "%s:%s:%s", posStr, tempRecord.getID(), tempRecord.quickConsequence[all+1]);
 				else
 					sprintf(comment, "%s:%s:", posStr, tempRecord.getID());
 				for (ptr = comment; *ptr; ++ptr)
