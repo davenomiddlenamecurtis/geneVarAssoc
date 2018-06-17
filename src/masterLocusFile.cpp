@@ -1879,7 +1879,7 @@ for (i=0;i<nLF;++i)
 // one day will have to allocate localLocus of correct type to these
 for (all = 0; all < MAXALL; ++all)
 {
-	ensemblConsequence[all][0] = quickConsequence[all][0] == '\0';
+	ensemblConsequence[all][0] = quickConsequence[all][0] = '\0';
 	worstConsequenceType[all] = NULL_CONSEQUENCE;
 }
 masterID[0]='\0';
