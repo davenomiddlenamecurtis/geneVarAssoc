@@ -78,12 +78,8 @@ struct	btree	*bt;
 #ifdef BYTEORDER
 	struct	btsuper	boge;
 #endif
-#ifndef NODCURTISCHANGES
-#ifndef _SYS_UNISTD_H 
-#ifndef _UNISTD_H 
+#ifdef NODCURTISCHANGES
 	extern	long	lseek();
-#endif
-#endif
 #endif
 
 	if (lseek(bt->fd, 0L, 0) < 0)
@@ -489,7 +485,9 @@ struct	btree	*bt;
 	struct	btnode	r_node;
 	struct	btnode	p_node;
 	int	compare;
+#ifdef NODCURTISCHANGES
 	extern	char	*strncpy();
+#endif
 
 
 	/* the very first node gets inserted specially */
