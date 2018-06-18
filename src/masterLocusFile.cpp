@@ -902,7 +902,8 @@ if (recPos!=0L)
 		for (std::list<std::string>::const_iterator it=spec.excludeExpressions.begin();it!=spec.excludeExpressions.end();++it)
 		{
 			geneVarParser *eP=new geneVarParser;
-			eP->parse(it->c_str());
+			const char *s = it->c_str();
+			eP->parse(s);
 			excludeParser.push_back(eP);
 		}
 	}
@@ -991,7 +992,7 @@ if (recPos!=0L)
 					for (std::list<geneVarParser *>::iterator it = excludeParser.begin(); it != excludeParser.end(); ++it)
 					{
 						rv = (*it)->eval();
-						val = *(double*)(rv);
+						val = (double)(*rv);
 						delete rv;
 						if (val != 0)
 							useLocus[splitLocusCount] = 0;

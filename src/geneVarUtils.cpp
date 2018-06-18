@@ -135,7 +135,8 @@ int gvaParams::readParms(int argc,char *argv[],analysisSpecs &spec)
 		}
 		else if (FILLARG("--exclude-expression"))
 		{
-			spec.excludeExpressions.push_back(arg);
+			std::string *argStr = new std::string(arg);
+			spec.excludeExpressions.push_back(*argStr);
 //			if(strstr(arg,"VEP"))
 //				spec.willNeedEnsemblConsequence=1;
 			if(strstr(arg,"INBUILT"))

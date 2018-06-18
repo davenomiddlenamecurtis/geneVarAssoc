@@ -30,8 +30,8 @@
 --reference-path \reference
 --GQ-threshold 30
 --exclusion-list -
-freq(0)=0 & freq(1)=0
-freq(0)>0.1 & freq(1)>0.1
-(0 genocount 0) > (0 genocount 1) & (0 genocount 2) > (0 genocount 1) & (1 genocount 0) > (1 genocount 1) & (1 genocount 2) > (1 genocount 1)     
+FREQ(0)=0 & FREQ(1)=0
+FREQ(0)>0.1 & FREQ(1)>0.1
+(0 GENOCOUNT 0) > (0 GENOCOUNT 1) & (0 GENOCOUNT 2) > (0 GENOCOUNT 1) & (1 GENOCOUNT 0) > (1 GENOCOUNT 1) & (1 GENOCOUNT 2) > (1 GENOCOUNT 1)     
 nsub(1)<97
 

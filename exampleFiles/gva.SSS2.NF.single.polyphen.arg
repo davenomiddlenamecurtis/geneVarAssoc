@@ -24,9 +24,9 @@
 --GQ-threshold 30
 --exclude-expression ' (("AF" VCFLOOKUP "../vcf/SSS2/ExAC.r0.3.nonpsych.sites.vcf.gz")) > 0'
 --exclusion-list -
-freq(0)=0 & freq(1)=0
+FREQ(0)=0 & FREQ(1)=0
 nsub(0)<5834-583 | nsub(1)<4225-423
-(0 genocount 1) + (1 genocount 1) != 1
-(0 genocount 0) > (0 genocount 1) & (0 genocount 2) > (0 genocount 1) & (1 genocount 0) > (1 genocount 1) & (1 genocount 2) > (1 genocount 1)     
+(0 GENOCOUNT 1) + (1 GENOCOUNT 1) != 1
+(0 GENOCOUNT 0) > (0 GENOCOUNT 1) & (0 GENOCOUNT 2) > (0 GENOCOUNT 1) & (1 GENOCOUNT 0) > (1 GENOCOUNT 1) & (1 GENOCOUNT 2) > (1 GENOCOUNT 1)     
 
 
