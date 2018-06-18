@@ -9,7 +9,7 @@ C = gcc
 CC = g++
 MAXVCFFILES = 10
 MAXSUB = 20000
-CFLAGS = $(OURFLAGS) 
+CFLAGS = -DMAXSUB=${MAXSUB} -DMAXVCFFILES=${MAXVCFFILES}
 
 HEADERS = btree.h consequenceType.hpp dcerror.hpp dcindex.hpp geneVarUtils.hpp getGene.hpp getSequence.hpp intervalList.h masterLocusFile.hpp vcfLocusFile.hpp hapsLocusFile.hpp geneVarParser.hpp dcexpr.hpp
 EXE = geneVarAssoc intVarAssoc
@@ -34,10 +34,10 @@ clean:
 VPATH=../src
 	
 %.o: ../src/%.cpp $(HEADERS)
-	$(CC) $(CFLAGS) -DMAXSUB=${MAXSUB} -DMAXVCFFILES=${MAXVCFFILES} -c $< -o ../obj/$@
+	$(CC) $(CFLAGS) $(DEBUGFLAG)  -c $< -o ../obj/$@
 	
 %.o: ../src/%.c $(HEADERS)
-	$(C) $(CFLAGS) -DMAXSUB=${MAXSUB} -DMAXVCFFILES=${MAXVCFFILES} -c $< -o ../obj/$@
+	$(C) $(CFLAGS) $(DEBUGFLAG) -c $< -o ../obj/$@
 
 groupGetGenotypes: groupGetGenotypes.o btree.o consequenceType.o dcerror.o dcindex.o geneVarUtils.o getGeneFuncs.o getSequenceFuncs.o intervalList.o vcfLocusFile.o vcfWriteVars.o masterLocusFile.o hapsLocusFile.o outputGenotypes.o 
 	$(CC) -o groupGetGenotypes groupGetGenotypes.o  btree.o consequenceType.o dcerror.o dcindex.o geneVarUtils.o getGeneFuncs.o getSequenceFuncs.o intervalList.o vcfLocusFile.o vcfWriteVars.o masterLocusFile.o hapsLocusFile.o outputGenotypes.o 
