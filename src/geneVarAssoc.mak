@@ -20,7 +20,7 @@ all:
 	if [ ! -e ../obj ] ; then mkdir ../obj ; fi ; \
 	if [ ! -e ${DCBIN} ] ; then mkdir ${DCBIN} ; fi ; \
 	cd ../obj; \
-	make -f ../src/geneVarAssoc.mak INOBJ=INOBJ CFLAGS=$(CFLAGS) MAXSUB=${MAXSUB} MAXVCFFILES=${MAXVCFFILES} ; \
+	make -f ../src/geneVarAssoc.mak INOBJ=INOBJ MAXSUB=${MAXSUB} MAXVCFFILES=${MAXVCFFILES} ; \
 	cp ${EXE} ${DCBIN} ; \
 	echo copied executables to ${DCBIN} ; \
 	cd ../src
