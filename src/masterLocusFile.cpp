@@ -323,7 +323,7 @@ int masterLocus::writePredictorQuery(FILE *fp, analysisSpecs const &spec )
 				strcpy(chrStr, "X");
 			else
 				sprintf(chrStr, "%d", chr);
-			fprintf(fp, "%s\t%ld\t%ld\t%s/%s\t+\n", chrStr, start, end, alls[0], alls[all+1]);
+			fprintf(fp, "%s\t%ld\t%ld\t%s/%s\t+\n", chrStr, start, end, (alls[0][0]=='*'?"-":alls[0]), (alls[0][all + 1] == '*' ? "-" : alls[all + 1]));
 	}
 	return 1;
 }

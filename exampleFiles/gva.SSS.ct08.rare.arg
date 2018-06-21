@@ -24,7 +24,7 @@
 --GQ-threshold 30
 --exclusion-list -
 FREQ(0)=0 & FREQ(1)=0
-nsub(0)<2545-100 | nsub(1)<2545-100
+NSUB(0)<2545-100 | NSUB(1)<2545-100
 FREQ(0)>0.1 & FREQ(1)>0.1
 (0 GENOCOUNT 0) > (0 GENOCOUNT 1) & (0 GENOCOUNT 2) > (0 GENOCOUNT 1) & (1 GENOCOUNT 0) > (1 GENOCOUNT 1) & (1 GENOCOUNT 2) > (1 GENOCOUNT 1)     
 

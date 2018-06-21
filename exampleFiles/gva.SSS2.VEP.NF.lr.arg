@@ -30,7 +30,7 @@
 --testfile ../pars/score.PCs.PRS.CNVs.tst.NF
 --exclusion-list -
 FREQ(0)=0 & FREQ(1)=0
-nsub(0)<5834-583 | nsub(1)<4225-423
+NSUB(0)<5834-583 | NSUB(1)<4225-423
 FREQ(0)>0.01 & FREQ(1)>0.01
 (0 GENOCOUNT 0) > (0 GENOCOUNT 1) & (0 GENOCOUNT 2) > (0 GENOCOUNT 1) & (1 GENOCOUNT 0) > (1 GENOCOUNT 1) & (1 GENOCOUNT 2) > (1 GENOCOUNT 1)     
 

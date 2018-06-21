@@ -25,7 +25,7 @@
 --exclude-expression ' (("AF" VCFLOOKUP "../vcf/SSS2/ExAC.r0.3.nonpsych.sites.vcf.gz")) > 0'
 --exclusion-list -
 FREQ(0)=0 & FREQ(1)=0
-nsub(0)<5834-583 | nsub(1)<4225-423
+NSUB(0)<5834-583 | NSUB(1)<4225-423
 (0 GENOCOUNT 1) + (1 GENOCOUNT 1) != 1
 (0 GENOCOUNT 0) > (0 GENOCOUNT 1) & (0 GENOCOUNT 2) > (0 GENOCOUNT 1) & (1 GENOCOUNT 0) > (1 GENOCOUNT 1) & (1 GENOCOUNT 2) > (1 GENOCOUNT 1)     
 
