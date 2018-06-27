@@ -103,6 +103,7 @@ public:
 		GQThreshold=-1;
 		hetDevThreshold=hetDevThresholdSq=-1;
 		depthThreshold = -1;
+		ABThreshold = -1;
 		onlyUseSNPs=0;
 		doRecessiveTest=0;
 		weightThreshold=0;
@@ -124,7 +125,7 @@ int useEnsembl,willNeedEnsemblConsequence,willNeedInbuiltConsequence,mergeAltAll
 int *phenotypes;
 TStrIntMap subPhenos;
 long sp,ep;
-float GQThreshold,proportionCalledToPass,hetDevThreshold,hetDevThresholdSq,depthThreshold;
+float GQThreshold,proportionCalledToPass,hetDevThreshold,hetDevThresholdSq,depthThreshold,ABThreshold;
 float weightThreshold,LDThreshold,wf;
 float consequenceThreshold;
 char exclusionStr[20][200];

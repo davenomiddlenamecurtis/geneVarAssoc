@@ -74,7 +74,7 @@ int gvaParams::readParms(int argc,char *argv[],analysisSpecs &spec)
 	spec.unknownIfNoPass=0;
 	spec.useHaplotypes=0;
 	spec.GQThreshold=0;
-	spec.depthThreshold=spec.hetDevThreshold=spec.hetDevThresholdSq=-1;
+	spec.depthThreshold=spec.hetDevThreshold=spec.hetDevThresholdSq=spec.ABThreshold=-1;
 	spec.ignoreAlleles=0;
 	*referencePath=*sequencePath=*posName='\0';
 	*spec.alleleFreqStr=*spec.alleleNumberStr=*spec.alleleCountStr='\0';
@@ -264,6 +264,8 @@ int gvaParams::readParms(int argc,char *argv[],analysisSpecs &spec)
 			spec.GQThreshold = atof(arg);
 		else if (FILLARG("--depth-threshold"))
 			spec.depthThreshold = atof(arg);
+		else if (FILLARG("--AB-threshold"))
+			spec.ABThreshold = atof(arg);
 		else if(FILLARG("--hetdev-threshold"))
 		{
 			spec.hetDevThreshold=atof(arg);

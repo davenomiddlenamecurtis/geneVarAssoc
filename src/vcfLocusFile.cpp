@@ -232,7 +232,7 @@ int vcfLocalLocus::outputProbs(probTriple *prob,FILE *f,FILEPOSITION filePos,int
 int vcfLocalLocus::outputAlleles(allelePair *all,FILE *f,FILEPOSITION filePos,int nSubs,int *alleleMap,analysisSpecs const &spec)
 {
 	char *ptr,allStr[20],*aptr,*ptr2;
-	int s,i;
+	int s,i,hdFail,dFail,abFail;
 	float gq,ad[2],hetDev,dp;
 	if (fseek(f,filePos,SEEK_SET)!=0)
 	{
@@ -301,9 +301,10 @@ int vcfLocalLocus::outputAlleles(allelePair *all,FILE *f,FILEPOSITION filePos,in
 			all[s][0] = all[s][1] = 1;
 		else if (allStr[0]=='.' || gq<spec.GQThreshold)
 			all[s][0]=all[s][1]=0;
-		else if ((spec.hetDevThresholdSq!=-1 && allStr[0]!=allStr[2]) || spec.depthThreshold!=-1)
+		else if (((spec.hetDevThresholdSq!=-1 || spec.ABThreshold!=-1) && allStr[0]!=allStr[2]) || spec.depthThreshold!=-1 )
 		{
 			ptr2=ptr;
+			hdFail = dFail = abFail = 0;
 			for(i=0;i<ADpos;++i)
 			{
 				while(*ptr2!=':')
@@ -322,8 +323,23 @@ int vcfLocalLocus::outputAlleles(allelePair *all,FILE *f,FILEPOSITION filePos,in
 				++ptr2;
 			ad[1]=atof(ptr2+1);
 			dp=ad[0]+ad[1];
-			hetDev = dp / 2 - ad[0]; // avoid calling sscanf, sqrt, etc.
-			if (hetDev*hetDev > spec.hetDevThresholdSq*0.25 || dp<spec.depthThreshold) // heterozygous counts too far from expected
+			if (allStr[0] != allStr[2])
+			{
+				if (spec.hetDevThresholdSq != -1)
+				{
+					hetDev = dp / 2 - ad[0]; // avoid calling sscanf, sqrt, etc.
+					if (hetDev*hetDev > spec.hetDevThresholdSq*0.25)
+						hdFail = 1;
+				}
+				if (spec.ABThreshold != -1)
+				{
+					if (ad[1] / dp < spec.ABThreshold || ad[0] / dp < spec.ABThreshold)
+						abFail = 1;
+				}
+			}
+			if (dp < spec.depthThreshold)
+				dFail = 1;
+			if (hdFail || abFail|| dFail) // heterozygous counts too far from expected
 				all[s][0] = all[s][1] = 0;
 			else
 			{
