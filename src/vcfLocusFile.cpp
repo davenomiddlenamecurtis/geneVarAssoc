@@ -323,7 +323,7 @@ int vcfLocalLocus::outputAlleles(allelePair *all,FILE *f,FILEPOSITION filePos,in
 			ad[1]=atof(ptr2+1);
 			dp=ad[0]+ad[1];
 			hetDev = dp / 2 - ad[0]; // avoid calling sscanf, sqrt, etc.
-			if (hetDev*hetDev > dp*spec.hetDevThresholdSq || dp<spec.depthThreshold) // heterozygous counts too far from expected
+			if (hetDev*hetDev > spec.hetDevThresholdSq*0.25 || dp<spec.depthThreshold) // heterozygous counts too far from expected
 				all[s][0] = all[s][1] = 0;
 			else
 			{
