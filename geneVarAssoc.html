@@ -17,17 +17,17 @@ xmlns="http://www.w3.org/TR/REC-html40">
   <o:Author>David Curtis</o:Author>
   <o:Template>B436C3BA.dotm</o:Template>
   <o:LastAuthor>Curtis, David</o:LastAuthor>
-  <o:Revision>11</o:Revision>
-  <o:TotalTime>8469</o:TotalTime>
+  <o:Revision>13</o:Revision>
+  <o:TotalTime>8486</o:TotalTime>
   <o:Created>2018-06-13T14:53:00Z</o:Created>
-  <o:LastSaved>2018-06-21T08:43:00Z</o:LastSaved>
+  <o:LastSaved>2018-06-27T13:43:00Z</o:LastSaved>
   <o:Pages>43</o:Pages>
-  <o:Words>8015</o:Words>
-  <o:Characters>45687</o:Characters>
+  <o:Words>8041</o:Words>
+  <o:Characters>45836</o:Characters>
   <o:Company>UCL</o:Company>
-  <o:Lines>380</o:Lines>
+  <o:Lines>381</o:Lines>
   <o:Paragraphs>107</o:Paragraphs>
-  <o:CharactersWithSpaces>53595</o:CharactersWithSpaces>
+  <o:CharactersWithSpaces>53770</o:CharactersWithSpaces>
   <o:Version>16.00</o:Version>
  </o:DocumentProperties>
  <o:OfficeDocumentSettings>
@@ -1304,11 +1304,11 @@ style='mso-bidi-font-style:normal'>PATH</i>.</p>
 
 <p class=MsoNormal>When <span class=SpellE><i style='mso-bidi-font-style:normal'>geneVarAssoc</i></span>
 is run it uses <span class=SpellE><i style='mso-bidi-font-style:normal'>tabix</i></span>
-to extract the subset of variants matching the gene coordinates. Then it
-annotates them. Then it produces <span class=SpellE><i style='mso-bidi-font-style:
-normal'>scoreassoc</i></span> data files for valid variants and produces
-weights according to the annotations. Then it runs <span class=SpellE><i
-style='mso-bidi-font-style:normal'>scoreassoc</i></span>.</p>
+to extract the subset of variants matching the gene coordinates. Then it annotates
+them. Then it produces <span class=SpellE><i style='mso-bidi-font-style:normal'>scoreassoc</i></span>
+data files for valid variants and produces weights according to the
+annotations. Then it runs <span class=SpellE><i style='mso-bidi-font-style:
+normal'>scoreassoc</i></span>.</p>
 
 <p class=MsoNormal>Typically a parameter file specified by <i style='mso-bidi-font-style:
 normal'>--<span class=SpellE>arg</span>-file</i> would contain the
@@ -1675,7 +1675,7 @@ be a reasonable way to deal with multiallelic variants although it may be less
 appropriate if alternate alleles have a high frequency. <i style='mso-bidi-font-style:
 normal'><o:p></o:p></i></p>
 
-<h3>--consequence-threshold num</h3>
+<h3>--consequence-threshold <span class=SpellE>num</span></h3>
 
 <p class=MsoNormal>Tell <span class=SpellE><i style='mso-bidi-font-style:normal'>scoreassoc</i></span>
 to only use variants with an annotation number of <span class=SpellE><i
@@ -1687,8 +1687,8 @@ annotations for more details.</p>
 <h3>--use-consequence-weights 0 or 1</h3>
 
 <p class=MsoNormal>If 1, provide <span class=SpellE><i style='mso-bidi-font-style:
-normal'>scoreassoc</i></span> with functional weights based on the annotation
-for each variant, such that variants which are predicted to affect function are
+normal'>scoreassoc</i></span> with functional weights based on the annotation for
+each variant, such that variants which are predicted to affect function are
 weighted more highly.</p>
 
 <h3>--only-use-SNPs 0 or 1</h3>
@@ -1720,9 +1720,10 @@ rarity and function) exceeds the threshold.</p>
 
 <h3>--LD-threshold threshold</h3>
 
-<p class=MsoNormal>Instructs <span class=SpellE>scoreassoc</span> to drop a
-variant which occurs in more than the stated proportion of subjects with
-another variant.</p>
+<p class=MsoNormal>Instructs <span class=SpellE><i style='mso-bidi-font-style:
+normal'>scoreassoc</i></span>, when carrying out an analysis for recessive
+effects, to drop a variant which occurs in more than the stated proportion of
+subjects with another variant.</p>
 
 <h3>--add-<span class=SpellE>chr</span> 0 or 1 or 0011001, etc.</h3>
 
@@ -1743,6 +1744,12 @@ style='mso-bidi-font-style:normal'>vcf</i></span> files corresponding to the
 
 <p class=MsoNormal>Only output genotypes reaching this threshold for the
 genotype quality score and treat others as unknown.</p>
+
+<h3>--depth-threshold threshold<o:p></o:p></h3>
+
+<h3><span style='font-weight:normal;mso-bidi-font-weight:bold'>Treat as unknown
+a genotype for which there are fewer reads than specified by the <i
+style='mso-bidi-font-style:normal'>threshold</i>.<o:p></o:p></span></h3>
 
 <h3>--<span class=SpellE>hetdev</span>-threshold threshold</h3>
 
@@ -1947,10 +1954,11 @@ subsequently.</p>
 <h3>--interval-list-file file</h3>
 
 <p class=MsoNormal>Specifies file containing list of intervals from which <span
-class=SpellE><i style='mso-bidi-font-style:normal'>intVarAssoc</i></span> will extract
-variables and perform a <span class=SpellE><i style='mso-bidi-font-style:normal'>scoreassoc</i></span>
-analysis. Intervals are in format <span class=SpellE><i style='mso-bidi-font-style:
-normal'>chr:start-end</i></span>, e.g. 5:140000-240000.</p>
+class=SpellE><i style='mso-bidi-font-style:normal'>intVarAssoc</i></span> will
+extract variables and perform a <span class=SpellE><i style='mso-bidi-font-style:
+normal'>scoreassoc</i></span> analysis. Intervals are in format <span
+class=SpellE><i style='mso-bidi-font-style:normal'>chr:start-end</i></span>,
+e.g. 5:140000-240000.</p>
 
 <h3>--position <span class=SpellE>chr:pos</span></h3>
 
@@ -1964,11 +1972,11 @@ itself.</p>
 <p class=MsoNormal>An inbuilt parser is used to interpret the expressions which
 may be provided for the <i style='mso-bidi-font-style:normal'>--weight-expression</i>
 and <i style='mso-bidi-font-style:normal'>--exclude-expression </i>options. One
-can build up arbitrarily complex logical and arithmetic expressions and using
-the usual precedence rules and parentheses. The symbols &amp;, | and = mean
-AND, OR and IS EQUAL TO. Values are either floating point numbers or strings
-and conversion between these happens automatically as required, so the number
-3.7 converts into the string &quot;3.7&quot; and vice versa. If a string begins
+can build up arbitrarily complex logical and arithmetic expressions and using the
+usual precedence rules and parentheses. The symbols &amp;, | and = mean AND, OR
+and IS EQUAL TO. Values are either floating point numbers or strings and
+conversion between these happens automatically as required, so the number 3.7
+converts into the string &quot;3.7&quot; and vice versa. If a string begins
 with a number then this will be its numerical value and otherwise its value
 will be 0. A logical expression has a numerical value of 1 if true and 0 if
 false and a numerical expression has a logical value of false if it is 0 and
@@ -2566,12 +2574,11 @@ practical situations.</p>
   <p class=MsoNormal style='margin:0cm;margin-bottom:.0001pt;mso-pagination:
   widow-orphan'><span style='font-size:12.0pt;mso-bidi-font-family:Calibri;
   mso-bidi-theme-font:minor-latin;color:black'>Argument should be
-  &quot;INBUILT&quot; or &quot;VEP&quot;. For the variant currently under
-  consideration, it returns the string for the annotation produced by the
-  inbuilt functions or by <i style='mso-bidi-font-style:normal'>variant effect
-  predictor</i> (<i style='mso-bidi-font-style:normal'>VEP</i>). E.g. the
-  result for the expression ANNOT &quot;INBUILT&quot; might be
-  &quot;INTRONIC&quot;<o:p></o:p></span></p>
+  &quot;INBUILT&quot; or &quot;VEP&quot;. For the variant currently under consideration,
+  it returns the string for the annotation produced by the inbuilt functions or
+  by <i style='mso-bidi-font-style:normal'>variant effect predictor</i> (<i
+  style='mso-bidi-font-style:normal'>VEP</i>). E.g. the result for the
+  expression ANNOT &quot;INBUILT&quot; might be &quot;INTRONIC&quot;<o:p></o:p></span></p>
   </td>
  </tr>
  <tr style='mso-yfti-irow:39;height:14.4pt'>
@@ -2694,9 +2701,9 @@ Alternatively, an annotation for each position can be read in from an external
 VCF file. The inbuilt functions are quicker but less thorough and require that
 the files for the reference genome sequence are available. A string describing
 the annotation is obtained and then a weight is assigned to this according to a
-table matching annotation strings to weights. Each annotation also has an integer
-attached to it, which is used if the <i style='mso-bidi-font-style:normal'>--consequence-threshold
-option</i> is specified.</p>
+table matching annotation strings to weights. Each annotation also has an
+integer attached to it, which is used if the <i style='mso-bidi-font-style:
+normal'>--consequence-threshold option</i> is specified.</p>
 
 <p class=MsoNormal>The inbuilt annotations and default weights are as follows:</p>
 
@@ -3080,8 +3087,8 @@ option</i> is specified.</p>
  </tr>
 </table>
 
-<p class=MsoNormal>The <i style='mso-bidi-font-style:normal'>VEP</i> annotations
-and their default weights are as follows:</p>
+<p class=MsoNormal>The <i style='mso-bidi-font-style:normal'>VEP</i>
+annotations and their default weights are as follows:</p>
 
 <table class=MsoNormalTable border=0 cellspacing=0 cellpadding=0 width=444
  style='width:333.0pt;border-collapse:collapse;mso-yfti-tbllook:1184;
@@ -4183,8 +4190,8 @@ minor-fareast'>Comment expressions<o:p></o:p></span></h2>
 mso-fareast-theme-font:minor-fareast'>Expressions can be provided to define the
 text which will be output by <span class=SpellE><i style='mso-bidi-font-style:
 normal'>scoreAssoc</i></span> as the comment for each locus. By default these
-comments are based on the annotation which has been used. Any valid expression
-can be used, so for example one might use:<o:p></o:p></span></p>
+comments are based on the annotation which has been used. Any valid expression can
+be used, so for example one might use:<o:p></o:p></span></p>
 
 <p class=MsoNormal><i style='mso-bidi-font-style:normal'><span
 style='mso-fareast-font-family:"Times New Roman";mso-fareast-theme-font:minor-fareast'>--comment-expression
@@ -4539,8 +4546,8 @@ class=SpellE>vcf</span>/SSS2/SSS2SZphenosNoFinns10.txt<o:p></o:p></span></p>
 mso-fareast-theme-font:minor-fareast'>--case-file ../<span class=SpellE>vcf</span>/SSS2/swe.vcf.gz<o:p></o:p></span></p>
 
 <p class=commandCxSpMiddle><span style='mso-fareast-font-family:"Times New Roman";
-mso-fareast-theme-font:minor-fareast'>--ref-gene-file
-../reference/refseqgenesorted101115.txt <o:p></o:p></span></p>
+mso-fareast-theme-font:minor-fareast'>--ref-gene-file ../reference/refseqgenesorted101115.txt
+<o:p></o:p></span></p>
 
 <p class=commandCxSpMiddle><span style='mso-fareast-font-family:"Times New Roman";
 mso-fareast-theme-font:minor-fareast'>--reference-path ../reference<o:p></o:p></span></p>
@@ -4607,9 +4614,9 @@ mso-fareast-theme-font:minor-fareast'>--use-haplotypes 0 <o:p></o:p></span></p>
 mso-fareast-theme-font:minor-fareast'>--GQ-threshold 30<o:p></o:p></span></p>
 
 <p class=commandCxSpMiddle><span style='mso-fareast-font-family:"Times New Roman";
-mso-fareast-theme-font:minor-fareast'>--exclude-expression ' ((&quot;AF&quot; VCFLOOKUP
-&quot;/home/<span class=SpellE>rejudcu</span>/sequence/<span class=SpellE>ExAC</span>/ExAC.r0.3.nonpsych.sites.vcf.gz&quot;))
-&gt; 0'<o:p></o:p></span></p>
+mso-fareast-theme-font:minor-fareast'>--exclude-expression ' ((&quot;AF&quot;
+VCFLOOKUP &quot;/home/<span class=SpellE>rejudcu</span>/sequence/<span
+class=SpellE>ExAC</span>/ExAC.r0.3.nonpsych.sites.vcf.gz&quot;)) &gt; 0'<o:p></o:p></span></p>
 
 <p class=commandCxSpMiddle><span style='mso-fareast-font-family:"Times New Roman";
 mso-fareast-theme-font:minor-fareast'>--exclusion-list -<o:p></o:p></span></p>
@@ -4698,8 +4705,8 @@ zero allele frequency in both cases and controls.<o:p></o:p></span></p>
 mso-fareast-theme-font:minor-fareast'>NSUB(0)&lt;5834-583 | NSUB(1)&lt;4225-423<o:p></o:p></span></p>
 
 <p class=MsoNormal><span style='mso-fareast-font-family:"Times New Roman";
-mso-fareast-theme-font:minor-fareast'>This means to exclude any variants not successfully
-genotyped in more than 10% of cases or controls.<o:p></o:p></span></p>
+mso-fareast-theme-font:minor-fareast'>This means to exclude any variants not
+successfully genotyped in more than 10% of cases or controls.<o:p></o:p></span></p>
 
 <p class=command><span style='mso-fareast-font-family:"Times New Roman";
 mso-fareast-theme-font:minor-fareast'>(0 GENOCOUNT 1) + (1 GENOCOUNT 1) != 1<o:p></o:p></span></p>
@@ -4865,9 +4872,9 @@ mso-fareast-theme-font:minor-fareast'>--weight-expression ' ( GETPOLYPHEN
 style='mso-spacerun:yes'>&nbsp; </span>'<o:p></o:p></span></p>
 
 <p class=MsoNormal><span style='mso-fareast-font-family:"Times New Roman";
-mso-fareast-theme-font:minor-fareast'>There is a file of annotations in VCF format
-created by VEP (as described below). The output from VEP is contained in the
-CSQ entry of the information field. The <i style='mso-bidi-font-style:normal'>VCFLOOKUP</i>
+mso-fareast-theme-font:minor-fareast'>There is a file of annotations in VCF
+format created by VEP (as described below). The output from VEP is contained in
+the CSQ entry of the information field. The <i style='mso-bidi-font-style:normal'>VCFLOOKUP</i>
 operator is used to obtain this entry. Then the <i style='mso-bidi-font-style:
 normal'>GETPOLYPHEN</i> operator extracts the most damaging <span class=SpellE><i
 style='mso-bidi-font-style:normal'>polyPhen</i></span> annotation, if one is
@@ -4894,10 +4901,10 @@ style='font-size:14.0pt;font-family:"Courier New"'>probably_damaging</span></spa
 style='font-size:14.0pt;font-family:"Courier New"'> 10.0</span></p>
 
 <p class=MsoNormal><span style='mso-fareast-font-family:"Times New Roman";
-mso-fareast-theme-font:minor-fareast'>The effect of this is that if a variant
-has an annotation of possibly or probably damaging it will have a functional
-weight of 10. Otherwise it will have a weight of 0, meaning that it will be
-ignored in the <span class=SpellE><i style='mso-bidi-font-style:normal'>scoreassoc</i></span>
+mso-fareast-theme-font:minor-fareast'>The effect of this is that if a variant has
+an annotation of possibly or probably damaging it will have a functional weight
+of 10. Otherwise it will have a weight of 0, meaning that it will be ignored in
+the <span class=SpellE><i style='mso-bidi-font-style:normal'>scoreassoc</i></span>
 analysis.<o:p></o:p></span></p>
 
 <h2><span style='mso-fareast-font-family:"Times New Roman";mso-fareast-theme-font:

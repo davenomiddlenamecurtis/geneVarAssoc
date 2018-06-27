@@ -301,7 +301,7 @@ int vcfLocalLocus::outputAlleles(allelePair *all,FILE *f,FILEPOSITION filePos,in
 			all[s][0] = all[s][1] = 1;
 		else if (allStr[0]=='.' || gq<spec.GQThreshold)
 			all[s][0]=all[s][1]=0;
-		else if (spec.hetDevThresholdSq!=-1 && allStr[0]!=allStr[2]) // heterozygous
+		else if ((spec.hetDevThresholdSq!=-1 && allStr[0]!=allStr[2]) || spec.depthThreshold!=-1)
 		{
 			ptr2=ptr;
 			for(i=0;i<ADpos;++i)
@@ -322,13 +322,16 @@ int vcfLocalLocus::outputAlleles(allelePair *all,FILE *f,FILEPOSITION filePos,in
 				++ptr2;
 			ad[1]=atof(ptr2+1);
 			dp=ad[0]+ad[1];
-			hetDev=dp/2-ad[0]; // avoid calling sscanf, sqrt, etc.
-			if(hetDev*hetDev>dp*spec.hetDevThresholdSq) // heterozygous counts too far from expected
-				all[s][0]=all[s][1]=0;
+			hetDev = dp / 2 - ad[0]; // avoid calling sscanf, sqrt, etc.
+			if (hetDev*hetDev > dp*spec.hetDevThresholdSq || dp<spec.depthThreshold) // heterozygous counts too far from expected
+				all[s][0] = all[s][1] = 0;
 			else
 			{
-				all[s][0]=alleleMap[allStr[0]-'0']+1;
-				all[s][1]=alleleMap[allStr[2]-'0']+1;
+				if (allStr[1] == '\0')
+					allStr[2] = allStr[0];
+				// single allele - just double it for now
+				all[s][0] = alleleMap[allStr[0] - '0'] + 1;
+				all[s][1] = alleleMap[allStr[2] - '0'] + 1;
 			}
 		}
 		else
