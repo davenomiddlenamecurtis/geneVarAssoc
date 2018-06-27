@@ -328,7 +328,7 @@ int vcfLocalLocus::outputAlleles(allelePair *all,FILE *f,FILEPOSITION filePos,in
 				if (spec.hetDevThresholdSq != -1)
 				{
 					hetDev = dp / 2 - ad[0]; // avoid calling sscanf, sqrt, etc.
-					if (hetDev*hetDev > spec.hetDevThresholdSq*0.25)
+					if (hetDev*hetDev > spec.hetDevThresholdSq*dp*0.25)
 						hdFail = 1;
 				}
 				if (spec.ABThreshold != -1)
