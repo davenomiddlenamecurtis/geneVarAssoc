@@ -262,8 +262,10 @@ const char *refseqGeneInfo::tellEffect()
 		dcerror(1,"No match for consequence type %d\n",worstConsequence);
 		return NULL;
 	}
-	if (worstEffect.posInCDS!=0)
-		sprintf(strchr(featureBuff,'\0')," %d",worstEffect.posInCDS);
+	if (worstEffect.posInCDS != 0)
+		sprintf(strchr(featureBuff, '\0'), " %d", worstEffect.posInCDS);
+	if (worstEffect.aaPos != 0)
+		sprintf(strchr(featureBuff, '\0'), " %d", worstEffect.aaPos);
 	return featureBuff;
 }
 
@@ -333,7 +335,7 @@ int refseqTranscript::getSpliceSiteSequence(faSequenceFile &f,int sSStart,int sS
 int refseqTranscript::getCodingEffect(faSequenceFile &f,int pos,char *a0,char *a1)
 {
 	consequenceType nsType;
-	int posInGene,cdsStartExon,posExon,e,b,framePos;
+	int posInGene,cdsStartExon, cdsEndExon,posExon,e,b,framePos;
 	char oldAA,newAA;
 	char codon[4],newCodon[4],buff[4],all0[2],all1[2];
 	if (!strchr("GACT", *a0) || !strchr("GACT", *a1))
@@ -371,6 +373,9 @@ int refseqTranscript::getCodingEffect(faSequenceFile &f,int pos,char *a0,char *a
 		return 0;
 	}
 	// for gene on the - strand we will find the position from cdsStart which is actually the "end" of the code
+	// that is, posInGene is the position along the positive strand
+	// this can give us framePos, also along the positive strand
+	// remove lengths of intervening introns
 	for (e=cdsStartExon;e<posExon;++e)
 		posInGene-=exonStarts[e+1]-exonEnds[e]; 
 	framePos=(posInGene-1)%3; // 0, 1 or 2 - framePos is zero-based
@@ -431,7 +436,26 @@ int refseqTranscript::getCodingEffect(faSequenceFile &f,int pos,char *a0,char *a
 		sprintf(effect.codonStr,"%s/%s",codon,newCodon);
 	}
 	effect.consequence[effect.nConsequence++]=nsType;
-	effect.posInCDS=posInGene; // allow comparison with ensembl
+	if (strand!='+')
+	{
+		posInGene = cdsEnd-pos ; // cdEnd is base 0, pos and posInGene are base 1
+		cdsEndExon = -1;
+		for (e = 0; e < exonCount; ++e)
+			if (cdsEnd >= exonStarts[e] && cdsStart < exonEnds[e])
+			{
+				cdsEndExon = e;
+				break;
+			}
+		if (cdsEndExon == -1)
+		{
+			dcerror(1, "Could not find cdsEndExon in %s", geneName);
+			return 0;
+		}
+		for (e = posExon; e<cdsEndExon; ++e)
+			posInGene -= exonStarts[e + 1] - exonEnds[e];
+	}
+	effect.posInCDS = posInGene; // allow comparison with ensembl - 1-based? - this is not matching VEP
+	effect.aaPos = (effect.posInCDS - 1) / 3 + 1;
 	return 1;
 }
 

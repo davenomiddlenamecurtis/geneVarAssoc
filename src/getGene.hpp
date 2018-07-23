@@ -39,11 +39,11 @@ along with geneVarAssoc.If not, see <http://www.gnu.org/licenses/>.
 
 class varEffect {
 public:
-int posInCDS,nConsequence;
+int posInCDS,nConsequence,aaPos;
 consequenceType consequence[5];
 char aaStr[10],codonStr[10],spliceStr[(NSBACCEPTOREXON+NSBACCEPTORINTRON)*2+10];
 varEffect() {;}
-void clear (){ nConsequence=0; aaStr[0]=codonStr[0]=spliceStr[0]='\0'; posInCDS=0;}
+void clear (){ nConsequence=0; aaStr[0]=codonStr[0]=spliceStr[0]='\0'; aaPos=posInCDS=0;}
 };
 
 class refseqTranscript {

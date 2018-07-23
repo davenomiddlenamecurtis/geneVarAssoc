@@ -244,7 +244,7 @@ dcexpr_string *getAlleleAnnotation(dcexpr_val *r1)
 	if (lineBuff[0] == '\0')
 	{
 		dcerror.warn();
-		dcerror(1, "Failed to find annotation for allele %s in this string:\n%s\n\nIf you use --merge-alt-alleles 0 then there must be an allele-specific annotation in the VEP output and you should not use --pick when running VEP. However may be no matching allele for indels so will use whole string.",altAllStr,CSQEntry);
+		dcerror(1, "Failed to find annotation for allele %s in this string:\n%s\n\nIf you use --merge-alt-alleles 0 then there must be an allele-specific annotation in the VEP output and you should not use --pick when running VEP. However there may be no matching allele for e.g. indels so will use whole string to select most severe variant. ",altAllStr,CSQEntry);
 		strcpy(lineBuff, CSQEntry);
 	}
 	rv = new dcexpr_string(lineBuff);
