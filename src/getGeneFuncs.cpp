@@ -438,7 +438,7 @@ int refseqTranscript::getCodingEffect(faSequenceFile &f,int pos,char *a0,char *a
 	effect.consequence[effect.nConsequence++]=nsType;
 	if (strand!='+')
 	{
-		posInGene = cdsEnd-pos ; // cdEnd is base 0, pos and posInGene are base 1
+		posInGene = cdsEnd-pos +1; // cdsEnd is base 1, pos and posInGene are base 1
 		cdsEndExon = -1;
 		for (e = 0; e < exonCount; ++e)
 			if (cdsEnd >= exonStarts[e] && cdsStart < exonEnds[e])
