@@ -21,6 +21,8 @@ along with geneVarAssoc.If not, see <http://www.gnu.org/licenses/>.
  
 #include "dcerror.hpp"
 #include "dcindex.hpp"
+#include <stdio.h>
+#include <stdlib.h>
 
 int dcIndex::add(char *key,long rec)
 // not checking here to see if already exists
@@ -37,11 +39,13 @@ long dcIndex::get_last()
 
 int dcIndex::remove()
 {
+	std::map<std::string, long, keyComp>::iterator togo;
 	if (m.empty())
 		return 0;
 	else
 	{
-		it=m.erase(it);
+		togo = it++;
+		m.erase(togo);
 		return 1;
 	}
 }
