@@ -261,7 +261,7 @@ typedef locusFile *LOCUSFILEPTR;
 #define MAXLOCIINSCOREASSOCFILE 25000
 
 class masterLocusFile  {
-	dcIndex index;
+	dc_index index;
 	FILE *recordFile;
 	masterLocus tempRecord;
 	localLocus *tempLocus;
