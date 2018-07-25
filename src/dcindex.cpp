@@ -169,6 +169,8 @@ dcIndex::~dcIndex()
 void dcIndex::close()
 {
 	FILE *fp;
+	if (fn.c_str()[0] == '\0')
+		return;
 	fp = fopen(fn.c_str(), "w");
 	if (fp == 0)
 		dcerror(1, "Could not open index file %s", fn.c_str());
