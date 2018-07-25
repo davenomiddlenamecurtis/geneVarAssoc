@@ -21,20 +21,33 @@ along with geneVarAssoc.If not, see <http://www.gnu.org/licenses/>.
 #ifndef DCINDEXHPP
 #define DCINDEXHPP 1
 
-#include "btree.h"
+#include <map>
+#include <string>
+#include <string.h>
 
-class dc_index {
-BTREE *h1;
-long node_nbr;
-BTNODE cnode;
+#define MAXKEYLENGTH	1000
+
+struct keyComp {
+	bool operator()(const std::string &s, const std::string &t) const {
+		return strcmp(s.c_str(), t.c_str()) < 0;
+	}
+};
+
+
+class dcIndex {
+	std::map<std::string, long, keyComp> m;
+	std::string fn;
+	std::map<std::string, long, keyComp>::iterator it;
+	// use this to mimic previous functionality
 public:
 int dump(char *fn);
-int is_open() { return h1!=0; }
+int is_open() { return fn.c_str()[0]!='\0' && !m.empty(); }
 int open_old(char *name);
 int make_new(char *name);
 void close();
 int add(char *key,long rec);
-int remove(); // can only remove current item from btree
+int remove(char *key); // probably do not need this
+int remove(); // probably do not need this
 long get_first();
 long get_last();
 long get_prev();
@@ -42,9 +55,9 @@ long get_next();
 long exact_find(char *key);
 long near_find(char *key);
 int find_matching_node(char *key,long rec);
-const char *current_key() { return cnode.key; }
-dc_index();
-~dc_index();
+const char *current_key() { return it->first.c_str(); }
+dcIndex();
+~dcIndex();
 };
 
 #endif
