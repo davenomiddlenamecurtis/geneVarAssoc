@@ -914,7 +914,7 @@ if (recPos!=0L)
 			break;
 		if (c==spec.ec && atol(testKey+3)>spec.ep)
 			break;
-		for (all = 0; all < (spec.mergeAltAlleles?1:tempRecord.nAlls - 1); ++all)
+		for (all = 1; all < (spec.mergeAltAlleles?2:tempRecord.nAlls); ++all)
 		{
 			locusWeight[splitLocusCount] = 1.0; // default if nothing else changes it
 			useLocus[splitLocusCount] = 1;
@@ -977,7 +977,7 @@ if (recPos!=0L)
 				if (spec.weightExpression[0] && spec.useConsequenceWeights)
 				{
 					geneVarParser::thisLocus = &tempRecord;
-					geneVarParser::thisAltAllele = all + 1;
+					geneVarParser::thisAltAllele = all;
 					dcexpr_val *rv = weightParser.eval();
 					locusWeight[splitLocusCount] = double(*rv);
 					delete rv;
@@ -988,7 +988,7 @@ if (recPos!=0L)
 					dcexpr_val *rv;
 					geneVarParser::thisLocus = &tempRecord;
 					geneVarParser::thisWeight = locusWeight[splitLocusCount];
-					geneVarParser::thisAltAllele = all + 1;
+					geneVarParser::thisAltAllele = all;
 					for (std::list<geneVarParser *>::iterator it = excludeParser.begin(); it != excludeParser.end(); ++it)
 					{
 						rv = (*it)->eval();
