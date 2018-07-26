@@ -1034,10 +1034,10 @@ int masterLocusFile::gotoNextInRange(analysisSpecs &spec)
 	const char *testKey;
 	int c;
 	FILEPOSITION recPos;
+	recPos = index.get_next();
 	testKey=index.current_key();
 	if ((c=atoi(testKey))==0 || c>spec.ec || (c==spec.ec && atol(testKey+3)>spec.ep))
 		return 0;
-	recPos=index.get_next();
 	if (recPos==0 || load(tempRecord,recPos)==0)
 		return 0;
 	else
@@ -1115,7 +1115,7 @@ int masterLocusFile::outputAlleles(allelePair **all, analysisSpecs &spec)
 	FILEPOSITION recPos;
 	const char *testKey;
 	int c, i, altIsCommon;
-	locusCount = 0;
+ 	locusCount = 0;
 // hereOK();
 	checkSystem();
 	if (gotoFirstInRange(spec))
@@ -1521,7 +1521,8 @@ int masterLocusFile::openFiles(char *rfn,char *ifn)
 			dcerror(99,"Could not create new index file %s",ifn);
 			return 0;
 		}
-		index.add("NO RECORD",0L); // just something to get index started so it is not empty
+		// index.add("NO RECORD",0L); // just something to get index started so it is not empty
+		// no longer need this and having this breaks near_find()
 	}
 	else
 	{
@@ -1908,6 +1909,8 @@ sprintf(key,"%3d %10ld",spec.sc,spec.sp);
 recPos=index.exact_find(key);
 if (recPos==0L)
 	recPos=index.near_find(key);
+if (recPos == 0L)
+	recPos = index.get_next(); // because near_find() can just jump to beginning
 if (recPos!=0L)
 // go back from here and try to find earliest which will match
 {

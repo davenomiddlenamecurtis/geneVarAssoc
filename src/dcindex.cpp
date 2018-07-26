@@ -19,188 +19,181 @@ along with geneVarAssoc.If not, see <http://www.gnu.org/licenses/>.
 
 /* this index will return 0L if it does not find a matching record */
  
-#include <fcntl.h> // for  O_CREAT etc.
-#ifndef MSDOS
-#include <unistd.h>
-#else
-#include <io.h> // for unlink()
-#include <dos.h> // for  O_CREAT etc.
-#endif
-
-#ifndef _O_BINARY
-#define _O_BINARY 0
-// if not defined yet then hopefully we do not need it - makes sure index files are binary
-#endif
-
-#include <string.h>
 #include "dcerror.hpp"
 #include "dcindex.hpp"
+#include <stdio.h>
+#include <stdlib.h>
 
-extern "C" {
-struct btree *btopen(char *path, int flags, int mode);
-int btclose(struct btree *bt);
-int btinsert(char *argkey, long recnbr, struct btree *bt);
-int btdelete(long node_nbr, struct btree *bt);
-int btnext(long *node_nbr,struct btnode *cno,struct	btree *bt);
-int btprevious(long *node_nbr,struct btnode *cno,struct btree *bt);
-int bttail(long *node_nbr,struct btnode *cno,struct btree *bt);
-int bthead(long *node_nbr,struct btnode *cno,struct btree *bt);
-int btfind(char *key1,long *node_nbr,struct btnode *cno,struct btree *bt);
-};
-
-int dc_index::add(char *key,long rec)
+int dcIndex::add(char *key,long rec)
+// not checking here to see if already exists
 {
-if (!h1) { dcerror(1,"index file is not open"); return 0; }
-char add_buff[BT_KSIZ];
-strncpy(add_buff,key, BT_KSIZ-1);
-add_buff[BT_KSIZ - 1] = '\0';
-int rv=btinsert(add_buff,rec,h1);
-if (rv<0) { dcerror(1,"btree error in add()"); return 0; }
-else return 1;
+	m.insert(std::pair<std::string, long>(key, rec));
+	return 1;
 }
 
-long dc_index::get_last()
+long dcIndex::get_last()
 {
-if (!h1) { dcerror(1,"index file is not open"); return 0L; }
-int rv=bttail(&node_nbr,&cnode,h1);
-if (rv==-1) { dcerror(1,"btree() error in get_last()"); return 0L; }
-else return rv==0?cnode.recno:0L;
+	return (m.empty()) ? 0L : (it= --m.end())->second;
 }
 
-int dc_index::remove()
+
+int dcIndex::remove()
 {
-if (!h1) { dcerror(1,"index file is not open"); return 0L; }
-int rv=btdelete(node_nbr,h1);
-if (rv<0) { dcerror(1,"btree() error in remove()"); return 0L; }
-else return 1;
+	std::map<std::string, long, keyComp>::iterator togo;
+	if (m.empty())
+		return 0;
+	else
+	{
+		togo = it++;
+		m.erase(togo);
+		return 1;
+	}
 }
 
-long dc_index::get_next()
+int dcIndex::remove(char *key)
 {
-if (!h1) { dcerror(1,"index file is not open"); return 0L; }
-int rv=btnext(&node_nbr,&cnode,h1);
-if (rv==-1) 
-  { 
-  dcerror(1,"btree() error in get_next()"); 
-  return 0L; 
-  }
-else if (rv==BT_EOF) return 0l; // at end
-// there seems to be an error in the btree routines so that when > 50,000 returns recPos=-1
-// need to fix this sometime
-else if (cnode.recno<0L) return 0l; // pretend we got to the end even though really an error
-else return cnode.recno;
+	return m.erase(key);
 }
 
-long dc_index::get_prev()
+long dcIndex::get_next()
 {
-int rv=btprevious(&node_nbr,&cnode,h1);
-if (rv==-1) { dcerror(1,"btree() error in get_prev()"); return 0L; }
-else if (rv==BT_EOF) return 0l; // at start
-else return cnode.recno;
+	if (m.empty() || it == m.end())
+		return 0L;
+	else 
+	{
+		++it;
+		return (it == m.end()) ? 0L : it->second;
+	}
 }
 
-long dc_index::get_first()
+long dcIndex::get_prev()
 {
-int rv=bthead(&node_nbr,&cnode,h1);
-if (rv==-1) { dcerror(1,"btree() error in get_first()"); return 0L; }
-else return rv==0?cnode.recno:0L;
+	if (m.empty() || it == m.begin())
+		return 0L;
+	else
+	{
+		--it;
+		return it->second;
+	}
 }
 
-int dc_index::find_matching_node(char *key,long rec)
+long dcIndex::get_first()
+{
+	if (m.empty())
+		return 0L;
+	else 
+	{
+		it = m.begin();
+		return it->second;
+	}
+}
+
+int dcIndex::find_matching_node(char *key,long rec)
 {
 // find first exact match, then try going backwards and forwards from it
 // till hit right record number
-int rv;
-rv=btfind(key,&node_nbr,&cnode,h1);
-if (rv==BT_NREC) 
-  { return 0; }
-else if (rv==-1) { dcerror(1,"btree error in find_matching_node()"); return 0; }
-do
-   { 
-   if (cnode.recno==rec) return 1;
-   int rrv=btnext(&node_nbr,&cnode,h1);
-   if (rrv==-1) { dcerror(1,"btree() error in find_matching_node()"); return 0; }
-   else if (rrv==BT_EOF) break; // at end
-   } while (!strcmp(key,cnode.key));
-rv=btfind(key,&node_nbr,&cnode,h1);
-if (rv==BT_NREC) 
-  { return 0; }
-else if (rv==-1) { dcerror(1,"btree error in find_matching_node()"); return 0; }
-do
-   { 
-   if (cnode.recno==rec) return 1;
-   int rrv=btprevious(&node_nbr,&cnode,h1);
-   if (rrv==-1) { dcerror(1,"btree() error in find_matching_node()"); return 0; }
-   else if (rrv==BT_EOF) break; // at start
-   } while (!strcmp(key,cnode.key));
-return 0;
+	if (m.empty() || (it=m.find(key))==m.end())
+		return 0L;
+	if (it->second != rec)
+	{
+		dcerror(1, "error in int dcIndex::find_matching_node(char *key,long rec): key=%s, rec=%ld but there is an entry for that key with rec=%ld\n",
+			key, rec, it->second);
+		return 0L;
+	}
 }
 
 
-long dc_index::exact_find(char *key)
+long dcIndex::exact_find(char *key)
 {
-if (!h1) { dcerror(1,"index file is not open"); return 0L; }
-int rv=btfind(key,&node_nbr,&cnode,h1);
-if (rv==BT_NREC) 
-  { 
-#if 0
-  dcerror(1,"key \"%s\" not found in exact_find()",key); 
-  // not necessarily a real error
-#endif
-  return 0L; 
-  }
-else if (rv==-1) { dcerror(1,"btree error in exact_find()"); return 0L; }
-else return cnode.recno;
+	if (m.empty() || (it = m.find(key)) == m.end())
+		return 0L;
+	else
+		return it->second;
 }
 
-long dc_index::near_find(char *key)
+long dcIndex::near_find(char *key)
 {
-if (!h1) { dcerror(1,"index file is not open"); return 0L; }
-int rv=btfind(key,&node_nbr,&cnode,h1);
-if (rv==-1) { dcerror(1,"btree error in near_find()"); return 0L; }
-else return cnode.recno;
+	if (m.empty() )
+		return 0L;
+	else
+	{
+		if ((it = m.lower_bound(key)) == m.end())
+			it = m.begin();
+		return it->second;
+	}
 }
 
-int dc_index::make_new(char *name)
+int dcIndex::make_new(char *name)
 {
-if (h1) close();
-::unlink(name);
-node_nbr=0L;
-if ((h1 = btopen(name,O_CREAT|O_RDWR|_O_BINARY,0600)) ==NULL)
-  { dcerror(1,"Could not create index file %s",name); return 0; }
-else return 1;
+	fn = name;
+	m.clear();
+	return 1;
 }
 
-int dc_index::open_old(char *name)
+int dcIndex::open_old(char *name)
 {
-if (h1) close();
-node_nbr=0L;
-if ((h1 = btopen(name,O_RDWR|_O_BINARY,0600)) ==NULL)
-  { 
-  dcerror(1,"Could not open index file %s",name); 
-  return 0; 
-  }
-else
-  {
-  get_first();
-  return 1;
-  }
+	FILE *fp;
+	char buff[MAXKEYLENGTH+1],*ptr;
+	long rec;
+	fp = fopen(name, "r");
+	if (fp==0)
+	{
+		dcerror(1, "Could not open index file %s", name);
+		return 0;
+	}
+	m.clear();
+	fn = name;
+	while (1)
+	{
+		if (!fgets(buff, MAXKEYLENGTH, fp))
+			break;
+		ptr = strchr(buff, '\n');
+		if (ptr == 0)
+		{
+			fclose(fp);
+			dcerror(1, "This line is too long in index file %s:\n%s\n", name, buff);
+			return 0;
+		}
+		else 
+			*ptr = '\0';
+		if (!fgets(buff, MAXKEYLENGTH, fp) || (rec=atol(buff),rec==0))
+		{
+			fclose(fp);
+			dcerror(1, "Could not read valid record number from index file %s for this key:\n%s\n", name, buff);
+			return 0;
+		}
+		m.insert(std::pair<std::string, long>(buff, rec));
+	}
+	fclose(fp);
+	it = m.begin();
+	return 1;
 }
 
-dc_index::~dc_index()
+dcIndex::~dcIndex()
 {
-close();
+	close();
 }
 
-void dc_index::close()
+void dcIndex::close()
 {
-if (h1) btclose(h1);
-h1=NULL;
+	FILE *fp;
+	if (fn.c_str()[0] == '\0')
+		return;
+	fp = fopen(fn.c_str(), "w");
+	if (fp == 0)
+		dcerror(1, "Could not open index file %s", fn.c_str());
+	else
+	{
+		for (it = m.begin(); it != m.end(); ++it)
+			fprintf(fp, "%s\n%ld\n", it->first.c_str(), it->second);
+	}
+	fclose(fp);
+	m.clear();
+	fn = "";
 }
 
-dc_index::dc_index()
+dcIndex::dcIndex()
 { 
-h1=NULL; 
-cnode.key[0]='\0';
+	fn = "";
 }
 
