@@ -1,0 +1,5 @@
+sift_missing 0
+tolerated  0
+unknown 0
+deleterious 10.0
+deleterious_low_confidence 8.0
