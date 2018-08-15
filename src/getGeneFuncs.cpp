@@ -232,7 +232,8 @@ consequenceType refseqGeneInfo::getEffect(int pos,char *all0,char *all1,int prom
 	faSequenceFile f;
 
 	sprintf(fn,"%s%s.fa",referencePath,chr);
-	f.init(fn);
+	if (!f.init(fn))
+		return NULL_CONSEQUENCE;
 	worstConsequence=NULL_CONSEQUENCE;
 	for (t=0;t<nTranscript;++t)
 	{

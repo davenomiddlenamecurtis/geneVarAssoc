@@ -110,6 +110,11 @@ int main(int argc,char *argv[])
 		{
 		if (spec.willNeedInbuiltConsequence)
 		{
+			if (gp.referencePath[0] == '\0')
+			{
+				dcerror(2, "Was going to annotate using inbuilt routines but cannot do this because --reference-folder has not been set\n");
+				return 1;
+			}
 			if (spec.weightExpression[0]=='\0' && ! spec.willNeedEnsemblConsequence)
 				strcpy(spec.weightExpression,"ANNOT(\"INBUILT\")GETWEIGHT(\"DEFAULTWEIGHTS\")");
 			// default behaviour is to use these weights unless told not to
