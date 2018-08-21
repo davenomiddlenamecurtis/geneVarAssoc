@@ -39,6 +39,7 @@ along with geneVarAssoc.If not, see <http://www.gnu.org/licenses/>.
 #define VCFFIELDLENGTH 2000 // maximum length for e.g. quality, format fields
 // even 3000 was too short for a UK10K gene with many PolyPhen entries
 #define MAXSCOREASSOCARGS 50
+#define MAXEXPRESSIONLENGTH 2000
 
 #include "dcindex.hpp"
 #include "dcerror.hpp"
@@ -133,9 +134,9 @@ char triosFn[200];
 char alleleFreqStr[100],alleleNumberStr[100],alleleCountStr[100],
 scoreassocArgs[MAXSCOREASSOCARGS][2][100];
 int nScoreassocArgs;
-char weightExpression[1000];
-char commentExpression[1000];
-char vepCommand[1000];
+char weightExpression[MAXEXPRESSIONLENGTH];
+char commentExpression[MAXEXPRESSIONLENGTH];
+char vepCommand[MAXEXPRESSIONLENGTH];
 std::list<std::string> excludeExpressions;
 };
 
