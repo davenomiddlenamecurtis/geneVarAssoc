@@ -9,7 +9,7 @@ C = gcc
 CC = g++
 MAXVCFFILES = 10
 MAXSUB = 20000
-CFLAGS = $(OURFLAGS) 
+CFLAGS = $(OURFLAGS) $(DEBUGFLAG)
 
 HEADERS = consequenceType.hpp dcerror.hpp dcindex.hpp geneVarUtils.hpp getGene.hpp getSequence.hpp intervalList.h masterLocusFile.hpp vcfLocusFile.hpp hapsLocusFile.hpp geneVarParser.hpp dcexpr.hpp
 EXE = geneVarAssoc intVarAssoc
