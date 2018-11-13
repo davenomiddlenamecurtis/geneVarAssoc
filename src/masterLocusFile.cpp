@@ -522,13 +522,14 @@ int masterLocusFile::loadNext(analysisSpecs &spec)
 	return 
 		load(tempRecord, currentRecPos);
 }
-#define MAXCOMMENTLENGTH 10000
+#define MAXCOMMENTLENGTH 250000 // can be 200K if multiple transcripts
+char comment[MAXCOMMENTLENGTH];
 // may be long VEP output
 int masterLocusFile::writeScoreAssocFiles(masterLocusFile &subFile,char *root, float wf, int *useFreqs, int *suppliedNSubs, int writeNames, int writeComments, int writeScorefile,analysisSpecs &spec)
 // allow information about subjects to be provided by a different masterLocusFile 
 // however we are assuming both files refer to identical set of subjects
 {
-	char fn[100],buff[MAXALL*MAXALLLENGTH],buff2[1000],comment[MAXCOMMENTLENGTH],*ptr,alleles[MAXSTR+1],commandString[1000],posStr[100];
+	char fn[100],buff[MAXALL*MAXALLLENGTH],buff2[1000],*ptr,alleles[MAXSTR+1],commandString[1000],posStr[100];
 	allelePair **a;
 	probTriple **p;
 	int totalSub,lc,s,l,ss,i,c,nValid,all,numSplitLoci;
