@@ -12,7 +12,7 @@ MAXSUB = 20000
 CFLAGS = $(DEBUGFLAG)
 
 HEADERS = consequenceType.hpp dcerror.hpp dcindex.hpp geneVarUtils.hpp getGene.hpp getSequence.hpp intervalList.h masterLocusFile.hpp vcfLocusFile.hpp hapsLocusFile.hpp geneVarParser.hpp dcexpr.hpp
-EXE = geneVarAssoc intVarAssoc
+EXE = geneVarAssoc intVarAssoc showAltSubs
 ifdef INOBJ
 all: ${EXE}
 else

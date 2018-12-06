@@ -49,6 +49,8 @@ int main(int argc,char *argv[])
 	if ((ptr=strchr(gp.posName,':'))==0)
 		dcerror(1,"Usage: showAltSubs --arg-file something.arg --position 7:12139555");
 	*ptr='\0';
+	spec.sc = spec.ec = gp.posName[0] == 'X' ? 23 : atoi(gp.posName);
+	spec.sp = spec.ep = atol(ptr + 1);
 	sprintf(posSpec,"%s%s:%s-%s",spec.addChrInVCF[0]?"chr":"",gp.posName,ptr+1,ptr+1);
 	sprintf(fn,"gva.altSubs.db");
 	sprintf(fn2,"gva.altSubs.vdx");

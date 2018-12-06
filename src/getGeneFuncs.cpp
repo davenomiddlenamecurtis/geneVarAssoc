@@ -760,12 +760,12 @@ int refseqGeneInfo::findGene(char *name)
 		startPos=ftell(geneListFile);
 		if (!fgets(geneLine,GENELINELENGTH-1,geneListFile) || sscanf(geneLine,"%s",lineName)!=1)
 		{
-			dcerror(3,"Could not find gene called %s in file %s",name,geneListFileName);
+			dcerror(3,"Could not find gene called %s in file %s\n",name,geneListFileName);
 			return 0;
 		}
 		if (sscanf(geneLine,"%*d %*s %*s %*c %*d %*d %*d %*d %*d %*s %*s %*d %s",lineName)!=1)
 		{
-			dcerror(4,"Could not read enough parameters from this line: %s",geneLine);
+			dcerror(4,"Could not read enough parameters from this line: %s\n",geneLine);
 			return 0;
 		}
 	} while (stricmp(name,lineName));
