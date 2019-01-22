@@ -72,7 +72,7 @@ int gvaParams::readParms(int argc,char *argv[],analysisSpecs &spec)
 	spec.unknownIfUntyped=0;
 	spec.skipIfNoPass=0;
 	spec.unknownIfNoPass=0;
-	spec.useHaplotypes=0;
+	spec.showHapLocusNames=spec.useHaplotypes=0;
 	spec.GQThreshold=0;
 	spec.depthThreshold=spec.hetDevThreshold=spec.hetDevThresholdSq=spec.ABThreshold=-1;
 	spec.ignoreAlleles=0;
@@ -237,7 +237,9 @@ int gvaParams::readParms(int argc,char *argv[],analysisSpecs &spec)
 		else if (FILLARG("--ignore-alleles")) // treat loci with different allele sets as the same locus
 			spec.ignoreAlleles=atoi(arg);
 		else if (FILLARG("--use-haplotypes"))
-			spec.useHaplotypes=atoi(arg);
+		spec.useHaplotypes = atoi(arg);
+		else if (FILLARG("--show-hap-locus-names"))
+		spec.showHapLocusNames = atoi(arg);
 		else if (FILLARG("--use-probs"))
 			spec.useProbs=atoi(arg);
 		else if (FILLARG("--dont-extract-variants"))

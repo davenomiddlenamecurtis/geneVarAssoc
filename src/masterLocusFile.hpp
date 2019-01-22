@@ -110,7 +110,7 @@ public:
 		weightThreshold=0;
 		LDThreshold=1;
 		phenotypes=NULL;
-		useHaplotypes=0;
+		showHapLocusNames=useHaplotypes=0;
 		useProbs=0;
 		count_hom_as_het=0;
 		useTrios=0;
@@ -121,7 +121,7 @@ public:
 		*commentExpression=*weightExpression='\0';
 		wf=10;
 	} 
-int onlycc01,unknownIfUntyped,unknownIfNoPass,altIsCommon,sc,ec,skipIfNoPass,useConsequenceWeights,onlyUseSNPs,nExc,doRecessiveTest,addChrInVCF[MAXVCFFILES],useHaplotypes,count_hom_as_het,useTrios,ignoreAlleles,useProbs,wildIfUnknown,debug;
+int onlycc01,unknownIfUntyped,unknownIfNoPass,altIsCommon,sc,ec,skipIfNoPass,useConsequenceWeights,onlyUseSNPs,nExc,doRecessiveTest,addChrInVCF[MAXVCFFILES],useHaplotypes, showHapLocusNames,count_hom_as_het,useTrios,ignoreAlleles,useProbs,wildIfUnknown,debug;
 int useEnsembl,willNeedEnsemblConsequence,willNeedInbuiltConsequence,mergeAltAlleles;
 int *phenotypes;
 TStrIntMap subPhenos;

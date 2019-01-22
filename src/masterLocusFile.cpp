@@ -649,22 +649,9 @@ int masterLocusFile::writeScoreAssocFiles(masterLocusFile &subFile,char *root, f
 		sprintf(strchr(commandString, '\0'), " --dorecessive 1 --minweight %f --ldthreshold %f ", spec.weightThreshold, spec.LDThreshold);
 		if (spec.useHaplotypes)
 			sprintf(strchr(commandString, '\0'), " --usehaps 1");
+		if (spec.showHapLocusNames)
+			sprintf(strchr(commandString, '\0'), " --showhaplocusnames 1");
 	}
-#if 0
-	fprintf(fp,"\n%f %d\n%d %d %d %d %d %d %f %f %d %d\n",
-		wf,
-		wFunc,
-		spec.useConsequenceWeights,
-		useFreqs[0],
-		useFreqs[1],
-		writeNames,
-		writeComments,
-		spec.doRecessiveTest,
-		spec.weightThreshold,
-		spec.LDThreshold,
-		spec.useHaplotypes,
-		spec.useTrios);
-#endif
 	checkSystem();
 	if (spec.useConsequenceWeights)
 	{
