@@ -27,21 +27,21 @@ along with geneVarAssoc.If not, see <http://www.gnu.org/licenses/>.
 #include <stdarg.h>
 #include <errno.h>
 
-extern void fg_error_display(char *s,va_list arg_ptr); // lives in bitmap.cpp
+extern void fg_error_display(const char *s,va_list arg_ptr); // lives in bitmap.cpp
 
 class error_object
 {
-friend void fg_error_display(char *s,va_list arg_ptr);
+friend void fg_error_display(const char *s,va_list arg_ptr);
 int fatal,showing,status;//,fg_inited;
 //va_list arg_ptr;
-void (*display_func)(char *,va_list);
+void (*display_func)(const char *,va_list);
 //void show_message(char *format);
 public:
-int operator()(int e,char *format,...);
+int operator()(int e, const char *format,...);
 int operator()(int e) { return operator()(e,0); }
 error_object();
 ~error_object();
-void set_display(void (*df)(char *,va_list));
+void set_display(void (*df)(const char *,va_list));
 void reset_display() { display_func=0; }
 int stat();
 void clear();

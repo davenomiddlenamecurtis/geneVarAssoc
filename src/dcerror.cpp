@@ -39,7 +39,7 @@ exit(1);
 #endif
 #endif
 
-int default_error_func(char *format,va_list arg_ptr)
+int default_error_func(const char *format,va_list arg_ptr)
 {
 #if 0
 char s[2000];
@@ -52,7 +52,7 @@ vfprintf(stderr,format,arg_ptr);
 return 0;
 }
  
-int error_object::operator()(int e,char *format,...)
+int error_object::operator()(int e, const char *format,...)
   {
   va_list arg_ptr;
   if (!format)
@@ -81,7 +81,7 @@ int error_object::operator()(int e,char *format,...)
 error_object::error_object() { showing=fatal=1; status=0; display_func=0;}
 
 error_object::~error_object() {;}
-void error_object::set_display(void (*df)(char *,va_list)) { display_func=df; }
+void error_object::set_display(void (*df)(const char *,va_list)) { display_func=df; }
 int error_object::stat() { return status; }
 void error_object::clear() { status=0; }
 void error_object::hide() { showing=0; }

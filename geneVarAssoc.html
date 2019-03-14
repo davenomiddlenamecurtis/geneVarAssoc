@@ -2,6 +2,7 @@
 xmlns:o="urn:schemas-microsoft-com:office:office"
 xmlns:w="urn:schemas-microsoft-com:office:word"
 xmlns:x="urn:schemas-microsoft-com:office:excel"
+xmlns:dt="uuid:C2F41010-65B3-11d1-A29F-00AA00C14882"
 xmlns:m="http://schemas.microsoft.com/office/2004/12/omml"
 xmlns="http://www.w3.org/TR/REC-html40">
 
@@ -17,17 +18,17 @@ xmlns="http://www.w3.org/TR/REC-html40">
   <o:Author>David Curtis</o:Author>
   <o:Template>B436C3BA.dotm</o:Template>
   <o:LastAuthor>Curtis, David</o:LastAuthor>
-  <o:Revision>20</o:Revision>
-  <o:TotalTime>9769</o:TotalTime>
+  <o:Revision>21</o:Revision>
+  <o:TotalTime>9772</o:TotalTime>
   <o:Created>2018-06-13T14:53:00Z</o:Created>
-  <o:LastSaved>2018-08-21T12:22:00Z</o:LastSaved>
-  <o:Pages>44</o:Pages>
-  <o:Words>8374</o:Words>
-  <o:Characters>47733</o:Characters>
+  <o:LastSaved>2019-01-22T16:27:00Z</o:LastSaved>
+  <o:Pages>45</o:Pages>
+  <o:Words>8410</o:Words>
+  <o:Characters>47940</o:Characters>
   <o:Company>UCL</o:Company>
-  <o:Lines>397</o:Lines>
-  <o:Paragraphs>111</o:Paragraphs>
-  <o:CharactersWithSpaces>55996</o:CharactersWithSpaces>
+  <o:Lines>399</o:Lines>
+  <o:Paragraphs>112</o:Paragraphs>
+  <o:CharactersWithSpaces>56238</o:CharactersWithSpaces>
   <o:Version>16.00</o:Version>
  </o:DocumentProperties>
  <o:OfficeDocumentSettings>
@@ -673,7 +674,7 @@ target="geneVarAssoc_files/props007.xml">
 	mso-font-charset:0;
 	mso-generic-font-family:swiss;
 	mso-font-pitch:variable;
-	mso-font-signature:-536859905 -1073732485 9 0 511 0;}
+	mso-font-signature:-536858881 -1073732485 9 0 511 0;}
 @font-face
 	{font-family:Consolas;
 	panose-1:2 11 6 9 2 2 4 3 2 4;
@@ -1304,11 +1305,11 @@ style='mso-bidi-font-style:normal'>PATH</i>.</p>
 
 <p class=MsoNormal>When <span class=SpellE><i style='mso-bidi-font-style:normal'>geneVarAssoc</i></span>
 is run it uses <span class=SpellE><i style='mso-bidi-font-style:normal'>tabix</i></span>
-to extract the subset of variants matching the gene coordinates. Then it
-annotates them. Then it produces <span class=SpellE><i style='mso-bidi-font-style:
-normal'>scoreassoc</i></span> data files for valid variants and produces
-weights according to the annotations. Then it runs <span class=SpellE><i
-style='mso-bidi-font-style:normal'>scoreassoc</i></span>.</p>
+to extract the subset of variants matching the gene coordinates. Then it annotates
+them. Then it produces <span class=SpellE><i style='mso-bidi-font-style:normal'>scoreassoc</i></span>
+data files for valid variants and produces weights according to the
+annotations. Then it runs <span class=SpellE><i style='mso-bidi-font-style:
+normal'>scoreassoc</i></span>.</p>
 
 <p class=MsoNormal>Typically a parameter file specified by <i style='mso-bidi-font-style:
 normal'>--<span class=SpellE>arg</span>-file</i> would contain the
@@ -1453,7 +1454,7 @@ normal'>vcf</i></span> file(s), as described for the <i style='mso-bidi-font-sty
 normal'>--phenotype-file</i> option. This argument can be repeated if there is
 more than one file containing phenotypes.</p>
 
-<h3>--use-<span class=SpellE>probs</span> 0 or 1</h3>
+<h3>--use-probs 0 or 1</h3>
 
 <p class=MsoNormal>A value of 1 specifies that the <span class=SpellE><i
 style='mso-bidi-font-style:normal'>vcf</i></span> file contains genotype
@@ -1506,37 +1507,35 @@ frequencies, i.e. the total number of cases genotyped. The number of successful
 genotypes may vary slightly between variants but the maximum number should be
 given here.</p>
 
-<h3>--allele-<span class=SpellE>freq</span>-<span class=SpellE>str</span>
-string</h3>
+<h3>--allele-<span class=SpellE>freq</span>-str string</h3>
 
 <p class=MsoNormal>String used to recognise the allele frequency entry in a <span
 class=SpellE><i style='mso-bidi-font-style:normal'>vcf</i></span> file which is
 used to provide allele frequencies for cases or controls. If the <span
 class=SpellE><i style='mso-bidi-font-style:normal'>vcf</i></span> file contains
 entries such as &#8230;;EUR_AF=0.42;&#8230; then one would specify <i
-style='mso-bidi-font-style:normal'>--allele-<span class=SpellE>freq</span>-<span
-class=SpellE>str</span> EUR_AF</i></p>
+style='mso-bidi-font-style:normal'>--allele-<span class=SpellE>freq</span>-str
+EUR_AF</i></p>
 
-<h3>--allele-number-<span class=SpellE>str</span> string</h3>
+<h3>--allele-number-str string</h3>
 
 <p class=MsoNormal>String used to recognise the allele number entry in a <span
 class=SpellE><i style='mso-bidi-font-style:normal'>vcf</i></span> file which is
 used to provide allele frequencies for cases or controls. If the <span
 class=SpellE><i style='mso-bidi-font-style:normal'>vcf</i></span> file contains
 entries such as &#8230;;EUR_AN=2414;&#8230; then one would specify <i
-style='mso-bidi-font-style:normal'>--allele-number-<span class=SpellE>str</span>
-EUR_AN</i></p>
+style='mso-bidi-font-style:normal'>--allele-number-str EUR_AN</i></p>
 
-<h3>--allele-count-<span class=SpellE>str</span> string</h3>
+<h3>--allele-count-str string</h3>
 
 <p class=MsoNormal>String used to recognise the alternate allele count entry in
 a <span class=SpellE><i style='mso-bidi-font-style:normal'>vcf</i></span> file
 which is used to provide allele frequencies for cases or controls. If the <span
 class=SpellE><i style='mso-bidi-font-style:normal'>vcf</i></span> file contains
 entries such as &#8230;;EUR_AC=27;&#8230; then one would specify <i
-style='mso-bidi-font-style:normal'>--allele-number-<span class=SpellE>str</span>
-EUR_AC</i>. If there is no allele frequency field then the frequency will be
-calculated as the count divided by the number (as in <span class=SpellE>ExAC</span>).</p>
+style='mso-bidi-font-style:normal'>--allele-number-str EUR_AC</i>. If there is
+no allele frequency field then the frequency will be calculated as the count
+divided by the number (as in <span class=SpellE>ExAC</span>).</p>
 
 <h3>--bait-file filename</h3>
 
@@ -1614,14 +1613,13 @@ entry might read: </p>
 
 <p class=command>--<span class=SpellE>vep</span> '<span class=SpellE>perl</span>
 /share/ref/VEP/ensembl-tools-release-87/scripts/variant_effect_predictor/variant_effect_predictor.pl
---cache --<span class=SpellE>dir</span> /share/ref/VEP/Cache --merged --offline'
-</p>
+--cache --<span class=SpellE>dir</span> /share/ref/VEP/Cache --merged
+--offline' </p>
 
 <p class=MsoNormal>This would mean that the command that <span class=SpellE><i
 style='mso-bidi-font-style:normal'>geneVarAssoc</i></span> ran would be:</p>
 
-<p class=command><span class=SpellE>perl</span>
-/share/ref/VEP/ensembl-tools-release-87/scripts/variant_effect_predictor/variant_effect_predictor.pl
+<p class=command><span class=SpellE>perl</span> /share/ref/VEP/ensembl-tools-release-87/scripts/variant_effect_predictor/variant_effect_predictor.pl
 --cache --<span class=SpellE>dir</span> /share/ref/VEP/Cache --merged --offline
 -i predictorQuery.txt -o predictorOutput.txt --<span class=SpellE>most_severe</span></p>
 
@@ -1733,8 +1731,8 @@ subjects with another variant.</p>
 <h3>--add-<span class=SpellE>chr</span> 0 or 1 or 0011001, etc.</h3>
 
 <p class=MsoNormal>Some <span class=SpellE><i style='mso-bidi-font-style:normal'>vcf</i></span><i
-style='mso-bidi-font-style:normal'> </i>files code give the chromosome entry
-for chromosome 17 as chr17, other as 17. If 1, adds <span class=SpellE><i
+style='mso-bidi-font-style:normal'> </i>files code give the chromosome entry for
+chromosome 17 as chr17, other as 17. If 1, adds <span class=SpellE><i
 style='mso-bidi-font-style:normal'>chr</i></span> to the chromosome number when
 running <span class=SpellE><i style='mso-bidi-font-style:normal'>tabix</i></span>
 to extract variants from all the <span class=SpellE><i style='mso-bidi-font-style:
@@ -1788,8 +1786,8 @@ variants missing from the frequency file will be omitted from the analysis. If
 0 they will be treated as having frequency of 0 (i.e. all wild type). The
 assumption then is that the variant was adequately covered but did not appear
 in the <span class=SpellE><i style='mso-bidi-font-style:normal'>vcf</i></span>
-file because no <i style='mso-bidi-font-style:normal'>alt</i> alleles were seen.
-Default value is 0.</p>
+file because no <i style='mso-bidi-font-style:normal'>alt</i> alleles were
+seen. Default value is 0.</p>
 
 <h3>--wild-if-unknown 0 or 1</h3>
 
@@ -1821,12 +1819,19 @@ being the same variant and merge them, whether or not the REF and ALT alleles
 are the same in both. If 0, only treat them as the same variant if the REF and
 ALT allele strings are identical. Default value is 0.</p>
 
-<h3>--use-haplotypes 0 or 1</h3>
+<h3>--use-haplotypes 0 or 1<o:p></o:p></h3>
 
 <p class=MsoNormal>If 1, instruct <span class=SpellE><i style='mso-bidi-font-style:
 normal'>scoreassoc</i></span> to treat the genotypes as phased for recessive
 analyses. This is appropriate if the alleles are ordered within the genotypes
-or if trios are used. Default value is 0.</p>
+or if trios are used. Default value is 0.<o:p></o:p></p>
+
+<h3>--show-hap-locus-names 0 or 1<o:p></o:p></h3>
+
+<p class=MsoNormal>If 1, instruct <span class=SpellE><i style='mso-bidi-font-style:
+normal'>scoreassoc</i></span> to output the names of the loci with minor
+alleles in subjects who are homozygotes or compound heterozygotes when carrying
+out recessive analyses based on haplotypes. Default value is 0.<o:p></o:p></p>
 
 <h3>--<span class=SpellE>dottest</span> 0 or 1</h3>
 
@@ -1997,11 +2002,11 @@ true if it is non-zero. Operators or functions can be unary or binary and the
 format for functions which take two arguments is the same as for operators
 taking two values in that the function name goes between the arguments, so that
 one can write, for example, 3+5 or &quot;<span class=SpellE>geneVar</span>&quot;
-STRCAT &quot;<span class=SpellE>Assoc</span>&quot;.</p>
+STRCAT &quot;Assoc&quot;.</p>
 
 <p class=MsoNormal>A list of operators/functions is provided below and
-hopefully the example files will make it clearer how they can be used in practical
-situations.</p>
+hopefully the example files will make it clearer how they can be used in
+practical situations.</p>
 
 <h3>List of operators/functions</h3>
 
@@ -2120,8 +2125,8 @@ situations.</p>
   height:14.4pt'>
   <p class=MsoNormal style='margin:0cm;margin-bottom:.0001pt;mso-pagination:
   widow-orphan'><span style='font-size:12.0pt;mso-bidi-font-family:Calibri;
-  mso-bidi-theme-font:minor-latin;color:black'>OR operator, return 1 if either
-  argument is true, only evaluate second if first is false.<o:p></o:p></span></p>
+  mso-bidi-theme-font:minor-latin;color:black'>OR operator, return 1 if either argument
+  is true, only evaluate second if first is false.<o:p></o:p></span></p>
   </td>
  </tr>
  <tr style='mso-yfti-irow:8;height:14.4pt'>
@@ -2307,18 +2312,17 @@ situations.</p>
   &quot;DEFAULTVEPWEIGHTS&quot;, in which case the default weights will be
   allocated for either an inbuilt or <i style='mso-bidi-font-style:normal'>VEP</i>
   annotation. Alternatively, the second argument can be the name of a file
-  which provides the weights for each annotation, e.g.
-  &quot;MYWEIGHTS.txt&quot;. Each line of this file must contain an annotation
-  string followed by the weight to be assigned for that annotation. For
-  example, (ANNOT &quot;INBUILT&quot;) GETWEIGHT &quot;DEFAULTWEIGHTS&quot;
-  returns the default weight assigned for the annotation produced using the
-  inbuilt annotation functions. (ANNOT &quot;VEP&quot;) GETWEIGHT
-  &quot;MYWEIGHTS.txt&quot; assigns a weight for the <i style='mso-bidi-font-style:
-  normal'>VEP </i>annotation using the scheme defined in that file, so if the <i
-  style='mso-bidi-font-style:normal'>VEP</i> annotation was &quot;<span
-  class=SpellE>stop_gained</span>&quot; and the file contained a line saying <span
-  class=SpellE>stop_gained</span> 25 then the expression would return a value
-  of 25.<o:p></o:p></span></p>
+  which provides the weights for each annotation, e.g. &quot;MYWEIGHTS.txt&quot;.
+  Each line of this file must contain an annotation string followed by the
+  weight to be assigned for that annotation. For example, (ANNOT
+  &quot;INBUILT&quot;) GETWEIGHT &quot;DEFAULTWEIGHTS&quot; returns the default
+  weight assigned for the annotation produced using the inbuilt annotation
+  functions. (ANNOT &quot;VEP&quot;) GETWEIGHT &quot;MYWEIGHTS.txt&quot;
+  assigns a weight for the <i style='mso-bidi-font-style:normal'>VEP </i>annotation
+  using the scheme defined in that file, so if the <i style='mso-bidi-font-style:
+  normal'>VEP</i> annotation was &quot;<span class=SpellE>stop_gained</span>&quot;
+  and the file contained a line saying <span class=SpellE>stop_gained</span> 25
+  then the expression would return a value of 25.<o:p></o:p></span></p>
   </td>
  </tr>
  <tr style='mso-yfti-irow:20;height:14.4pt'>
@@ -2345,8 +2349,8 @@ situations.</p>
   frequencies. So if the information field at the matching position in<span
   style='mso-spacerun:yes'>&nbsp; </span><i style='mso-bidi-font-style:normal'>VCF</i>
   file contains the string &#8230;;AF=0.02;&#8230; then the returned result
-  will be 0.02. If there is no string matching ;AF then the returned result
-  will be e.g. &quot;NOVCFENTRY_17_198232_AF&quot; while if there is no line
+  will be 0.02. If there is no string matching ;AF then the returned result will
+  be e.g. &quot;NOVCFENTRY_17_198232_AF&quot; while if there is no line
   matching the required position it will return a result such as
   &quot;NOVCFLINE_17_198232&quot;. The full path and filename of the <i
   style='mso-bidi-font-style:normal'>VCF</i> file must be provided. If it
@@ -2384,8 +2388,8 @@ situations.</p>
   height:14.4pt'>
   <p class=MsoNormal style='margin:0cm;margin-bottom:.0001pt;mso-pagination:
   widow-orphan'><span style='font-size:12.0pt;mso-bidi-font-family:Calibri;
-  mso-bidi-theme-font:minor-latin;color:black'>This function behaves in the same
-  way as VCFLOOKUP except that it puts the letters <span class=SpellE>chr</span>
+  mso-bidi-theme-font:minor-latin;color:black'>This function behaves in the
+  same way as VCFLOOKUP except that it puts the letters <span class=SpellE>chr</span>
   before the chromosome number when performing the lookup into the <i
   style='mso-bidi-font-style:normal'>VCF</i> file.<o:p></o:p></span></p>
   </td>
@@ -2710,14 +2714,14 @@ as they are evaluated and this can be helpful for trouble-shooting.</p>
 can<i style='mso-bidi-font-style:normal'> </i>perform annotations either using
 its own inbuilt functions or by calling <span class=SpellE><i style='mso-bidi-font-style:
 normal'>ensembl</i>'s</span> <i style='mso-bidi-font-style:normal'>variant
-effect predictor</i> (<i style='mso-bidi-font-style:normal'>VEP</i>).
-Alternatively, an annotation for each position can be read in from an external
-VCF file. The inbuilt functions are quicker but less thorough and require that
-the files for the reference genome sequence are available. A string describing
-the annotation is obtained and then a weight is assigned to this according to a
-table matching annotation strings to weights. Each annotation also has an
-integer attached to it, which is used if the <i style='mso-bidi-font-style:
-normal'>--consequence-threshold option</i> is specified.</p>
+effect predictor</i> (<i style='mso-bidi-font-style:normal'>VEP</i>). Alternatively,
+an annotation for each position can be read in from an external VCF file. The
+inbuilt functions are quicker but less thorough and require that the files for
+the reference genome sequence are available. A string describing the annotation
+is obtained and then a weight is assigned to this according to a table matching
+annotation strings to weights. Each annotation also has an integer attached to
+it, which is used if the <i style='mso-bidi-font-style:normal'>--consequence-threshold
+option</i> is specified.</p>
 
 <p class=MsoNormal>The inbuilt annotations and default weights are as follows:</p>
 
@@ -4095,9 +4099,9 @@ N/A 1</p>
 
 <p class=MsoNormal>Then one could specify the following:</p>
 
-<p class=command>--weight-expression '(&quot;SIFT&quot; VCFLOOKUP
-&quot;annot.vcf&quot;)<span style='mso-fareast-font-family:"Times New Roman";
-mso-fareast-theme-font:minor-fareast'> GETWEIGHT &quot;SIFTWEIGHTS.txt&quot;'</span></p>
+<p class=command>--weight-expression '(&quot;SIFT&quot; VCFLOOKUP &quot;annot.vcf&quot;)<span
+style='mso-fareast-font-family:"Times New Roman";mso-fareast-theme-font:minor-fareast'>
+GETWEIGHT &quot;SIFTWEIGHTS.txt&quot;'</span></p>
 
 <p class=MsoNormal><span style='mso-fareast-font-family:"Times New Roman";
 mso-fareast-theme-font:minor-fareast'>In practice, when one uses <i
@@ -4125,15 +4129,16 @@ expression like:<o:p></o:p></span></p>
 
 <p class=MsoNormal><span style='font-size:14.0pt;font-family:"Courier New";
 mso-fareast-font-family:"Times New Roman";mso-fareast-theme-font:minor-fareast'>--weight-expression
-'GETVEP(&quot;CSQ&quot; VCFLOOKUP &quot;annot.vcf&quot;) GETWEIGHT &quot;VEPWEIGHTS.txt&quot;'<o:p></o:p></span></p>
+'GETVEP(&quot;CSQ&quot; VCFLOOKUP &quot;annot.vcf&quot;) GETWEIGHT
+&quot;VEPWEIGHTS.txt&quot;'<o:p></o:p></span></p>
 
 <p class=MsoNormal><span style='mso-fareast-font-family:"Times New Roman";
 mso-fareast-theme-font:minor-fareast'><o:p>&nbsp;</o:p></span></p>
 
 <p class=MsoNormal><span style='mso-fareast-font-family:"Times New Roman";
 mso-fareast-theme-font:minor-fareast'>If one wishes to completely ignore
-variants having a particular annotation one can assign it a weight of 0. Such
-variants will have no effect on the <span class=SpellE><i style='mso-bidi-font-style:
+variants having a particular annotation one can assign it a weight of 0. Such variants
+will have no effect on the <span class=SpellE><i style='mso-bidi-font-style:
 normal'>scoreAssoc</i></span> analysis. Another option is to use a suitable
 exclusion expression, e.g.:<o:p></o:p></span></p>
 
@@ -4158,11 +4163,11 @@ provided by <span class=SpellE><i style='mso-bidi-font-style:normal'>geneVarAsso
 minor-fareast'>Exclusion expressions<o:p></o:p></span></h2>
 
 <p class=MsoNormal><span style='mso-fareast-font-family:"Times New Roman";
-mso-fareast-theme-font:minor-fareast'>Expressions can be provided to limit the variants
-to be used in the <span class=SpellE><i style='mso-bidi-font-style:normal'>scoreAssoc</i></span>
-analysis using different criteria. For example, if one wishes to restrict
-analysis to ultra-rare variants not seen in <span class=SpellE>ExAC</span> one
-might use:<o:p></o:p></span></p>
+mso-fareast-theme-font:minor-fareast'>Expressions can be provided to limit the
+variants to be used in the <span class=SpellE><i style='mso-bidi-font-style:
+normal'>scoreAssoc</i></span> analysis using different criteria. For example,
+if one wishes to restrict analysis to ultra-rare variants not seen in <span
+class=SpellE>ExAC</span> one might use:<o:p></o:p></span></p>
 
 <p class=MsoNormal><i style='mso-bidi-font-style:normal'><span
 style='mso-fareast-font-family:"Times New Roman";mso-fareast-theme-font:minor-fareast'>--exclude-expression
@@ -4264,7 +4269,8 @@ some of the lines have wrapped):<o:p></o:p></span></p>
 <p class=commandCxSpFirst>--weight-expression
 ANNOT(&quot;INBUILT&quot;)GETWEIGHT(&quot;DEFAULTWEIGHTS&quot;) </p>
 
-<p class=commandCxSpMiddle>--exclude-expression ATTRIB(&quot;WEIGHT&quot;)&lt;10</p>
+<p class=commandCxSpMiddle>--exclude-expression
+ATTRIB(&quot;WEIGHT&quot;)&lt;10</p>
 
 <p class=commandCxSpMiddle>--exclude-expression ' ((&quot;AC&quot; VCFLOOKUP
 &quot;\reference\ALL.wgs.phase1_release_v3.20101123.snps_indels_sv.sites.vcf.gz&quot;)/(&quot;AN&quot;
@@ -4277,16 +4283,16 @@ ANNOT(&quot;INBUILT&quot;)GETWEIGHT(&quot;DEFAULTWEIGHTS&quot;) </p>
 
 <p class=commandCxSpMiddle>--<span class=SpellE>num-cont</span> 45000</p>
 
-<p class=commandCxSpMiddle>--allele-number-<span class=SpellE>str</span> AN_NFE</p>
+<p class=commandCxSpMiddle>--allele-number-str AN_NFE</p>
 
-<p class=commandCxSpMiddle>--allele-count-<span class=SpellE>str</span> AC_NFE</p>
+<p class=commandCxSpMiddle>--allele-count-str AC_NFE</p>
 
 <p class=commandCxSpMiddle>--case-file \sequence\<span class=SpellE>BPGenomes</span>\BP_chr*.vcf.gz</p>
 
 <p class=commandCxSpMiddle>--ref-gene-file \reference\refseqgenesorted.txt </p>
 
-<p class=commandCxSpMiddle>--bait-file \reference\SureSelect_All_Exon_50mb.hg19.w100.nr.bed
-</p>
+<p class=commandCxSpMiddle>--bait-file
+\reference\SureSelect_All_Exon_50mb.hg19.w100.nr.bed </p>
 
 <p class=commandCxSpMiddle>--margin 0</p>
 
@@ -4351,9 +4357,9 @@ as follows.<o:p></o:p></span></p>
 ANNOT(&quot;INBUILT&quot;)GETWEIGHT(&quot;DEFAULTWEIGHTS&quot;) </p>
 
 <p class=MsoNormal><span style='mso-fareast-font-family:"Times New Roman";
-mso-fareast-theme-font:minor-fareast'>This means to use the inbuilt annotation
-scheme with the default weights. This is line is redundant but having it here
-will make it easy to change to a different weighting scheme if desired.<o:p></o:p></span></p>
+mso-fareast-theme-font:minor-fareast'>This means to use the inbuilt annotation scheme
+with the default weights. This is line is redundant but having it here will
+make it easy to change to a different weighting scheme if desired.<o:p></o:p></span></p>
 
 <p class=command>--exclude-expression ATTRIB(&quot;WEIGHT&quot;)&lt;10</p>
 
@@ -4362,7 +4368,8 @@ weight of at least 10.</p>
 
 <p class=command>--exclude-expression ' ((&quot;AC&quot; VCFLOOKUP
 &quot;\reference\ALL.wgs.phase1_release_v3.20101123.snps_indels_sv.sites.vcf.gz&quot;)/(&quot;AN&quot;
-<span class=SpellE>VCFLOOKUP</span> &quot;\reference\ALL.wgs.phase1_release_v3.20101123.snps_indels_sv.sites.vcf.gz&quot;))
+<span class=SpellE>VCFLOOKUP</span>
+&quot;\reference\ALL.wgs.phase1_release_v3.20101123.snps_indels_sv.sites.vcf.gz&quot;))
 &gt; 0.01'</p>
 
 <p class=MsoNormal>This will exclude any variant which has a frequency greater
@@ -4384,9 +4391,9 @@ control frequencies.<o:p></o:p></span></p>
 <p class=MsoNormal>This is the (approximate) number of control subjects from
 which the frequencies are derived. </p>
 
-<p class=commandCxSpFirst>--allele-number-<span class=SpellE>str</span> AN_NFE</p>
+<p class=commandCxSpFirst>--allele-number-str AN_NFE</p>
 
-<p class=commandCxSpLast>--allele-count-<span class=SpellE>str</span> AC_NFE</p>
+<p class=commandCxSpLast>--allele-count-str AC_NFE</p>
 
 <p class=MsoNormal><span style='mso-fareast-font-family:"Times New Roman";
 mso-fareast-theme-font:minor-fareast'>These lines say that the entries in the
@@ -4504,8 +4511,7 @@ reference genome.</p>
 <p class=commandCxSpMiddle>(0 GENOCOUNT 0) &gt; (0 GENOCOUNT 1) &amp; (0
 GENOCOUNT 2) &gt; (0 GENOCOUNT 1) &amp; (1 GENOCOUNT 0) &gt; (1 GENOCOUNT 1)
 &amp; (1 GENOCOUNT 2) &gt; (1 GENOCOUNT 1)<span
-style='mso-spacerun:yes'>&nbsp;&nbsp;&nbsp; </span><span
-style='mso-spacerun:yes'>&nbsp;</span></p>
+style='mso-spacerun:yes'>&nbsp;&nbsp;&nbsp;&nbsp; </span></p>
 
 <p class=commandCxSpLast>NSUB(1)&lt;97</p>
 
@@ -4538,8 +4544,8 @@ commoner than the heterozygous genotypes in both cases and controls.<o:p></o:p><
 <p class=command>NSUB(1)&lt;97</p>
 
 <p class=MsoNormal><span style='mso-fareast-font-family:"Times New Roman";
-mso-fareast-theme-font:minor-fareast'>The case sample contains 99 subjects.
-This line excludes variants successfully genotyped in fewer than 97 subjects.<o:p></o:p></span></p>
+mso-fareast-theme-font:minor-fareast'>The case sample contains 99 subjects. This
+line excludes variants successfully genotyped in fewer than 97 subjects.<o:p></o:p></span></p>
 
 <h3><span style='mso-fareast-font-family:"Times New Roman";mso-fareast-theme-font:
 minor-fareast'>gva.SSS2.ct08.single.arg<o:p></o:p></span></h3>
@@ -4842,8 +4848,8 @@ mso-fareast-theme-font:minor-fareast'>--GQ-threshold 30<o:p></o:p></span></p>
 
 <p class=MsoNormal style='margin:0cm;margin-bottom:.0001pt'><span
 style='font-size:14.0pt;font-family:"Courier New";mso-fareast-font-family:"Times New Roman";
-mso-fareast-theme-font:minor-fareast'>--exclude-expression ' ((&quot;AF&quot; VCFLOOKUP
-&quot;../<span class=SpellE>vcf</span>/SSS2/ExAC.r0.3.nonpsych.sites.vcf.gz&quot;))
+mso-fareast-theme-font:minor-fareast'>--exclude-expression ' ((&quot;AF&quot;
+VCFLOOKUP &quot;../<span class=SpellE>vcf</span>/SSS2/ExAC.r0.3.nonpsych.sites.vcf.gz&quot;))
 &gt; 0'<o:p></o:p></span></p>
 
 <p class=MsoNormal style='margin:0cm;margin-bottom:.0001pt'><span
@@ -4970,7 +4976,8 @@ VEP one can enter a command such as:<o:p></o:p></span></p>
 "Courier New";mso-fareast-font-family:"Times New Roman";mso-fareast-theme-font:
 minor-fareast'>perl</span></span><span style='font-size:14.0pt;font-family:
 "Courier New";mso-fareast-font-family:"Times New Roman";mso-fareast-theme-font:
-minor-fareast'> /share/ref/VEP/ensembl-tools-release-87/scripts/variant_effect_predictor/variant_effect_predictor.pl
+minor-fareast'>
+/share/ref/VEP/ensembl-tools-release-87/scripts/variant_effect_predictor/variant_effect_predictor.pl
 --cache --<span class=SpellE>dir</span> /share/ref/VEP/Cache --merged --offline
 --<span class=SpellE>input_file</span> SSS2.vars.vcf.gz --format <span
 class=SpellE>vcf</span> --<span class=SpellE>output_file</span>
@@ -5015,10 +5022,10 @@ operators.<o:p></o:p></span></p>
 
 <p class=MsoNormal><span style='mso-fareast-font-family:"Times New Roman";
 mso-fareast-theme-font:minor-fareast'>If <i style='mso-bidi-font-style:normal'>--merge-alt-alleles
-0</i> is used then the <i style='mso-bidi-font-style:normal'>--pick</i> option
-must not be used because one needs to have an annotation for every alternate
-allele. Even so, some alleles may not be matched correctly because of the way that
-VEP annotates indels.<o:p></o:p></span></p>
+0</i> is used then the <i style='mso-bidi-font-style:normal'>--pick</i> option must
+not be used because one needs to have an annotation for every alternate allele.
+Even so, some alleles may not be matched correctly because of the way that VEP
+annotates indels.<o:p></o:p></span></p>
 
 <p class=MsoNormal><span style='mso-fareast-font-family:"Times New Roman";
 mso-fareast-theme-font:minor-fareast'>Here is an example of a weight expression
@@ -5030,9 +5037,10 @@ mso-fareast-font-family:"Times New Roman";mso-fareast-theme-font:minor-fareast'>
 '( ( GETVEP (&quot;CSQ&quot; VCFLOOKUP &quot;SSS2.vars.annot.vcf.gz&quot;))
 GETWEIGHT &quot;newWeights.200718.txt&quot; ) + ( ( GETPOLYPHEN
 (&quot;CSQ&quot; VCFLOOKUP &quot;SSS2.vars.annot.vcf.gz&quot;) ) GETWEIGHT
-&quot;POLYPHENWEIGHTS.txt&quot;<span style='mso-spacerun:yes'>&nbsp; </span>) +<span
-style='mso-spacerun:yes'>&nbsp; </span>( ( GETSIFT (&quot;CSQ&quot; VCFLOOKUP
-&quot;SSS2.vars.annot.vcf.gz&quot;) ) GETWEIGHT &quot;SIFTWEIGHTS.txt&quot; ) '<o:p></o:p></span></p>
+&quot;POLYPHENWEIGHTS.txt&quot;<span style='mso-spacerun:yes'>&nbsp; </span>)
++<span style='mso-spacerun:yes'>&nbsp; </span>( ( GETSIFT (&quot;CSQ&quot;
+VCFLOOKUP &quot;SSS2.vars.annot.vcf.gz&quot;) ) GETWEIGHT &quot;SIFTWEIGHTS.txt&quot;
+) '<o:p></o:p></span></p>
 
 <p class=MsoNormal><span style='mso-fareast-font-family:"Times New Roman";
 mso-fareast-theme-font:minor-fareast'>Here is an example of a weight expression
@@ -5044,9 +5052,9 @@ score:<o:p></o:p></span></p>
 
 <p class=MsoNormal><span style='font-size:14.0pt;font-family:"Courier New";
 mso-fareast-font-family:"Times New Roman";mso-fareast-theme-font:minor-fareast'>--weight-expression
-'( (&quot;<span class=SpellE>CADD_phred</span>&quot; VCFLOOKUP &quot;CADD-scores.vcf.gz&quot;)&gt;0
-IFTRUE 50) + ( (&quot;<span class=SpellE>CADD_phred</span>&quot; VCFLOOKUP
-&quot;CADD-scores.vcf.gz&quot;)&gt;10 IFTRUE 100) + ( (&quot;<span
+'( (&quot;<span class=SpellE>CADD_phred</span>&quot; VCFLOOKUP
+&quot;CADD-scores.vcf.gz&quot;)&gt;0 IFTRUE 50) + ( (&quot;<span class=SpellE>CADD_phred</span>&quot;
+VCFLOOKUP &quot;CADD-scores.vcf.gz&quot;)&gt;10 IFTRUE 100) + ( (&quot;<span
 class=SpellE>CADD_phred</span>&quot; VCFLOOKUP &quot;CADD-scores.vcf.gz&quot;)&gt;30<span
 style='mso-spacerun:yes'>&nbsp; </span>IFTRUE 150)'<o:p></o:p></span></p>
 
