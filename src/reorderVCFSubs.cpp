@@ -8,7 +8,7 @@
 #define MAXSUBS 10000
 
 char line[FIELDLENGTH*(MAXSUBS + 20)], right[MAXSUBS + 20][FIELDLENGTH],wrong[MAXSUBS + 20][FIELDLENGTH];
-int index[MAXSUBS + 20];
+int fieldIndex[MAXSUBS + 20];
 
 int fillArray(char* l, char arr[MAXSUBS + 20][FIELDLENGTH])
 {
@@ -61,13 +61,13 @@ int main(int argc, char *argv[])
 		for (ff = 0; ff < numFields; ++ff)
 			if (!strcmp(wrong[f], right[ff]))
 			{
-				index[ff] = f;
+				fieldIndex[ff] = f;
 				break;
 			}
 	do {
 		fillArray(line,wrong);
 		for (f = 0; f < numFields; ++f)
-			fprintf(fo, "%s%c", wrong[index[f]], f == numFields - 1 ? '\n' : '\t');
+			fprintf(fo, "%s%c", wrong[fieldIndex[f]], f == numFields - 1 ? '\n' : '\t');
 	} while (fgets(line, FIELDLENGTH*(MAXSUBS + 20), fi)); // hopefully no blank line at the end
 	fclose(fi);
 	fclose(fo);
