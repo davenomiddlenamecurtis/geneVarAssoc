@@ -4,7 +4,7 @@
 #include <string.h>
 #include <ctype.h>
 
-#define FIELDLENGTH 60
+#define FIELDLENGTH 100
 #define MAXSUBS 10000
 
 char line[FIELDLENGTH*(MAXSUBS + 20)], right[MAXSUBS + 20][FIELDLENGTH],wrong[MAXSUBS + 20][FIELDLENGTH];
