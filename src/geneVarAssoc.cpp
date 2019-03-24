@@ -129,19 +129,10 @@ int main(int argc,char *argv[])
 			vf.getEnsemblConsequences(spec);
 		}
 		}
-#if 0
-	if (spec.consequenceThreshold!=0)
-		sprintf(fn,"gva.%s.ct%02d",geneName,spec.consequenceThreshold);
-	else if (spec.useConsequenceWeights!=0)
-		sprintf(fn,"gva.%s.ucw",geneName);
-	else
-		sprintf(fn,"gva.%s",geneName);
-#else
 	sprintf(fn,"%s.%s",gp.testName,geneName);
-#endif
 	if (extractedOK)
 	{
-		geneVarParser::thisGene=&r; // esssential for the annotation to work
+		geneVarParser::thisGene=&r; // essential for the annotation to work
 		printf("Writing scoreassoc files...\n");
 		vf.writeScoreAssocFiles(fn, spec.wf,  gp.useFreqs, gp.nSubs, 1, gp.writeComments, gp.writeScoreFile, spec);
 #ifndef MSDOS
