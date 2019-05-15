@@ -106,6 +106,11 @@ int main(int argc,char *argv[])
 			if (!vf.readLocusFileEntries(fn,spec,1))
 				extractedOK=0;
 		}
+	if (gp.onlyExtractVariants)
+	{
+		printf("Exiting because --only-extract-variants was set\n");
+		exit(0);
+	}
 	if (extractedOK)
 		{
 		if (spec.willNeedInbuiltConsequence)

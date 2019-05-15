@@ -12,7 +12,7 @@ MAXSUB = 20000
 CFLAGS = $(DEBUGFLAG)
 
 HEADERS = consequenceType.hpp dcerror.hpp dcindex.hpp geneVarUtils.hpp getGene.hpp getSequence.hpp intervalList.h masterLocusFile.hpp vcfLocusFile.hpp hapsLocusFile.hpp geneVarParser.hpp dcexpr.hpp
-EXE = geneVarAssoc intVarAssoc showAltSubs
+EXE = geneVarAssoc intVarAssoc showAltSubs reorderVCFSubs
 ifdef INOBJ
 all: ${EXE}
 else
@@ -38,6 +38,9 @@ VPATH=../src
 	
 %.o: ../src/%.c $(HEADERS)
 	$(C) $(CFLAGS) -DMAXSUB=${MAXSUB} -DMAXVCFFILES=${MAXVCFFILES} -c $< -o ../obj/$@
+
+reorderVCFSubs: reorderVCFSubs.o dcerror.o
+	$(CC) -o reorderVCFSubs reorderVCFSubs.o dcerror.o
 
 groupGetGenotypes: groupGetGenotypes.o consequenceType.o dcerror.o dcindex.o geneVarUtils.o getGeneFuncs.o getSequenceFuncs.o intervalList.o vcfLocusFile.o vcfWriteVars.o masterLocusFile.o hapsLocusFile.o outputGenotypes.o 
 	$(CC) -o groupGetGenotypes groupGetGenotypes.o  consequenceType.o dcerror.o dcindex.o geneVarUtils.o getGeneFuncs.o getSequenceFuncs.o intervalList.o vcfLocusFile.o vcfWriteVars.o masterLocusFile.o hapsLocusFile.o outputGenotypes.o 
