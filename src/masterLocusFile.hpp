@@ -35,7 +35,7 @@ along with geneVarAssoc.If not, see <http://www.gnu.org/licenses/>.
 #define MAXVCFFILES 10
 #endif
 #define MAXFILENAMELENGTH 100
-#define BUFFSIZE 900000 // maximum length of e.g. line read in from VCF file
+#define BUFFSIZE 1000000 // maximum length of e.g. line read in from VCF file was 900000
 #define VCFFIELDLENGTH 2000 // maximum length for e.g. quality, format fields
 // even 3000 was too short for a UK10K gene with many PolyPhen entries
 #define MAXSCOREASSOCARGS 50
