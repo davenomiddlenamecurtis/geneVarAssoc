@@ -101,13 +101,13 @@
     <ClCompile Include="..\..\src\masterLocusFile.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\geneVarAssoc.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\geneVarParser.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\dcexpr.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\geneVarAssoc.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

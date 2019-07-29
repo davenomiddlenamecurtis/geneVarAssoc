@@ -41,12 +41,11 @@ int main(int argc,char *argv[])
 	analysisSpecs spec;
 	weightTable *wt;
 
-#if 1
 	printf("%s %s\nRunning ",PROGRAM,GVAVERSION);
 	for (i=0;i<argc;++i)
 		printf("%s ",argv[i]);
 	printf("\n");
-#endif
+
 	wt=new weightTable;
 	wt->init("DEFAULTWEIGHTS",consequence,NCONSEQUENCETYPES);
 	weightTableList[wt->tableName]=wt;

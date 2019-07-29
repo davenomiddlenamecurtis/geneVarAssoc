@@ -96,6 +96,11 @@ int main(int argc,char *argv[])
 		}
 		first=0;
 	}
+	if (gp.onlyExtractVariants)
+	{
+		printf("Exiting because --only-extract-variants was set\n");
+		exit(0);
+	}
 	for (i=0;i<gp.nCc[0];++i)
 		{
 			sprintf(fn,"%s.cont.%d.vcf",gp.testName,i+1);
