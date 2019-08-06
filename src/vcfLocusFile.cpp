@@ -250,7 +250,7 @@ int vcfLocalLocus::outputAlleles(allelePair *all,FILE *f,FILEPOSITION filePos,in
 		return 0;
 	}
 
-	for (s=0,ptr=locusFile::buff;s<nFieldsToSkip;++s)
+	for (s=0,ptr=locusFile::buff;s<spec.numVcfFieldsToSkip;++s) // user specified number of columns to skip
 	{
 		while (!isspace(*ptr))
 			++ptr;

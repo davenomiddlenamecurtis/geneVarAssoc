@@ -646,7 +646,7 @@ int refseqGeneInfo::tbiExtractGene(char *tbiFilename,char *outFn,int appendToOld
 			} while (strncmp(buff,chr+3,strlen(chr+3)) || (sscanf(buff,"%*s %*d %d",&endPos),endPos-baitMargin<firstExonStart));
 
 		fseek(baitsFile,lineStart,SEEK_SET);
-		sprintf(geneLine,"tabix %s%s ",tbiFn,appendToOld?"":" -h");
+		sprintf(geneLine,"b 692tabix %s%s ",tbiFn,appendToOld?"":" -h");
 
 		foundOne=0; // what can happen is small transcript in refseq file may be missed completely
 		while (fgets(buff,999,baitsFile)&&!strncmp(buff,chr+3,strlen(chr+3))&&(sscanf(buff,"%*s %d %d",&startPos,&endPos),startPos+baitMargin<=lastExonEnd))

@@ -83,6 +83,7 @@ int gvaParams::readParms(int argc,char *argv[],analysisSpecs &spec)
 	keepTempFiles=0;
 	doNotRun=0;
 	spec.debug=0;
+	spec.numVcfFieldsToSkip = DEFAULTNUMVCFFIELDSTOSKIP;
 	for (i = 0; i < 2; ++i)
 	{
 		useFreqs[i] = 0; // default
@@ -252,6 +253,8 @@ int gvaParams::readParms(int argc,char *argv[],analysisSpecs &spec)
 			doNotRun=atoi(arg);
 		else if (FILLARG("--debug"))
 			spec.debug = atoi(arg);
+		else if (FILLARG("--num-fields-to-skip"))
+			spec.numVcfFieldsToSkip = atoi(arg);
 		else if (FILLARG("--merge-alt-alleles"))
 			spec.mergeAltAlleles = atoi(arg);
 		else if(FILLARG("--reference-path"))

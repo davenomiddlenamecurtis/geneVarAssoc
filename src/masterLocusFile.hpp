@@ -120,9 +120,10 @@ public:
 		*alleleFreqStr=*alleleNumberStr=*alleleCountStr='\0';
 		*commentExpression=*weightExpression='\0';
 		wf=10;
+		numVcfFieldsToSkip = DEFAULTNUMVCFFIELDSTOSKIP;
 	} 
 int onlycc01,unknownIfUntyped,unknownIfNoPass,altIsCommon,sc,ec,skipIfNoPass,useConsequenceWeights,onlyUseSNPs,nExc,doRecessiveTest,addChrInVCF[MAXVCFFILES],useHaplotypes, showHapLocusNames,count_hom_as_het,useTrios,ignoreAlleles,useProbs,wildIfUnknown,debug;
-int useEnsembl,willNeedEnsemblConsequence,willNeedInbuiltConsequence,mergeAltAlleles;
+int useEnsembl,willNeedEnsemblConsequence,willNeedInbuiltConsequence,mergeAltAlleles,numVcfFieldsToSkip;
 int *phenotypes;
 TStrIntMap subPhenos;
 long sp,ep;
