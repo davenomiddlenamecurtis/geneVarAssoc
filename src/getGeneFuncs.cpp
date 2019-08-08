@@ -598,7 +598,7 @@ int refseqTranscript::checkExonLengths()
 	return 1;
 }
 
-int refseqGeneInfo::tbiExtractGene(char *tbiFilename,char *outFn,int appendToOld,int addChrInVCF)
+int refseqGeneInfo::tbiExtractGene(char *tbiFilename,char *outFn,int appendToOld,int addChrInVCF,int removeSpaces)
 {
 	int i,startPos,endPos,foundOne,systemStatus;
 	char buff[1000],*tbiFn,*ptr,tbiFnBuff[1000];
@@ -659,7 +659,7 @@ int refseqGeneInfo::tbiExtractGene(char *tbiFilename,char *outFn,int appendToOld
 #endif
 				if (strlen(geneLine)>3900) // line getting long, extract baits so far then go back for more - maximum is 4000?
 				{
-				sprintf(strchr(geneLine,'\0'),"%s %s",appendToOld?">>":">",outFn);
+				sprintf(strchr(geneLine,'\0'),"%s %s %s",removeSpaces?"| sed s/' '/'_'/g ":"",appendToOld?">>":">",outFn);
 				printf("Running command: %s\n",geneLine);
 				checkSystem();
 				systemStatus=system(geneLine);
@@ -791,10 +791,10 @@ int geneExtractor::downloadGene(refseqGeneInfo &g,char *outFn)
 	firstHalf[ptr-variantFileName]='\0';
 	strcpy(secondHalf,ptr+3);
 	sprintf(tbiFn,"%s%s%s",firstHalf,g.getChr(),secondHalf);
-	return g.tbiExtractGene(tbiFn,outFn);
+	return g.tbiExtractGene(tbiFn,outFn,0,0,0);
 }
 
-int geneExtractor::extractVariants(refseqGeneInfo &g,char *outFn,int appendToOld,int addChrInVCF)
+int geneExtractor::extractVariants(refseqGeneInfo &g,char *outFn,int appendToOld,int addChrInVCF,int removeSpaces)
 // extract vcf file from local tbi file
 {
 	if (variantFileName[0]=='\0')
@@ -803,7 +803,7 @@ int geneExtractor::extractVariants(refseqGeneInfo &g,char *outFn,int appendToOld
 		return 0;
 	}
 	else 
-		return g.tbiExtractGene(variantFileName,outFn,appendToOld,addChrInVCF);
+		return g.tbiExtractGene(variantFileName,outFn,appendToOld,addChrInVCF,removeSpaces);
 }
 
 

@@ -87,7 +87,7 @@ int main(int argc,char *argv[])
 			sprintf(fn,"gva.%s.cont.%d.vcf",geneName,i+1);
 			if (gp.dontExtractVariants)
 				printf("Will not attempt to produce %s because --dont-extract-variants was set\n",fn);
-			else if (!gcont.extractVariants(r,fn,0,spec.addChrInVCF[ff++]))
+			else if (!gcont.extractVariants(r,fn,0,spec.addChrInVCF[ff++],spec.removeVcfSpaces))
 				extractedOK=0;
 			vf.addLocusFile(fn,VCFFILE);
 			if (!vf.readLocusFileEntries(fn,spec,0))
@@ -99,7 +99,7 @@ int main(int argc,char *argv[])
 			sprintf(fn,"gva.%s.case.%d.vcf",geneName,i+1);
 			if (gp.dontExtractVariants)
 				printf("Will not attempt to produce %s because --dont-extract-variants was set\n",fn);
-			else if (!gcase.extractVariants(r,fn,0,spec.addChrInVCF[ff++]))
+			else if (!gcase.extractVariants(r,fn,0,spec.addChrInVCF[ff++], spec.removeVcfSpaces))
 				extractedOK=0;
 			vf.addLocusFile(fn,VCFFILE);
 			if (!vf.readLocusFileEntries(fn,spec,1))
