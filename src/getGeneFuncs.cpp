@@ -675,7 +675,7 @@ int refseqGeneInfo::tbiExtractGene(char *tbiFilename,char *outFn,int appendToOld
 		}
 		if (strchr(geneLine+4,':')) // means we found another bait since last calling tabix, skipping start of line which may be C:
 		{
-		sprintf(strchr(geneLine,'\0'),"%s %s",appendToOld?">>":">",outFn);
+		sprintf(strchr(geneLine,'\0'),"%s%s %s", removeSpaces ? "| sed s/' '/'_'/g " : "", appendToOld?">>":">",outFn);
 		printf("Running command: %s\n",geneLine);
 		checkSystem();
 		systemStatus=system(geneLine);
@@ -688,7 +688,7 @@ int refseqGeneInfo::tbiExtractGene(char *tbiFilename,char *outFn,int appendToOld
 		chr+(addChrInVCF?0:3),
 		firstExonStart - ((strand=='+')?upstream:downstream),
 		lastExonEnd + ((strand=='-')?upstream:downstream));
-	sprintf(strchr(geneLine,'\0'),"%s %s",appendToOld?">>":">",outFn);
+	sprintf(strchr(geneLine,'\0'),"%s%s %s", removeSpaces ? "| sed s/' '/'_'/g " : "", appendToOld?">>":">",outFn);
 	printf("Running command: %s\n",geneLine);
 	systemStatus=system(geneLine);
 	// printf("system returned %d\n",systemStatus);
