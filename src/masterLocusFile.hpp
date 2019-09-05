@@ -114,7 +114,7 @@ public:
 		useProbs=0;
 		count_hom_as_het=0;
 		useTrios=0;
-		ignoreAlleles=0;
+		dontMergeAlleles=ignoreAlleles=0;
 		mergeAltAlleles = 1;
 		debug=0;
 		*alleleFreqStr=*alleleNumberStr=*alleleCountStr='\0';
@@ -123,7 +123,8 @@ public:
 		numVcfFieldsToSkip = DEFAULTNUMVCFFIELDSTOSKIP;
 		removeVcfSpaces = 0;
 	} 
-int onlycc01,unknownIfUntyped,unknownIfNoPass,altIsCommon,sc,ec,skipIfNoPass,useConsequenceWeights,onlyUseSNPs,nExc,doRecessiveTest,addChrInVCF[MAXVCFFILES],useHaplotypes, showHapLocusNames,count_hom_as_het,useTrios,ignoreAlleles,useProbs,wildIfUnknown,debug;
+int onlycc01,unknownIfUntyped,unknownIfNoPass,altIsCommon,sc,ec,skipIfNoPass,useConsequenceWeights,onlyUseSNPs,nExc,doRecessiveTest,addChrInVCF[MAXVCFFILES],useHaplotypes, showHapLocusNames,count_hom_as_het,useTrios,
+ignoreAlleles,dontMergeAlleles,useProbs,wildIfUnknown,debug;
 int useEnsembl,willNeedEnsemblConsequence,willNeedInbuiltConsequence,mergeAltAlleles,numVcfFieldsToSkip,removeVcfSpaces;
 int *phenotypes;
 TStrIntMap subPhenos;

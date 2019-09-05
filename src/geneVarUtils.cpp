@@ -76,6 +76,7 @@ int gvaParams::readParms(int argc,char *argv[],analysisSpecs &spec)
 	spec.GQThreshold=0;
 	spec.depthThreshold=spec.hetDevThreshold=spec.hetDevThresholdSq=spec.ABThreshold=-1;
 	spec.ignoreAlleles=0;
+	spec.dontMergeAlleles = 0;
 	*referencePath=*sequencePath=*posName='\0';
 	*spec.alleleFreqStr=*spec.alleleNumberStr=*spec.alleleCountStr='\0';
 	spec.nExc=0;
@@ -237,7 +238,9 @@ int gvaParams::readParms(int argc,char *argv[],analysisSpecs &spec)
 		else if (FILLARG("--skip-if-no-pass"))
 			spec.skipIfNoPass=atoi(arg);
 		else if (FILLARG("--ignore-alleles")) // treat loci with different allele sets as the same locus
-			spec.ignoreAlleles=atoi(arg);
+			spec.ignoreAlleles = atoi(arg);
+		else if (FILLARG("--dont-merge-alleles")) // do not merge allelic systems from different vcf lines
+			spec.dontMergeAlleles = atoi(arg);
 		else if (FILLARG("--use-haplotypes"))
 		spec.useHaplotypes = atoi(arg);
 		else if (FILLARG("--show-hap-locus-names"))
@@ -255,7 +258,7 @@ int gvaParams::readParms(int argc,char *argv[],analysisSpecs &spec)
 		else if (FILLARG("--debug"))
 			spec.debug = atoi(arg);
 		else if (FILLARG("--num-fields-to-skip"))
-		spec.numVcfFieldsToSkip = atoi(arg);
+			spec.numVcfFieldsToSkip = atoi(arg);
 		else if (FILLARG("--remove-vcf-spaces"))
 		spec.removeVcfSpaces = atoi(arg);
 		else if (FILLARG("--merge-alt-alleles"))

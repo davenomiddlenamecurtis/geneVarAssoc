@@ -73,11 +73,12 @@ void weightTable::init(char *n,consequenceReport consequence[],int nConsequence)
 }
 
 #define MAXINFOLENGTH 20000
+#define MAXINFOLENGTHSTR "20000"
 char lineBuff[MAXINFOLENGTH+1],tempBuff[MAXINFOLENGTH+1]; // need these to be big for e.g. VEP on TTN
 
 dcexpr_val *performTabixQuery(const char *fn,int addChr,int lower,char *lookupStr)
 {
-	char fnBuff[1000],*ptr,*tptr,queryBuff[1000],chrStr[10];
+	char fnBuff[1000],*ptr,*tptr,queryBuff[1000],chrStr[10],altAll[1000];
 	int noEntry,c,f,l;
 	dcexpr_val *rv;
 	FILE *fq;
@@ -94,13 +95,13 @@ dcexpr_val *performTabixQuery(const char *fn,int addChr,int lower,char *lookupSt
 		ptr=strchr(lineBuff,'*');
 		strcat(fnBuff,lineBuff);
 	}
-	sprintf(queryBuff,"tabix %s %s%s:%ld-%ld",fnBuff,addChr?lower?"chr":"CHR":"",chrStr,geneVarParser::thisLocus->getPos(),geneVarParser::thisLocus->getPos());
+	sprintf(queryBuff,"%s:%ld-%s/%s",chrStr,geneVarParser::thisLocus->getPos(), geneVarParser::thisLocus->getAll(0), geneVarParser::thisLocus->getAll(1));
 	std::map<std::string,std::string>::const_iterator queryIter=geneVarParser::queryCache.find(queryBuff);
 	if (queryIter==geneVarParser::queryCache.end())
 	{
 		int stest;
 		remove("tabixQueryOutput.txt");
-		sprintf(lineBuff,"%s > tabixQueryOutput.txt",queryBuff);
+		sprintf(lineBuff, "tabix %s %s%s:%ld-%ld > tabixQueryOutput.txt", fnBuff, addChr ? lower ? "chr" : "CHR" : "", chrStr, geneVarParser::thisLocus->getPos(), geneVarParser::thisLocus->getPos());
 		checkSystem();
 		if ((stest=system(lineBuff))!=0)
 		{
@@ -110,34 +111,19 @@ dcexpr_val *performTabixQuery(const char *fn,int addChr,int lower,char *lookupSt
 		noEntry=1;
 		if (fq)
 		{
-			c=fgetc(fq);
-			while (c!=EOF && isspace(c))
-				c=fgetc(fq);
-			for (f=0;f<7;++f)
+			while (fgets(tempBuff, MAXINFOLENGTH, fq))
 			{
-					while (c!=EOF && !isspace(c))
-						c=fgetc(fq);
-					while (c!=EOF && isspace(c))
-						c=fgetc(fq);
-			}
-			if (c!=EOF)
-			{
-				noEntry=0;
-				ptr=lineBuff;
-				l=0;
-				while (c!=EOF && !isspace(c))
+				if (sscanf(tempBuff, "%*s %*s %*s %*s %[^ \t,]", altAll) == 1 && !strcmp(altAll, geneVarParser::thisLocus->getAll(1)))
 				{
-					*ptr++=c;
-					if (++l>=MAXINFOLENGTH)
-						break;
-					c=fgetc(fq);
+					noEntry = 0;
+					sscanf(tempBuff, "%*s %*s %*s %*s %*s %*s %*s %" MAXINFOLENGTHSTR "s", lineBuff);
+					break;
 				}
-				*ptr='\0';
 			}
 			fclose(fq);
 		}
 		if (noEntry)
-			sprintf(lineBuff,"NOVCFLINE_%s_%ld",chrStr,geneVarParser::thisLocus->getPos());
+			sprintf(lineBuff,"NOVCFLINE_%s_%ld_%s",chrStr, geneVarParser::thisLocus->getPos(), geneVarParser::thisLocus->getAll(1));
 		geneVarParser::queryCache[queryBuff]=lineBuff;
 	}
 	else

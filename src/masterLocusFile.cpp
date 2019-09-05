@@ -1977,6 +1977,11 @@ if (recPos!=0L)
 			break;
 		if (gotSNP!=SNP_NO)
 		{
+			if (spec.dontMergeAlleles && strcmp(tempRecord.alt, tempLocus->alt)) // treat allele variants as two separate loci
+			{
+				recPos = 0L;
+				break;
+			}
 			if (tempRecord.isSNP()!=SNP_NO)
 				break;
 			// both look like they could be SNP at this position
@@ -2004,7 +2009,7 @@ else
 	fill(tempRecord,tempLocus,locusPosInFile);
 	FSEEK(recordFile,0L,SEEK_END);
 	recPos=FTELL(recordFile);
-	sprintf(key,"%3d %10ld",tempLocus->chr,tempLocus->pos);
+	sprintf(key,"%3d %10ld %10.10s",tempLocus->chr,tempLocus->pos,tempLocus->alt);
 	index.add(key,recPos);
 }
 save(tempRecord,recPos);
