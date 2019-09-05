@@ -279,7 +279,7 @@ int vcfLocalLocus::outputAlleles(allelePair *all,FILE *f,FILEPOSITION filePos,in
 			*aptr++=*ptr++;
 		*aptr='\0'; // copied genotype into allStr
 		ptr=ptr2; // back at start of entry
-		if (GQpos>0 && *ptr2!='.')
+		if (spec.GQThreshold>0 && GQpos>0 && *ptr2!='.') // I had a rogue vcf which said it had a GQ entry but didn't
 		{
 		for (i=0;i<GQpos;++i)
 		{
@@ -434,14 +434,17 @@ int vcfLocalLocus::input(FILE *f,FILEPOSITION *locusPosInFile,analysisSpecs cons
 		;
 	if (!scanWord(&ptr,qualstr,VCFFIELDLENGTH-1))
 		goto problemReadingLocus;
-	if (!scanWord(&ptr,filter,VCFFIELDLENGTH-1))
-		goto problemReadingLocus;
-	if (spec.skipIfNoPass)
+	if (spec.numVcfFieldsToSkip>=9) // if not assume that PASS is blank and do not try to read it
 	{
-		if (strncmp(filter,"PASS",4))
-			continue; // try and read next line
-		// this can be set if all files have same set of loci so ones which do not PASS can be ignored
-		// if a locus passes in some files but not others, should use unknownIfNoPass instead.
+		if (!scanWord(&ptr, filter, VCFFIELDLENGTH - 1))
+			goto problemReadingLocus;
+		if (spec.skipIfNoPass)
+		{
+			if (strncmp(filter, "PASS", 4))
+				continue; // try and read next line
+			// this can be set if all files have same set of loci so ones which do not PASS can be ignored
+			// if a locus passes in some files but not others, should use unknownIfNoPass instead.
+		}
 	}
 	if (!scanWord(&ptr,info,VCFFIELDLENGTH-1))
 		;
