@@ -275,7 +275,7 @@ int vcfLocalLocus::outputAlleles(allelePair *all,FILE *f,FILEPOSITION filePos,in
 			++ptr;
 		}
 		aptr=allStr;
-		while (*ptr!=':' && *ptr!=' ' && *ptr!='\t')
+		while (*ptr!=':' && *ptr!=' ' && *ptr != '\t' && *ptr != '\n')
 			*aptr++=*ptr++;
 		*aptr='\0'; // copied genotype into allStr
 		ptr=ptr2; // back at start of entry
@@ -434,7 +434,9 @@ int vcfLocalLocus::input(FILE *f,FILEPOSITION *locusPosInFile,analysisSpecs cons
 		;
 	if (!scanWord(&ptr,qualstr,VCFFIELDLENGTH-1))
 		goto problemReadingLocus;
-	if (spec.numVcfFieldsToSkip>=9) // if not assume that PASS is blank and do not try to read it
+	if (spec.numVcfFieldsToSkip < 9) // assume that PASS is blank and do not try to read it
+		strcpy(filter, "PASS");
+	else
 	{
 		if (!scanWord(&ptr, filter, VCFFIELDLENGTH - 1))
 			goto problemReadingLocus;
