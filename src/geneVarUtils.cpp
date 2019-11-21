@@ -260,9 +260,13 @@ int gvaParams::readParms(int argc,char *argv[],analysisSpecs &spec)
 		else if (FILLARG("--num-fields-to-skip"))
 			spec.numVcfFieldsToSkip = atoi(arg);
 		else if (FILLARG("--remove-vcf-spaces"))
-		spec.removeVcfSpaces = atoi(arg);
+			spec.removeVcfSpaces = atoi(arg);
 		else if (FILLARG("--merge-alt-alleles"))
 			spec.mergeAltAlleles = atoi(arg);
+		else if (FILLARG("--omit-introns"))
+			spec.omitIntrons = atoi(arg);
+		else if (FILLARG("--splice-region-size"))
+			spec.spliceRegionSize = atoi(arg);
 		else if(FILLARG("--reference-path"))
 			strcpy(referencePath,arg);
 		else if(FILLARG("--vep"))

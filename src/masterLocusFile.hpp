@@ -116,6 +116,8 @@ public:
 		useTrios=0;
 		dontMergeAlleles=ignoreAlleles=0;
 		mergeAltAlleles = 1;
+		omitIntrons = 0;
+		spliceRegionSize = 100;
 		debug=0;
 		*alleleFreqStr=*alleleNumberStr=*alleleCountStr='\0';
 		*commentExpression=*weightExpression='\0';
@@ -124,7 +126,7 @@ public:
 		removeVcfSpaces = 0;
 	} 
 int onlycc01,unknownIfUntyped,unknownIfNoPass,altIsCommon,sc,ec,skipIfNoPass,useConsequenceWeights,onlyUseSNPs,nExc,doRecessiveTest,addChrInVCF[MAXVCFFILES],useHaplotypes, showHapLocusNames,count_hom_as_het,useTrios,
-ignoreAlleles,dontMergeAlleles,useProbs,wildIfUnknown,debug;
+ignoreAlleles,dontMergeAlleles,useProbs,wildIfUnknown,debug,omitIntrons,spliceRegionSize;
 int useEnsembl,willNeedEnsemblConsequence,willNeedInbuiltConsequence,mergeAltAlleles,numVcfFieldsToSkip,removeVcfSpaces;
 int *phenotypes;
 TStrIntMap subPhenos;
