@@ -646,7 +646,7 @@ int refseqGeneInfo::tbiExtractGene(char *tbiFilename,char *outFn,int appendToOld
 			} while (strncmp(buff,chr+3,strlen(chr+3)) || (sscanf(buff,"%*s %*d %d",&endPos),endPos-baitMargin<firstExonStart));
 
 		fseek(baitsFile,lineStart,SEEK_SET);
-		sprintf(geneLine,"b 692tabix %s%s ",tbiFn,appendToOld?"":" -h");
+		sprintf(geneLine,"tabix %s%s ",tbiFn,appendToOld?"":" -h");
 
 		foundOne=0; // what can happen is small transcript in refseq file may be missed completely
 		while (fgets(buff,999,baitsFile)&&!strncmp(buff,chr+3,strlen(chr+3))&&(sscanf(buff,"%*s %d %d",&startPos,&endPos),startPos+baitMargin<=lastExonEnd))
@@ -687,6 +687,11 @@ int refseqGeneInfo::tbiExtractGene(char *tbiFilename,char *outFn,int appendToOld
 		sprintf(geneLine, "tabix -h %s ", tbiFn);
 		for (i = 0; i < allExonCount; ++i)
 			sprintf(strchr(geneLine, '\0'), "%s:%d-%d ",chr + 3,exonStarts[i] - spliceRegionSize,exonEnds[i] + spliceRegionSize);
+		sprintf(strchr(geneLine, '\0'), "%s%s %s", removeSpaces ? "| sed s/' '/'_'/g " : "", appendToOld ? ">>" : ">", outFn);
+		printf("Running command: %s\n", geneLine);
+		checkSystem();
+		systemStatus = system(geneLine);
+		// printf("system returned %d\n",systemStatus);
 	}
 	else
 	{
