@@ -598,6 +598,43 @@ int refseqTranscript::checkExonLengths()
 	return 1;
 }
 
+void refseqGeneInfo::getAllExons()
+// we will assume exons do no vary between transcripts
+{
+	int allFound,t,lastStart,nextStart,tt,s,ss;
+	if (gotAllExons)
+		return;
+	allFound = 0;
+	lastStart = 0;
+	while (!allFound)
+	{
+		allFound = 1;
+		nextStart = 1e10;
+		for (t = 0; t < nTranscript; ++t)
+		{
+			for (s = 0; s < transcript[t].exonCount; ++s)
+			{
+				if (transcript[t].exonStarts[s] > lastStart && transcript[t].exonStarts[s] < nextStart)
+				{
+					allFound = 0;
+					nextStart = transcript[t].exonStarts[s];
+					tt = t;
+					ss = s;
+				}
+			}
+		}
+		if (allFound == 0)
+		{
+			exonStarts[allExonCount] = nextStart;
+			exonEnds[allExonCount] = transcript[tt].exonEnds[ss];
+			++allExonCount;
+		}
+	}
+	firstExonStart = exonStarts[0];
+	lastExonEnd = exonEnds[allExonCount - 1];
+	gotAllExons = 1;
+}
+
 int refseqGeneInfo::tbiExtractGene(char *tbiFilename,char *outFn,int appendToOld,int addChrInVCF,int removeSpaces,int omitIntrons, int spliceRegionSize)
 {
 	int i,startPos,endPos,foundOne,systemStatus;
@@ -685,6 +722,8 @@ int refseqGeneInfo::tbiExtractGene(char *tbiFilename,char *outFn,int appendToOld
 	else if (omitIntrons)
 	{
 		sprintf(geneLine, "tabix -h %s ", tbiFn);
+		if (!gotAllExons)
+			getAllExons();
 		for (i = 0; i < allExonCount; ++i)
 			sprintf(strchr(geneLine, '\0'), "%s:%d-%d ",chr + 3,exonStarts[i] - spliceRegionSize,exonEnds[i] + spliceRegionSize);
 		sprintf(strchr(geneLine, '\0'), "%s%s %s", removeSpaces ? "| sed s/' '/'_'/g " : "", appendToOld ? ">>" : ">", outFn);
