@@ -726,7 +726,7 @@ int refseqGeneInfo::tbiExtractGene(char *tbiFilename,char *outFn,int appendToOld
 		if (!gotAllExons)
 			getAllExons();
 		for (i = 0; i < allExonCount; ++i)
-			sprintf(strchr(geneLine, '\0'), "%s:%d-%d ",chr + 3,exonStarts[i] - spliceRegionSize,exonEnds[i] + spliceRegionSize);
+			sprintf(strchr(geneLine, '\0'), "%s:%d-%d ", chr + (addChrInVCF ? 0 : 3),exonStarts[i] - spliceRegionSize,exonEnds[i] + spliceRegionSize);
 		sprintf(strchr(geneLine, '\0'), "%s%s %s", removeSpaces ? "| sed s/' '/'_'/g " : "", appendToOld ? ">>" : ">", outFn);
 		printf("Running command: %s\n", geneLine);
 		checkSystem();
