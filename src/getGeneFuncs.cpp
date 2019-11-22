@@ -627,6 +627,7 @@ void refseqGeneInfo::getAllExons()
 		{
 			exonStarts[allExonCount] = nextStart;
 			exonEnds[allExonCount] = transcript[tt].exonEnds[ss];
+			lastStart = nextStart;
 			++allExonCount;
 		}
 	}
