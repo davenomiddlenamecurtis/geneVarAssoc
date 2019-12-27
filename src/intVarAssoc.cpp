@@ -30,7 +30,7 @@ along with geneVarAssoc.If not, see <http://www.gnu.org/licenses/>.
 
 int main(int argc,char *argv[])
 {
-	char fn[100],fn2[100],line[1000],intStr[100];
+	char fn[100],fn2[100],line[1000],intStr[100],chr[10], * tbiFn, * ptr, tbiFnBuff[1000];
 	int i,first,extractedOK;
 	FILE *fp,*fi;
 	gvaParams gp;
@@ -82,16 +82,45 @@ int main(int argc,char *argv[])
 		int ff=0;
 		for (i=0;i<gp.nCc[0];++i)
 		{
+			if ((ptr = strchr(gp.ccFn[0][i], '*')) == 0)
+				tbiFn = gp.ccFn[0][i];
+			else
+			{
+				sscanf(intStr, "%[^:]", chr);
+				strcpy(tbiFnBuff, gp.ccFn[0][i]);
+				ptr = strchr(tbiFnBuff, '*');
+				*ptr = '\0';
+				strcat(tbiFnBuff,chr);
+				ptr = strchr(gp.ccFn[0][i], '*');
+				strcat(tbiFnBuff, ptr + 1);
+				tbiFn = tbiFnBuff;
+			}
 			sprintf(fn,"%s.cont.%d.vcf",gp.testName,i+1);
-			sprintf(line,"tabix %s %s %s%s %s %s",gp.ccFn[0][i],first==1?"-h":"",spec.addChrInVCF[ff++]?"chr":"",intStr,first?">":">>",fn);
+			sprintf(line,"tabix %s %s %s%s %s %s", tbiFn,first==1?"-h":"",spec.addChrInVCF[ff++]?"chr":"",intStr,first?">":">>",fn);
 			checkSystem();
+			printf("Executing command:\n%s\n", line);
 			system(line);
 		}
 		for (i=0;i<gp.nCc[1];++i)
 		{
+			if ((ptr = strchr(gp.ccFn[1][i], '*')) == 0)
+				tbiFn = gp.ccFn[1][i];
+			else
+			{
+				sscanf(intStr, "%[^:]", chr);
+				strcpy(tbiFnBuff, gp.ccFn[0][i]);
+				ptr = strchr(tbiFnBuff, '*');
+				*ptr = '\0';
+				strcat(tbiFnBuff, chr);
+				ptr = strchr(gp.ccFn[1][i], '*');
+				strcat(tbiFnBuff, ptr + 1);
+				tbiFn = tbiFnBuff;
+			}
+
 			sprintf(fn,"%s.case.%d.vcf",gp.testName,i+1);
-			sprintf(line,"tabix %s %s %s%s %s %s",gp.ccFn[1][i],first==1?"-h":"",spec.addChrInVCF[ff++]?"chr":"",intStr,first?">":">>",fn);
+			sprintf(line,"tabix %s %s %s%s %s %s",tbiFn,first==1?"-h":"",spec.addChrInVCF[ff++]?"chr":"",intStr,first?">":">>",fn);
 			checkSystem();
+			printf("Executing command:\n%s\n", line);
 			system(line);
 		}
 		first=0;
