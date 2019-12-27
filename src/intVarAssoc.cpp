@@ -108,7 +108,7 @@ int main(int argc,char *argv[])
 			else
 			{
 				sscanf(intStr, "%[^:]", chr);
-				strcpy(tbiFnBuff, gp.ccFn[0][i]);
+				strcpy(tbiFnBuff, gp.ccFn[1][i]);
 				ptr = strchr(tbiFnBuff, '*');
 				*ptr = '\0';
 				strcat(tbiFnBuff, chr);
