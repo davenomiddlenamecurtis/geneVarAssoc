@@ -18,17 +18,17 @@ xmlns="http://www.w3.org/TR/REC-html40">
   <o:Author>David Curtis</o:Author>
   <o:Template>B436C3BA.dotm</o:Template>
   <o:LastAuthor>Curtis, David</o:LastAuthor>
-  <o:Revision>30</o:Revision>
+  <o:Revision>31</o:Revision>
   <o:TotalTime>9844</o:TotalTime>
   <o:Created>2018-06-13T14:53:00Z</o:Created>
-  <o:LastSaved>2019-12-30T15:46:00Z</o:LastSaved>
+  <o:LastSaved>2019-12-30T15:48:00Z</o:LastSaved>
   <o:Pages>46</o:Pages>
   <o:Words>8801</o:Words>
-  <o:Characters>50172</o:Characters>
+  <o:Characters>50170</o:Characters>
   <o:Company>UCL</o:Company>
   <o:Lines>418</o:Lines>
   <o:Paragraphs>117</o:Paragraphs>
-  <o:CharactersWithSpaces>58856</o:CharactersWithSpaces>
+  <o:CharactersWithSpaces>58854</o:CharactersWithSpaces>
   <o:Version>16.00</o:Version>
  </o:DocumentProperties>
  <o:OfficeDocumentSettings>
@@ -773,7 +773,8 @@ h3
 	mso-bidi-theme-font:major-bidi;
 	font-weight:bold;}
 a:link, span.MsoHyperlink
-	{mso-style-priority:99;
+	{mso-style-noshow:yes;
+	mso-style-priority:99;
 	color:blue;
 	text-decoration:underline;
 	text-underline:single;}
@@ -1190,7 +1191,7 @@ were described in this publications, which should be cited:</p>
 <p class=MsoNormal><a href="http://www.ncbi.nlm.nih.gov/pubmed/26474449">Practical
 experience of the application of a weighted burden test to whole exome sequence
 data for obesity and schizophrenia. D Curtis and the UK10K Consortium. Ann Hum
-Genet 80, 38-49. 2016.</a> </p>
+Genet 80:38-49. 2016.</a> </p>
 
 <p class=MsoNormal><a href="https://www.nature.com/articles/s41431-018-0272-6">A
 weighted burden test using logistic regression for integrated analysis of
@@ -1255,13 +1256,13 @@ number to extract the relevant variants for a particular gene. </p>
 <p class=MsoNormal>For the simplest usage, there will be one or more <span
 class=SpellE><i style='mso-bidi-font-style:normal'>vcf</i></span> files
 containing control genotypes and one or more <span class=SpellE><i
-style='mso-bidi-font-style:normal'>vcf</i></span> files containing case genotypes.
-However one may also work with only allele frequencies, rather than genotypes,
-for controls and/or cases. If the control and case genotypes are in the same <span
-class=SpellE><i style='mso-bidi-font-style:normal'>vcf</i></span> file then the
-phenotypes are specified with a<span style='mso-spacerun:yes'>&nbsp;
-</span>separate file. If the subjects consist of trios then a separate file is
-used to define the pedigree relationships. </p>
+style='mso-bidi-font-style:normal'>vcf</i></span> files containing case
+genotypes. However one may also work with only allele frequencies, rather than
+genotypes, for controls and/or cases. If the control and case genotypes are in
+the same <span class=SpellE><i style='mso-bidi-font-style:normal'>vcf</i></span>
+file then the phenotypes are specified with a<span
+style='mso-spacerun:yes'>&nbsp; </span>separate file. If the subjects consist
+of trios then a separate file is used to define the pedigree relationships. </p>
 
 <p class=MsoNormal>In order to run <span class=SpellE><i style='mso-bidi-font-style:
 normal'>geneVarAssoc</i></span> you will need the following:</p>
@@ -1318,9 +1319,9 @@ style='mso-bidi-font-style:normal'>scoreassoc</i></span>.</p>
 <p class=MsoNormal>Typically a parameter file specified by <i style='mso-bidi-font-style:
 normal'>--<span class=SpellE>arg</span>-file</i> would contain the
 specifications for the analyses and the locations of the data and reference
-files and then the <i style='mso-bidi-font-style:normal'>--gene</i> argument
-would specify the gene to be analysed. Two example parameter files are
-provided. In <span class=SpellE><i style='mso-bidi-font-style:normal'>exampleContFreqFile.arg</i></span>,
+files and then the <i style='mso-bidi-font-style:normal'>--gene</i> argument would
+specify the gene to be analysed. Two example parameter files are provided. In <span
+class=SpellE><i style='mso-bidi-font-style:normal'>exampleContFreqFile.arg</i></span>,
 a 1KG file is used to provide allele frequencies based on 195 subjects and the
 case genotypes would be in files called <i style='mso-bidi-font-style:normal'>BP_chr1.vcf.gz</i>,
 <i style='mso-bidi-font-style:normal'>BP_chr2.vcf.gz</i>, etc. In <i
@@ -1347,13 +1348,13 @@ class=SpellE>chr</span> 1</i>.</p>
 <p class=MsoNormal>All the arguments are in pairs. The first member of the pair
 must begin with a double-hyphen and the second member provides the value for
 the argument, which for an option to be turned on or off is 1 or 0. The
-arguments can be provided on the command line or in argument files or in a combination
-of both. Arguments are separated by any amount of white space. If an argument
-value includes spaces then it must be enclosed in single quotes. For arguments
-on the command line, the operating system will apply the normal command line
-substitutions, which may affect arguments including asterisks and/or double
-quotes, so these should either be within an argument file (probably easiest) or
-else enclosed in single quotes to prevent substitution.</p>
+arguments can be provided on the command line or in argument files or in a
+combination of both. Arguments are separated by any amount of white space. If
+an argument value includes spaces then it must be enclosed in single quotes.
+For arguments on the command line, the operating system will apply the normal command
+line substitutions, which may affect arguments including asterisks and/or
+double quotes, so these should either be within an argument file (probably
+easiest) or else enclosed in single quotes to prevent substitution.</p>
 
 <p class=MsoNormal>Here is the list of options:</p>
 
@@ -1430,15 +1431,15 @@ regardless of which are specified first. So the phenotype file must have
 phenotypes for the subjects in the control files before those in the case
 files. This aside, the <span class=SpellE><i style='mso-bidi-font-style:normal'>vcf</i></span>
 files are read in in the order in which they are specified. This argument can
-be repeated if there is more than one file containing phenotypes. The
-phenotypes in this file or files will override the control or case file
-specification. (A possible application of this would be if one wished to
-perform some kind of permutation testing.) </p>
+be repeated if there is more than one file containing phenotypes. The phenotypes
+in this file or files will override the control or case file specification. (A
+possible application of this would be if one wished to perform some kind of
+permutation testing.) </p>
 
 <h3>--ID-and-phenotype-file filename</h3>
 
-<p class=MsoNormal>Specifies the name of a file which provides phenotypes of the
-subjects in the <span class=SpellE><i style='mso-bidi-font-style:normal'>vcf</i></span>
+<p class=MsoNormal>Specifies the name of a file which provides phenotypes of
+the subjects in the <span class=SpellE><i style='mso-bidi-font-style:normal'>vcf</i></span>
 file(s). There is one row per subject, consisting of the subject ID as in the <span
 class=SpellE><i style='mso-bidi-font-style:normal'>vcf</i></span> file followed
 by a space then a 0 or 1 (for case or control) or any other number (to be
@@ -1472,9 +1473,9 @@ match is case-sensitive.</p>
 
 <h3>--trio-file filename</h3>
 
-<p class=MsoNormal>Indicates that the subjects consist of sets of trios as defined
-in the file specified. Each subject to be used occupies one row. The first
-entry is the ID of the subject, as in the <span class=SpellE><i
+<p class=MsoNormal>Indicates that the subjects consist of sets of trios as
+defined in the file specified. Each subject to be used occupies one row. The
+first entry is the ID of the subject, as in the <span class=SpellE><i
 style='mso-bidi-font-style:normal'>vcf</i></span> file. If the subject has
 parents then their IDs are given next, father then mother. If the subject is a
 parent then the parental IDs are given as 0 0. Subjects in the <span
@@ -1585,9 +1586,9 @@ class=SpellE><i style='mso-bidi-font-style:normal'>refseq</i></span> file.</p>
 
 <p class=MsoNormal>Weight factor to provide to <span class=SpellE><i
 style='mso-bidi-font-style:normal'>scoreassoc</i></span> for weighting based on
-allele frequency, meaning that rarer variants receive a higher weight. Default
-value is 10, meaning very rare variants have 10 times the weight of very common
-ones. See <span class=SpellE><i style='mso-bidi-font-style:normal'>scoreassoc</i></span>
+allele frequency, meaning that rarer variants receive a higher weight. Default value
+is 10, meaning very rare variants have 10 times the weight of very common ones.
+See <span class=SpellE><i style='mso-bidi-font-style:normal'>scoreassoc</i></span>
 documentation for further details. </p>
 
 <h3>--use-<span class=SpellE>ensembl</span> 0 or 1</h3>
@@ -1625,17 +1626,16 @@ style='mso-bidi-font-style:normal'>predictorOutput.txt</i> containing the
 annotations, then read in that file. By default, the above command line will be
 run. The default value for the <i style='mso-bidi-font-style:normal'>--<span
 class=SpellE>vep</span></i> argument is <span class=SpellE><i style='mso-bidi-font-style:
-normal'>perl</i></span><i style='mso-bidi-font-style:normal'>
-variant_effect_predictor.pl</i> and to this <span class=SpellE><i
-style='mso-bidi-font-style:normal'>geneVarAssoc</i></span><i style='mso-bidi-font-style:
-normal'> </i>appends <i style='mso-bidi-font-style:normal'>-<span class=SpellE>i</span>
-predictorQuery.txt -o predictorOutput.txt --<span class=SpellE>most_severe</span></i>.
-If one needs a different command to run <i style='mso-bidi-font-style:normal'>VEP</i>
-successfully then the <i style='mso-bidi-font-style:normal'>--<span
-class=SpellE>vep</span></i> argument is used to provide this. Because there
-will be spaces the whole argument must be enclosed in single quotes. For
-example, to run <i style='mso-bidi-font-style:normal'>VEP </i>under Unix the
-entry might read: </p>
+normal'>perl</i></span><i style='mso-bidi-font-style:normal'> variant_effect_predictor.pl</i>
+and to this <span class=SpellE><i style='mso-bidi-font-style:normal'>geneVarAssoc</i></span><i
+style='mso-bidi-font-style:normal'> </i>appends <i style='mso-bidi-font-style:
+normal'>-<span class=SpellE>i</span> predictorQuery.txt -o predictorOutput.txt
+--<span class=SpellE>most_severe</span></i>. If one needs a different command
+to run <i style='mso-bidi-font-style:normal'>VEP</i> successfully then the <i
+style='mso-bidi-font-style:normal'>--<span class=SpellE>vep</span></i> argument
+is used to provide this. Because there will be spaces the whole argument must
+be enclosed in single quotes. For example, to run <i style='mso-bidi-font-style:
+normal'>VEP </i>under Unix the entry might read: </p>
 
 <p class=command>--<span class=SpellE>vep</span> '<span class=SpellE>perl</span>
 /share/ref/VEP/ensembl-tools-release-87/scripts/variant_effect_predictor/variant_effect_predictor.pl
@@ -1701,8 +1701,8 @@ shown below:</p>
 2/2 1 1 2 2<o:p></o:p></span></p>
 
 <p class=MsoNormal>Breaking up the variant in this way allows the two alleles
-to be given their own annotations and treated separately and this will usually
-be a reasonable way to deal with multiallelic variants although it may be less
+to be given their own annotations and treated separately and this will usually be
+a reasonable way to deal with multiallelic variants although it may be less
 appropriate if alternate alleles have a high frequency. <i style='mso-bidi-font-style:
 normal'><o:p></o:p></i></p>
 
@@ -1875,9 +1875,9 @@ ALT allele strings are identical. Default value is 0.</p>
 
 <h3>--<span class=SpellE>dont</span>-merge-alleles 0 or 1</h3>
 
-<p class=MsoNormal>If 0, do not attempt to merge variants at the same position
-having different ALT alleles into a single allelic system. You must use this if
-a single <span class=SpellE><i style='mso-bidi-font-style:normal'>vcf</i></span>
+<p class=MsoNormal>If 0, do not attempt to merge variants at the same position having
+different ALT alleles into a single allelic system. You must use this if a
+single <span class=SpellE><i style='mso-bidi-font-style:normal'>vcf</i></span>
 file has separate lines for the different ALT alleles. Default value is 0.</p>
 
 <h3>--use-haplotypes 0 or 1</h3>
@@ -1921,9 +1921,9 @@ using logistic regression analysis. </p>
 <p class=MsoNormal><b style='mso-bidi-font-weight:normal'><span
 style='font-size:20.0pt'>--start-from-fitted 0 or 1<o:p></o:p></span></b></p>
 
-<p class=MsoNormal>When carrying out logistic regression analysis, use the
-fitted values obtained from the first model as the starting values to find the
-best fitting values for the second model.</p>
+<p class=MsoNormal>When carrying out logistic regression analysis, use the fitted
+values obtained from the first model as the starting values to find the best
+fitting values for the second model.</p>
 
 <h3>--<span class=SpellE>dont</span>-extract-variants 0 or 1</h3>
 
@@ -2064,8 +2064,8 @@ the usual precedence rules and parentheses. The symbols &amp;, | and = mean
 AND, OR and IS EQUAL TO. Values are either floating point numbers or strings
 and conversion between these happens automatically as required, so the number
 3.7 converts into the string &quot;3.7&quot; and vice versa. If a string begins
-with a number then this will be its numerical value and otherwise its value
-will be 0. A logical expression has a numerical value of 1 if true and 0 if false
+with a number then this will be its numerical value and otherwise its value will
+be 0. A logical expression has a numerical value of 1 if true and 0 if false
 and a numerical expression has a logical value of false if it is 0 and true if
 it is non-zero. Operators or functions can be unary or binary and the format
 for functions which take two arguments is the same as for operators taking two
@@ -2108,8 +2108,8 @@ practical situations.</p>
   height:14.4pt'>
   <p class=MsoNormal style='margin:0cm;margin-bottom:.0001pt;mso-pagination:
   widow-orphan'><span style='font-size:12.0pt;mso-bidi-font-family:Calibri;
-  mso-bidi-theme-font:minor-latin;color:black'>Return 1 if numerical values of
-  arguments are equal or if both are identical strings, e.g. &quot;Fred&quot; =
+  mso-bidi-theme-font:minor-latin;color:black'>Return 1 if numerical values of arguments
+  are equal or if both are identical strings, e.g. &quot;Fred&quot; =
   &quot;Tim&quot; is false (0),<span style='mso-spacerun:yes'>&nbsp; </span>and
   using the NOT operator NOT (&quot;Fred&quot; = &quot;Tim&quot;) is true (1).<o:p></o:p></span></p>
   </td>
@@ -2126,8 +2126,8 @@ practical situations.</p>
   <p class=MsoNormal style='margin:0cm;margin-bottom:.0001pt;mso-pagination:
   widow-orphan'><span style='font-size:12.0pt;mso-bidi-font-family:Calibri;
   mso-bidi-theme-font:minor-latin;color:black'>Return 1 if numerical values of
-  arguments are not equal (NB false if two different strings both have
-  numerical value 0, e.g. &quot;Fred&quot; != &quot;Tim&quot; is false (0).<o:p></o:p></span></p>
+  arguments are not equal (NB false if two different strings both have numerical
+  value 0, e.g. &quot;Fred&quot; != &quot;Tim&quot; is false (0).<o:p></o:p></span></p>
   </td>
  </tr>
  <tr style='mso-yfti-irow:3;height:14.4pt'>
@@ -2209,8 +2209,8 @@ practical situations.</p>
   height:14.4pt'>
   <p class=MsoNormal style='margin:0cm;margin-bottom:.0001pt;mso-pagination:
   widow-orphan'><span style='font-size:12.0pt;mso-bidi-font-family:Calibri;
-  mso-bidi-theme-font:minor-latin;color:black'>AND operator, return 1 if both arguments
-  are true, only evaluate second if first is true.<o:p></o:p></span></p>
+  mso-bidi-theme-font:minor-latin;color:black'>AND operator, return 1 if both
+  arguments are true, only evaluate second if first is true.<o:p></o:p></span></p>
   </td>
  </tr>
  <tr style='mso-yfti-irow:9;height:14.4pt'>
@@ -2239,8 +2239,8 @@ practical situations.</p>
   height:14.4pt'>
   <p class=MsoNormal style='margin:0cm;margin-bottom:.0001pt;mso-pagination:
   widow-orphan'><span style='font-size:12.0pt;mso-bidi-font-family:Calibri;
-  mso-bidi-theme-font:minor-latin;color:black'>Comma operator - evaluate both
-  arguments, return second.<o:p></o:p></span></p>
+  mso-bidi-theme-font:minor-latin;color:black'>Comma operator - evaluate both arguments,
+  return second.<o:p></o:p></span></p>
   </td>
  </tr>
  <tr style='mso-yfti-irow:11;height:14.4pt'>
@@ -2341,9 +2341,9 @@ practical situations.</p>
   height:14.4pt'>
   <p class=MsoNormal style='margin:0cm;margin-bottom:.0001pt;mso-pagination:
   widow-orphan'><span style='font-size:12.0pt;mso-bidi-font-family:Calibri;
-  mso-bidi-theme-font:minor-latin;color:black'>Return 1 if the first argument starts
-  with the letters of the second argument, e.g. &quot;Fred&quot; STARTSWITH
-  &quot;Fr&quot; returns 1.<o:p></o:p></span></p>
+  mso-bidi-theme-font:minor-latin;color:black'>Return 1 if the first argument
+  starts with the letters of the second argument, e.g. &quot;Fred&quot;
+  STARTSWITH &quot;Fr&quot; returns 1.<o:p></o:p></span></p>
   </td>
  </tr>
  <tr style='mso-yfti-irow:18;height:14.4pt'>
@@ -2372,8 +2372,8 @@ practical situations.</p>
   height:14.4pt'>
   <p class=MsoNormal style='margin:0cm;margin-bottom:.0001pt;mso-pagination:
   widow-orphan'><span style='font-size:12.0pt;mso-bidi-font-family:Calibri;
-  mso-bidi-theme-font:minor-latin;color:black'>The first argument consists of an
-  annotation, such as may be produced by the inbuilt functions or by <i
+  mso-bidi-theme-font:minor-latin;color:black'>The first argument consists of
+  an annotation, such as may be produced by the inbuilt functions or by <i
   style='mso-bidi-font-style:normal'>variant effect predictor</i> (<i
   style='mso-bidi-font-style:normal'>VEP</i>) but which can consist of any
   string. The second argument provides a weight table which assigns the weight
@@ -2660,11 +2660,12 @@ practical situations.</p>
   <p class=MsoNormal style='margin:0cm;margin-bottom:.0001pt;mso-pagination:
   widow-orphan'><span style='font-size:12.0pt;mso-bidi-font-family:Calibri;
   mso-bidi-theme-font:minor-latin;color:black'>Argument should be
-  &quot;INBUILT&quot; or &quot;VEP&quot;. For the variant currently under consideration,
-  it returns the string for the annotation produced by the inbuilt functions or
-  by <i style='mso-bidi-font-style:normal'>variant effect predictor</i> (<i
-  style='mso-bidi-font-style:normal'>VEP</i>). E.g. the result for the
-  expression ANNOT &quot;INBUILT&quot; might be &quot;INTRONIC&quot;<o:p></o:p></span></p>
+  &quot;INBUILT&quot; or &quot;VEP&quot;. For the variant currently under
+  consideration, it returns the string for the annotation produced by the
+  inbuilt functions or by <i style='mso-bidi-font-style:normal'>variant effect
+  predictor</i> (<i style='mso-bidi-font-style:normal'>VEP</i>). E.g. the
+  result for the expression ANNOT &quot;INBUILT&quot; might be
+  &quot;INTRONIC&quot;<o:p></o:p></span></p>
   </td>
  </tr>
  <tr style='mso-yfti-irow:39;height:14.4pt'>
@@ -2685,10 +2686,10 @@ practical situations.</p>
   produces a string describing the base pair position, e.g.
   &quot;1376826&quot;; &quot;CHR&quot; produces a string describing the
   chromosome, e.g. &quot;17&quot;; &quot;COORD&quot; produces a string
-  describing the coordinates,<span style='mso-spacerun:yes'>&nbsp; </span>e.g.
-  &quot;17:1376826&quot;; &quot;ID&quot; produces a string consisting of the
-  variant name, e.g. &quot;rs785623&quot;; &quot;ISSNP&quot; produces a value
-  of 1 if the variant is an SNP, else 0.<o:p></o:p></span></p>
+  describing the coordinates,<span style='mso-spacerun:yes'>&nbsp; </span>e.g. &quot;17:1376826&quot;;
+  &quot;ID&quot; produces a string consisting of the variant name, e.g.
+  &quot;rs785623&quot;; &quot;ISSNP&quot; produces a value of 1 if the variant
+  is an SNP, else 0.<o:p></o:p></span></p>
   </td>
  </tr>
  <tr style='mso-yfti-irow:40;height:14.4pt'>
@@ -2702,13 +2703,13 @@ practical situations.</p>
   height:14.4pt'>
   <p class=MsoNormal style='margin:0cm;margin-bottom:.0001pt;mso-pagination:
   widow-orphan'><span style='font-size:12.0pt;mso-bidi-font-family:Calibri;
-  mso-bidi-theme-font:minor-latin;color:black'>Takes one argument, a string,
-  and looks within it for an entry corresponding to the POLYPHEN status output
-  by VEP. Typically this would be applied to<span
-  style='mso-spacerun:yes'>&nbsp; </span>the result of looking up the information
-  field in a VCF file containing annotations produced by VEP. The function
-  looks for the following strings: &quot;<span class=SpellE>probably_damaging</span>&quot;,
-  &quot;<span class=SpellE>possibly_damaging</span>&quot;, &quot;unknown&quot;,
+  mso-bidi-theme-font:minor-latin;color:black'>Takes one argument, a string, and
+  looks within it for an entry corresponding to the POLYPHEN status output by
+  VEP. Typically this would be applied to<span style='mso-spacerun:yes'>&nbsp;
+  </span>the result of looking up the information field in a VCF file
+  containing annotations produced by VEP. The function looks for the following
+  strings: &quot;<span class=SpellE>probably_damaging</span>&quot;, &quot;<span
+  class=SpellE>possibly_damaging</span>&quot;, &quot;unknown&quot;,
   &quot;benign&quot; and if it finds one it returns the most severe. Thus if
   there are multiple entries for multiple transcripts only the most severe will
   be reported. If no entry is found it returns &quot;<span class=SpellE>polyphen_missing</span>&quot;.
@@ -2770,11 +2771,11 @@ practical situations.</p>
 
 <p class=MsoNormal>It is possible to construct quite complicated expressions
 whose results are then used by <span class=SpellE><i style='mso-bidi-font-style:
-normal'>geneVarAssoc</i></span><i style='mso-bidi-font-style:normal'> </i>and when
-it is run normally one cannot see the intermediate stages of the expression
-evaluation. If one specifies <i style='mso-bidi-font-style:normal'>--debug 1</i>
-then the intermediate values for each part of the expression are output as they
-are evaluated and this can be helpful for trouble-shooting.</p>
+normal'>geneVarAssoc</i></span><i style='mso-bidi-font-style:normal'> </i>and
+when it is run normally one cannot see the intermediate stages of the
+expression evaluation. If one specifies <i style='mso-bidi-font-style:normal'>--debug
+1</i> then the intermediate values for each part of the expression are output
+as they are evaluated and this can be helpful for trouble-shooting.</p>
 
 <h2>Annotations</h2>
 
@@ -3173,8 +3174,8 @@ normal'>--consequence-threshold option</i> is specified.</p>
  </tr>
 </table>
 
-<p class=MsoNormal>The <i style='mso-bidi-font-style:normal'>VEP</i>
-annotations and their default weights are as follows:</p>
+<p class=MsoNormal>The <i style='mso-bidi-font-style:normal'>VEP</i> annotations
+and their default weights are as follows:</p>
 
 <table class=MsoNormalTable border=0 cellspacing=0 cellpadding=0 width=444
  style='width:333.0pt;border-collapse:collapse;mso-yfti-tbllook:1184;
@@ -4261,12 +4262,11 @@ style='mso-fareast-font-family:"Times New Roman";mso-fareast-theme-font:minor-fa
 style='mso-fareast-font-family:"Times New Roman";mso-fareast-theme-font:minor-fareast'><o:p></o:p></span></p>
 
 <p class=MsoNormal><span style='mso-fareast-font-family:"Times New Roman";
-mso-fareast-theme-font:minor-fareast'>Again, one should remember that these
-exclusions are based on properties of the variants and are different from those
-in the exclusion list which are passed on to<span
-style='mso-spacerun:yes'>&nbsp; </span><span class=SpellE><i style='mso-bidi-font-style:
-normal'>scoreAssoc</i></span>, and which are based on allele and genotype
-counts.<o:p></o:p></span></p>
+mso-fareast-theme-font:minor-fareast'>Again, one should remember that these exclusions
+are based on properties of the variants and are different from those in the
+exclusion list which are passed on to<span style='mso-spacerun:yes'>&nbsp;
+</span><span class=SpellE><i style='mso-bidi-font-style:normal'>scoreAssoc</i></span>,
+and which are based on allele and genotype counts.<o:p></o:p></span></p>
 
 <h2><span style='mso-fareast-font-family:"Times New Roman";mso-fareast-theme-font:
 minor-fareast'>Comment expressions<o:p></o:p></span></h2>
@@ -4280,8 +4280,8 @@ can be used, so for example one might use:<o:p></o:p></span></p>
 
 <p class=MsoNormal><i style='mso-bidi-font-style:normal'><span
 style='mso-fareast-font-family:"Times New Roman";mso-fareast-theme-font:minor-fareast'>--comment-expression
-' &#8220;MAF in <span class=SpellE>ExAC</span> is: &#8220; STRCAT
-(&quot;AF&quot; VCFLOOKUP &quot;ExAC.r0.3.nonpsych.sites.vcf.gz&quot;) '</span></i><span
+' &#8220;MAF in <span class=SpellE>ExAC</span> is: &#8220; STRCAT (&quot;AF&quot;
+VCFLOOKUP &quot;ExAC.r0.3.nonpsych.sites.vcf.gz&quot;) '</span></i><span
 style='mso-fareast-font-family:"Times New Roman";mso-fareast-theme-font:minor-fareast'><o:p></o:p></span></p>
 
 <p class=MsoNormal><span style='mso-fareast-font-family:"Times New Roman";
@@ -4455,8 +4455,8 @@ control frequencies.<o:p></o:p></span></p>
 
 <p class=command>--<span class=SpellE>num-cont</span> 45000</p>
 
-<p class=MsoNormal>This is the (approximate) number of control subjects from which
-the frequencies are derived. </p>
+<p class=MsoNormal>This is the (approximate) number of control subjects from
+which the frequencies are derived. </p>
 
 <p class=commandCxSpFirst>--allele-number-str AN_NFE</p>
 
@@ -4493,8 +4493,8 @@ transcript coordinates.<o:p></o:p></span></p>
 <p class=command>--weight-factor 10.0 </p>
 
 <p class=MsoNormal>This is passed on to <span class=SpellE><i style='mso-bidi-font-style:
-normal'>scoreAssoc</i></span> and means that very rare variants will have weights
-multiplied by 10 compared to very common variants.</p>
+normal'>scoreAssoc</i></span> and means that very rare variants will have
+weights multiplied by 10 compared to very common variants.</p>
 
 <p class=command>--use-<span class=SpellE>ensembl</span> 0 </p>
 
@@ -4552,9 +4552,9 @@ style='mso-bidi-font-style:normal'>VCF</i> file to denote valid variants.<o:p></
 <p class=command>--ignore-alleles 1</p>
 
 <p class=MsoNormal><span style='mso-fareast-font-family:"Times New Roman";
-mso-fareast-theme-font:minor-fareast'>This means that variants at the same position
-in the two <i style='mso-bidi-font-style:normal'>VCF</i> files are treated as
-the same variant even if the allele lists are not identical.<o:p></o:p></span></p>
+mso-fareast-theme-font:minor-fareast'>This means that variants at the same
+position in the two <i style='mso-bidi-font-style:normal'>VCF</i> files are
+treated as the same variant even if the allele lists are not identical.<o:p></o:p></span></p>
 
 <p class=command>--reference-path \reference</p>
 
@@ -4986,10 +4986,10 @@ style='font-size:14.0pt;font-family:"Courier New"'>probably_damaging</span></spa
 style='font-size:14.0pt;font-family:"Courier New"'> 10.0</span></p>
 
 <p class=MsoNormal><span style='mso-fareast-font-family:"Times New Roman";
-mso-fareast-theme-font:minor-fareast'>The effect of this is that if a variant has
-an annotation of possibly or probably damaging it will have a functional weight
-of 10. Otherwise it will have a weight of 0, meaning that it will be ignored in
-the <span class=SpellE><i style='mso-bidi-font-style:normal'>scoreassoc</i></span>
+mso-fareast-theme-font:minor-fareast'>The effect of this is that if a variant
+has an annotation of possibly or probably damaging it will have a functional
+weight of 10. Otherwise it will have a weight of 0, meaning that it will be
+ignored in the <span class=SpellE><i style='mso-bidi-font-style:normal'>scoreassoc</i></span>
 analysis.<o:p></o:p></span></p>
 
 <p class=MsoNormal><span style='mso-fareast-font-family:"Times New Roman";
@@ -5015,9 +5015,9 @@ proceed as follows. <o:p></o:p></span></p>
 
 <p class=MsoNormal><span style='mso-fareast-font-family:"Times New Roman";
 mso-fareast-theme-font:minor-fareast'>Firstly, use the Unix <i
-style='mso-bidi-font-style:normal'>cut</i> utility to remove all but the first
-nine columns of the VCF file, discarding the genotypes which follow. Assuming
-the original file is called <i style='mso-bidi-font-style:normal'>swe.vcf.gz</i>,
+style='mso-bidi-font-style:normal'>cut</i> utility to remove all but the first nine
+columns of the VCF file, discarding the genotypes which follow. Assuming the
+original file is called <i style='mso-bidi-font-style:normal'>swe.vcf.gz</i>,
 one can enter:<o:p></o:p></span></p>
 
 <p class=MsoNormal><span class=SpellE><span style='font-size:14.0pt;font-family:
@@ -5060,10 +5060,10 @@ b --pick<o:p></o:p></span></p>
 
 <p class=MsoNormal><span style='mso-fareast-font-family:"Times New Roman";
 mso-fareast-theme-font:minor-fareast'>The <i style='mso-bidi-font-style:normal'>--pick</i>
-option has been specified to produce only one annotation, rather than one for every
-transcript. Otherwise genes with large numbers of transcripts can produce very
-long entries. Before it can be used the file containing the annotations must be
-compressed and indexed:<o:p></o:p></span></p>
+option has been specified to produce only one annotation, rather than one for
+every transcript. Otherwise genes with large numbers of transcripts can produce
+very long entries. Before it can be used the file containing the annotations
+must be compressed and indexed:<o:p></o:p></span></p>
 
 <p class=MsoNormal style='margin:0cm;margin-bottom:.0001pt'><span class=SpellE><span
 style='font-size:14.0pt;font-family:"Courier New";mso-fareast-font-family:"Times New Roman";
@@ -5075,9 +5075,8 @@ mso-fareast-theme-font:minor-fareast'> SSS2.vars.annot.vcf<o:p></o:p></span></p>
 style='font-size:14.0pt;font-family:"Courier New";mso-fareast-font-family:"Times New Roman";
 mso-fareast-theme-font:minor-fareast'>tabix</span></span><span
 style='font-size:14.0pt;font-family:"Courier New";mso-fareast-font-family:"Times New Roman";
-mso-fareast-theme-font:minor-fareast'> -p <span class=SpellE>vcf</span>
-SSS2.vars.annot.vcf.gz</span><span style='mso-fareast-font-family:"Times New Roman";
-mso-fareast-theme-font:minor-fareast'><o:p></o:p></span></p>
+mso-fareast-theme-font:minor-fareast'> -p <span class=SpellE>vcf</span> SSS2.vars.annot.vcf.gz</span><span
+style='mso-fareast-font-family:"Times New Roman";mso-fareast-theme-font:minor-fareast'><o:p></o:p></span></p>
 
 <p class=MsoNormal><span style='mso-fareast-font-family:"Times New Roman";
 mso-fareast-theme-font:minor-fareast'>When this process is completed the
@@ -5112,8 +5111,8 @@ GETWEIGHT &quot;newWeights.200718.txt&quot; ) + ( ( GETPOLYPHEN
 (&quot;CSQ&quot; VCFLOOKUP &quot;SSS2.vars.annot.vcf.gz&quot;) ) GETWEIGHT
 &quot;POLYPHENWEIGHTS.txt&quot;<span style='mso-spacerun:yes'>&nbsp; </span>)
 +<span style='mso-spacerun:yes'>&nbsp; </span>( ( GETSIFT (&quot;CSQ&quot;
-VCFLOOKUP &quot;SSS2.vars.annot.vcf.gz&quot;) ) GETWEIGHT
-&quot;SIFTWEIGHTS.txt&quot; ) '<o:p></o:p></span></p>
+VCFLOOKUP &quot;SSS2.vars.annot.vcf.gz&quot;) ) GETWEIGHT &quot;SIFTWEIGHTS.txt&quot;
+) '<o:p></o:p></span></p>
 
 <p class=MsoNormal><span style='mso-fareast-font-family:"Times New Roman";
 mso-fareast-theme-font:minor-fareast'>Here is an example of a weight expression
@@ -5128,8 +5127,9 @@ mso-fareast-font-family:"Times New Roman";mso-fareast-theme-font:minor-fareast'>
 '( (&quot;<span class=SpellE>CADD_phred</span>&quot; VCFLOOKUP
 &quot;CADD-scores.vcf.gz&quot;)&gt;0 IFTRUE 50) + ( (&quot;<span class=SpellE>CADD_phred</span>&quot;
 VCFLOOKUP &quot;CADD-scores.vcf.gz&quot;)&gt;10 IFTRUE 100) + ( (&quot;<span
-class=SpellE>CADD_phred</span>&quot; VCFLOOKUP &quot;CADD-scores.vcf.gz&quot;)&gt;30<span
-style='mso-spacerun:yes'>&nbsp; </span>IFTRUE 150)'<o:p></o:p></span></p>
+class=SpellE>CADD_phred</span>&quot; VCFLOOKUP
+&quot;CADD-scores.vcf.gz&quot;)&gt;30<span style='mso-spacerun:yes'>&nbsp;
+</span>IFTRUE 150)'<o:p></o:p></span></p>
 
 <p class=MsoNormal><span style='mso-fareast-font-family:"Times New Roman";
 mso-fareast-theme-font:minor-fareast'><o:p>&nbsp;</o:p></span></p>
@@ -5145,8 +5145,8 @@ mso-fareast-theme-font:minor-fareast'>Here are a few suggestions for things to
 try if the program does not seem to be working as expected.<o:p></o:p></span></p>
 
 <p class=MsoNormal><span style='mso-fareast-font-family:"Times New Roman";
-mso-fareast-theme-font:minor-fareast'>Make sure that all file names and
-directories are correctly specified.<o:p></o:p></span></p>
+mso-fareast-theme-font:minor-fareast'>Make sure that all file names and directories
+are correctly specified.<o:p></o:p></span></p>
 
 <p class=MsoNormal><span style='mso-fareast-font-family:"Times New Roman";
 mso-fareast-theme-font:minor-fareast'>Check whether <span class=SpellE><i
