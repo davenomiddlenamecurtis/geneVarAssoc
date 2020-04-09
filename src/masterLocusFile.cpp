@@ -548,12 +548,17 @@ int masterLocusFile::writeScoreAssocFiles(masterLocusFile &subFile,char *root, f
 			nSubs[i]=subFile.nSubs[i];
 	else
 	{
-		dcerror(99,"Incompatible numbers of subjects in subFile in masterLocusFile::writeOldScoreAssocFiles()");
+		dcerror(99,"Incompatible numbers of subjects in subFile in masterLocusFile::writeScoreAssocFiles()");
 		return 0;
 	}
 	openLocusFiles();
 	for (i=0,totalSub=0;i<subFile.nLocusFiles;++i)
 		totalSub+=subFile.nSubs[i];
+	if (totalSub == 0)
+	{
+		dcerror(99, "The total number of valid subjects is zero in masterLocusFile::writeScoreAssocFiles()");
+		return 0;
+	}
 	subName=(strEntry *)calloc(totalSub,sizeof(strEntry));
 // hereOK();
 	subFile.outputSubNames(subName,spec);

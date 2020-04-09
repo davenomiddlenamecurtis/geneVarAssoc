@@ -28,7 +28,7 @@ along with geneVarAssoc.If not, see <http://www.gnu.org/licenses/>.
 // SSS uses .:.:.:.:. to mean unknown??
 
 #define PROGRAM "geneVarAassoc"
-#define GVAVERSION "5.1"
+#define GVAVERSION "5.2"
 
 int main(int argc,char *argv[])
 {
