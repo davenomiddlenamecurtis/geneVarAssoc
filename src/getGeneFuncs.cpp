@@ -248,9 +248,9 @@ consequenceType refseqGeneInfo::getEffect(int pos,char *all0,char *all1,int prom
 return worstConsequence;
 }
 
+static char featureBuff[10000];
 const char *refseqGeneInfo::tellEffect()
 {
-	char featureBuff[10000];
 	int c;
 	for (c=0;c<NCONSEQUENCETYPES;++c)
 		if (consequence[c].t==worstConsequence)
