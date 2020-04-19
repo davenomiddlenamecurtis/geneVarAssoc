@@ -216,7 +216,7 @@ int vcfLocusFile::outputSubNames(strEntry *subName, analysisSpecs &spec)
 return s;
 }
 
-int masterLocusFile::outputAffectionStatus(int *ccToWrite, analysisSpecs &spec)
+int masterLocusFile::outputAffectionStatus(float *ccToWrite, analysisSpecs &spec)
 {
 	int i,s,ss;
 	for (s=0,i=0;i<nLocusFiles;++i)

@@ -39,6 +39,7 @@ int gvaParams::readParms(int argc,char *argv[],analysisSpecs &spec)
 	nPhenotypeFile=nIDsAndPhenotypeFile=nSamplesFile=0;
 	spec.nScoreassocArgs = 0;
 	geneListFn[0]=baitFn[0]=ccFn[2][MAXVCFPERCC][0]=referencePath[0]=geneName[0]=sequencePath[0]=posName[0]=intervalListFn[0]='\0';
+	bedFileFn[0] = bimFileFn[0] = famFileFn[0] = '\0';
 	// testName can be set by calling function, e.g. default "gva" for geneVarAssoc
 	strcpy(spec.vepCommand,"perl variant_effect_predictor.pl");
 //	strcpy(spec.weightExpression,"ANNOT(\"DEFAULT\")GETWEIGHT(\"DEFAULTWEIGHTS\")");
@@ -58,6 +59,7 @@ int gvaParams::readParms(int argc,char *argv[],analysisSpecs &spec)
 	spec.wf=10.0;
 	writeScoreFile=0;
 	*addChrStr='\0';
+	spec.isQuantitative = 0;
 	spec.useTrios=0;
 	spec.useProbs=0;
 	spec.useEnsembl=spec.willNeedEnsemblConsequence=spec.willNeedInbuiltConsequence=0;
@@ -99,7 +101,7 @@ int gvaParams::readParms(int argc,char *argv[],analysisSpecs &spec)
 			dcerror(1,"Expected argument beginning -- but got this: %s\n",arg);
 			return 0;
 		}
-		else if (!strcmp(arg, "--dottest") || !strcmp(arg, "--dolrtest") || !strcmp(arg, "--dolinrtest") || !strcmp(arg, "--varfile") || !strcmp(arg, "--testfile") || !strcmp(arg, "--start-from-fitted"))
+		else if (!strcmp(arg, "--dottest") || !strcmp(arg, "--dolrtest") || !strcmp(arg, "--dolinrtest") || !strcmp(arg, "--varfile") || !strcmp(arg, "--testfile") || !strcmp(arg, "--lintestfile") || !strcmp(arg, "--start-from-fitted"))
 		{
 			strcpy(spec.scoreassocArgs[spec.nScoreassocArgs][0], arg);
 			getNextArg(arg, argc, argv, fp, &depth, &argNum);
@@ -191,6 +193,12 @@ int gvaParams::readParms(int argc,char *argv[],analysisSpecs &spec)
 			strcpy(ccFn[0][nCc[0]++], arg);
 		else if (FILLARG("--case-file"))
 			strcpy(ccFn[1][nCc[1]++], arg);
+		else if (FILLARG("--bed-file"))
+			strcpy(bedFileFn, arg);
+		else if (FILLARG("--fam-file"))
+			strcpy(famFileFn, arg);
+		else if (FILLARG("--bim-file"))
+		strcpy(bimFileFn, arg);
 		else if (FILLARG("--ref-gene-file"))
 			strcpy(geneListFn, arg);
 		else if (FILLARG("--allele-freq-str"))
@@ -209,8 +217,10 @@ int gvaParams::readParms(int argc,char *argv[],analysisSpecs &spec)
 			margin=atoi(arg);
 		else if (FILLARG("--weight-factor"))
 			spec.wf=atof(arg);
+		else if (FILLARG("--isquantitative"))
+			spec.isQuantitative = atoi(arg);
 		else if (FILLARG("--use-ensembl"))
-			spec.useEnsembl=atoi(arg);
+			spec.useEnsembl = atoi(arg);
 		else if (FILLARG("--consequence-threshold"))
 			spec.consequenceThreshold=atof(arg);
 		else if (FILLARG("--use-consequence-weights"))
@@ -333,9 +343,19 @@ int gvaParams::readParms(int argc,char *argv[],analysisSpecs &spec)
 		}
 		;
 	}
+	if (bedFileFn[0] && (!famFileFn[0] || !bimFileFn[0]))
+	{
+		dcerror(5, "If use --bed-file must also use --fam-file and --bim-file\n");
+		return 0;
+	}
+	if (spec.isQuantitative && !nIDsAndPhenotypeFile)
+	{
+		dcerror(4, "Can only use --is-quantitative 1 if also use --ID-and-phenotype-file\n");
+		return 0;
+	}
 	if (nPhenotypeFile || nIDsAndPhenotypeFile || nSamplesFile)
 	{
-		spec.phenotypes = (int*)malloc(sizeof(int)*MAXSUB);
+		spec.phenotypes = (float*)malloc(sizeof(float)*MAXSUB);
 		s=0;
 		if (nPhenotypeFile)
 			for (i=0;i<nPhenotypeFile;++i)
@@ -344,7 +364,7 @@ int gvaParams::readParms(int argc,char *argv[],analysisSpecs &spec)
 		if (phenotypeFile == NULL)
 				dcerror(1, "Could not open phenotype file: %s\n",phenotypeFileName[i]);
 			nCc[0] = 0;
-			for (; fgets(line, 1999, phenotypeFile) && sscanf(line, "%d", &spec.phenotypes[s]) == 1; ++s)
+			for (; fgets(line, 1999, phenotypeFile) && sscanf(line, "%f", &spec.phenotypes[s]) == 1; ++s)
 				;
 		fclose(phenotypeFile);
 		}
@@ -352,13 +372,13 @@ int gvaParams::readParms(int argc,char *argv[],analysisSpecs &spec)
 			for (i=0;i<nIDsAndPhenotypeFile;++i)
 		{
 			char ID[100];
-			int phen;
+			float phen;
 			phenotypeFile = fopen(phenotypeFileName[i], "r");
 			if (phenotypeFile == NULL)
 				dcerror(1,"Could not open ID and phenotype file: %s\n",phenotypeFileName[i]);
 			nCc[0] = 0;
-			for (; phen=-1,fgets(line,1999,phenotypeFile) && sscanf(line,"%s %d",ID,&phen) >=1; ++s) // allow that phen may be NA
-				spec.subPhenos.insert(TStrIntPair(ID,phen));
+			for (; phen=-1,fgets(line,1999,phenotypeFile) && sscanf(line,"%s %f",ID,&phen) >=1; ++s) // allow that phen may be NA
+				spec.subPhenos.insert(TStrFloatPair(ID,phen));
 			fclose(phenotypeFile);
 			}
 		else
@@ -384,7 +404,7 @@ int gvaParams::readParms(int argc,char *argv[],analysisSpecs &spec)
 				spec.phenotypes[s]=*ptr-'0';
 			}
 			fclose(phenotypeFile);
-			}
+			} // I have made phenotypes a float rather than int but hopefully will all still work
 	}
 	int len;
 	if (*addChrStr != '\0')

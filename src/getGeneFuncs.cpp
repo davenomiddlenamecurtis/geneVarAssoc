@@ -636,33 +636,143 @@ void refseqGeneInfo::getAllExons()
 	gotAllExons = 1;
 }
 
-int refseqGeneInfo::tbiExtractGene(char *tbiFilename,char *outFn,int appendToOld,int addChrInVCF,int removeSpaces,int omitIntrons, int spliceRegionSize)
+int refseqGeneInfo::tbiExtractGene(char* tbiFilename, char* outFn, int appendToOld, int addChrInVCF, int removeSpaces, int omitIntrons, int spliceRegionSize)
 {
-	int i,startPos,endPos,foundOne,systemStatus;
-	char buff[1000],*tbiFn,*ptr,tbiFnBuff[1000];
+	int i, startPos, endPos, foundOne, systemStatus;
+	char buff[1000], * tbiFn, * ptr, tbiFnBuff[1000];
 	long lineStart;
-	if ((ptr=strchr(tbiFilename,'*'))==0)
-		tbiFn=tbiFilename;
+	if ((ptr = strchr(tbiFilename, '*')) == 0)
+		tbiFn = tbiFilename;
 	else
 	{
-		strcpy(tbiFnBuff,tbiFilename);
-		ptr=strchr(tbiFnBuff,'*');
-		*ptr='\0';
-		strcat(tbiFnBuff,chr+3); // because first three chars of chr are "chr"
-		ptr=strchr(tbiFilename,'*');
-		strcat(tbiFnBuff,ptr+1);
-		tbiFn=tbiFnBuff;
+		strcpy(tbiFnBuff, tbiFilename);
+		ptr = strchr(tbiFnBuff, '*');
+		*ptr = '\0';
+		strcat(tbiFnBuff, chr + 3); // because first three chars of chr are "chr"
+		ptr = strchr(tbiFilename, '*');
+		strcat(tbiFnBuff, ptr + 1);
+		tbiFn = tbiFnBuff;
 	}
 
 #if 0
 	// code was written originally to extract individual exons
-	sprintf(line,"tabix -h %s ",tbiFn);
-	for (i=0;i<exonCount;++i)
-		sprintf(strchr(line,'\0'),"%s:%d-%d ",
-		chr+3,
-		exonStarts[i] - ((i==0&&strand=='+')?upstream:0) - ((i==0&&strand=='-')?downstream:0),
-		exonEnds[i] + ((i==exonCount-1&&strand=='-')?upstream:0) + ((i==exonCount-1&&strand=='+')?downstream:0));
+	sprintf(line, "tabix -h %s ", tbiFn);
+	for (i = 0; i < exonCount; ++i)
+		sprintf(strchr(line, '\0'), "%s:%d-%d ",
+			chr + 3,
+			exonStarts[i] - ((i == 0 && strand == '+') ? upstream : 0) - ((i == 0 && strand == '-') ? downstream : 0),
+			exonEnds[i] + ((i == exonCount - 1 && strand == '-') ? upstream : 0) + ((i == exonCount - 1 && strand == '+') ? downstream : 0));
 #endif
+	// code to extract according to baits
+	if (baitsFileName[0] != '\0')
+	{
+		if (baitsFile == 0)
+		{
+			if ((baitsFile = fopen(baitsFileName, "rb")) == 0)
+			{
+				dcerror(7, "Could not open baits file: %s", baitsFileName);
+				return 0;
+			}
+		}
+		// We will start slow and stupid
+		fseek(baitsFile, 0L, SEEK_SET);
+		do
+		{
+			lineStart = ftell(baitsFile);
+			if (!fgets(buff, 999, baitsFile))
+				return 0; // no bait found for this transcript
+		} while (strncmp(buff, chr + 3, strlen(chr + 3)) || (sscanf(buff, "%*s %*d %d", &endPos), endPos - baitMargin < firstExonStart));
+
+		fseek(baitsFile, lineStart, SEEK_SET);
+		sprintf(geneLine, "tabix %s%s ", tbiFn, appendToOld ? "" : " -h");
+
+		foundOne = 0; // what can happen is small transcript in refseq file may be missed completely
+		while (fgets(buff, 999, baitsFile) && !strncmp(buff, chr + 3, strlen(chr + 3)) && (sscanf(buff, "%*s %d %d", &startPos, &endPos), startPos + baitMargin <= lastExonEnd))
+		{
+			foundOne = 1;
+#ifdef OLDTABIX
+			sprintf(strchr(geneLine, '\0'), "%s:%d-%d ", chr + 3, startPos + baitMargin, endPos + baitMargin);
+#else
+			sprintf(strchr(geneLine, '\0'), "%s:%d-%d ", chr + (addChrInVCF ? 0 : 3), startPos + baitMargin, endPos + baitMargin);
+#endif
+			if (strlen(geneLine) > 3900) // line getting long, extract baits so far then go back for more - maximum is 4000?
+			{
+				sprintf(strchr(geneLine, '\0'), "%s %s %s", removeSpaces ? "| sed s/' '/'_'/g " : "", appendToOld ? ">>" : ">", outFn);
+				printf("Running command: %s\n", geneLine);
+				checkSystem();
+				systemStatus = system(geneLine);
+				// printf("system returned %d\n",systemStatus);
+				appendToOld = 1;
+				sprintf(geneLine, "tabix %s ", tbiFn);
+			}
+		}
+		if (foundOne == 0)
+		{
+			printf("Did not find any baits for %s\n", geneName);
+			return 0;
+		}
+		if (strchr(geneLine + 4, ':')) // means we found another bait since last calling tabix, skipping start of line which may be C:
+		{
+			sprintf(strchr(geneLine, '\0'), "%s%s %s", removeSpaces ? "| sed s/' '/'_'/g " : "", appendToOld ? ">>" : ">", outFn);
+			printf("Running command: %s\n", geneLine);
+			checkSystem();
+			systemStatus = system(geneLine);
+			// printf("system returned %d\n",systemStatus);
+		}
+	}
+	else if (omitIntrons)
+	{
+		sprintf(geneLine, "tabix -h %s ", tbiFn);
+		if (!gotAllExons)
+			getAllExons();
+		for (i = 0; i < allExonCount; ++i)
+			sprintf(strchr(geneLine, '\0'), "%s:%d-%d ", chr + (addChrInVCF ? 0 : 3), exonStarts[i] - spliceRegionSize, exonEnds[i] + spliceRegionSize);
+		sprintf(strchr(geneLine, '\0'), "%s%s %s", removeSpaces ? "| sed s/' '/'_'/g " : "", appendToOld ? ">>" : ">", outFn);
+		printf("Running command: %s\n", geneLine);
+		checkSystem();
+		systemStatus = system(geneLine);
+		// printf("system returned %d\n",systemStatus);
+	}
+	else
+	{
+		sprintf(geneLine, "tabix %s%s %s:%d-%d", tbiFn, appendToOld ? "" : " -h",
+			chr + (addChrInVCF ? 0 : 3),
+			firstExonStart - ((strand == '+') ? upstream : downstream),
+			lastExonEnd + ((strand == '-') ? upstream : downstream));
+		sprintf(strchr(geneLine, '\0'), "%s%s %s", removeSpaces ? "| sed s/' '/'_'/g " : "", appendToOld ? ">>" : ">", outFn);
+		printf("Running command: %s\n", geneLine);
+		systemStatus = system(geneLine);
+		// printf("system returned %d\n",systemStatus);
+	}
+	return 1;
+}
+
+
+int refseqGeneInfo::plinkExtractGene(char* bedFilename, char* famFilename, char* bimFilename, char *outFn,int omitIntrons, int spliceRegionSize)
+{
+	int i,startPos,endPos,foundOne,systemStatus;
+	char buff[1000],*bedFn,*ptr,bedFnBuff[1000];
+	long lineStart;
+	FILE* rf;
+	rf = fopen("range.temp.txt", "w");
+	if (rf == 0)
+	{
+		dcerror(5, "Could not open file: range.temp.txt for writing\n");
+		return 0;
+	}
+	if ((ptr=strchr(bedFilename,'*'))==0)
+		bedFn=bedFilename;
+	else
+	{
+		strcpy(bedFnBuff,bedFilename);
+		ptr=strchr(bedFnBuff,'*');
+		*ptr='\0';
+		strcat(bedFnBuff,chr+3); // because first three chars of chr are "chr"
+		ptr=strchr(bedFilename,'*');
+		strcat(bedFnBuff,ptr+1);
+		bedFn=bedFnBuff;
+	}
+
 	// code to extract according to baits
 	if (baitsFileName[0]!='\0')
 	{
@@ -684,68 +794,42 @@ int refseqGeneInfo::tbiExtractGene(char *tbiFilename,char *outFn,int appendToOld
 			} while (strncmp(buff,chr+3,strlen(chr+3)) || (sscanf(buff,"%*s %*d %d",&endPos),endPos-baitMargin<firstExonStart));
 
 		fseek(baitsFile,lineStart,SEEK_SET);
-		sprintf(geneLine,"tabix %s%s ",tbiFn,appendToOld?"":" -h");
-
 		foundOne=0; // what can happen is small transcript in refseq file may be missed completely
 		while (fgets(buff,999,baitsFile)&&!strncmp(buff,chr+3,strlen(chr+3))&&(sscanf(buff,"%*s %d %d",&startPos,&endPos),startPos+baitMargin<=lastExonEnd))
 			{
 				foundOne=1;
-#ifdef OLDTABIX
-				sprintf(strchr(geneLine,'\0'),"%s:%d-%d ",chr+3,startPos+baitMargin,endPos+baitMargin);
-#else
-				sprintf(strchr(geneLine,'\0'),"%s:%d-%d ",chr+(addChrInVCF?0:3),startPos+baitMargin,endPos+baitMargin);
-#endif
-				if (strlen(geneLine)>3900) // line getting long, extract baits so far then go back for more - maximum is 4000?
-				{
-				sprintf(strchr(geneLine,'\0'),"%s %s %s",removeSpaces?"| sed s/' '/'_'/g ":"",appendToOld?">>":">",outFn);
-				printf("Running command: %s\n",geneLine);
-				checkSystem();
-				systemStatus=system(geneLine);
-				// printf("system returned %d\n",systemStatus);
-				appendToOld=1;
-				sprintf(geneLine,"tabix %s ",tbiFn);
-				}
+				fprintf(rf,"%s %d %d %s\n",chr+3,startPos+baitMargin,endPos+baitMargin,geneName);
 			}
+		fclose(rf);
 		if (foundOne==0)
 		{
 			printf("Did not find any baits for %s\n",geneName);
 			return 0;
 		}
-		if (strchr(geneLine+4,':')) // means we found another bait since last calling tabix, skipping start of line which may be C:
-		{
-		sprintf(strchr(geneLine,'\0'),"%s%s %s", removeSpaces ? "| sed s/' '/'_'/g " : "", appendToOld?">>":">",outFn);
-		printf("Running command: %s\n",geneLine);
-		checkSystem();
-		systemStatus=system(geneLine);
-		// printf("system returned %d\n",systemStatus);
-		}
 	}
 	else if (omitIntrons)
 	{
-		sprintf(geneLine, "tabix -h %s ", tbiFn);
 		if (!gotAllExons)
 			getAllExons();
 		for (i = 0; i < allExonCount; ++i)
-			sprintf(strchr(geneLine, '\0'), "%s:%d-%d ", chr + (addChrInVCF ? 0 : 3),exonStarts[i] - spliceRegionSize,exonEnds[i] + spliceRegionSize);
-		sprintf(strchr(geneLine, '\0'), "%s%s %s", removeSpaces ? "| sed s/' '/'_'/g " : "", appendToOld ? ">>" : ">", outFn);
-		printf("Running command: %s\n", geneLine);
-		checkSystem();
-		systemStatus = system(geneLine);
-		// printf("system returned %d\n",systemStatus);
+			fprintf(rf, "%s %d %d %s\n", chr + 3,exonStarts[i] - spliceRegionSize,exonEnds[i] + spliceRegionSize,geneName);
+		fclose(rf);
 	}
 	else
 	{
-	sprintf(geneLine,"tabix %s%s %s:%d-%d",tbiFn,appendToOld?"":" -h",
-		chr+(addChrInVCF?0:3),
+	fprintf(rf,"%s %d %d %s",chr+3,
 		firstExonStart - ((strand=='+')?upstream:downstream),
-		lastExonEnd + ((strand=='-')?upstream:downstream));
-	sprintf(strchr(geneLine,'\0'),"%s%s %s", removeSpaces ? "| sed s/' '/'_'/g " : "", appendToOld?">>":">",outFn);
-	printf("Running command: %s\n",geneLine);
-	systemStatus=system(geneLine);
-	// printf("system returned %d\n",systemStatus);
+		lastExonEnd + ((strand=='-')?upstream:downstream),
+		geneName);
+	fclose(rf);
 	}
+	sprintf(geneLine, "plink --bed --fam --bim --extract range range.temp.txt --vcf --recode --out %s",
+		bedFilename, famFilename, bimFilename, outFn);
+	printf("Running command: %s\n", geneLine);
+	systemStatus = system(geneLine);
 	return 1;
 }
+
 
 int refseqGeneInfo::goToStart()
 {

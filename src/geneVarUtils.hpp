@@ -24,11 +24,13 @@ along with geneVarAssoc.If not, see <http://www.gnu.org/licenses/>.
 
 #define MAXVCFPERCC MAXVCFFILES
 #define MAXDEPTH 5
+#define	MAXFILENAMELENGTH 100
 
 class gvaParams {
 public:
-	char geneListFn[100],baitFn[100],ccFn[2][MAXVCFPERCC][100],referencePath[100],geneName[100],sequencePath[100],posName[100];
-	char intervalListFn[100], testName[100]; // for intVarAssoc
+	char geneListFn[MAXFILENAMELENGTH],baitFn[MAXFILENAMELENGTH],ccFn[2][MAXVCFPERCC][MAXFILENAMELENGTH],referencePath[MAXFILENAMELENGTH],geneName[100],sequencePath[100],posName[100];
+	char bedFileFn[MAXFILENAMELENGTH], famFileFn[MAXFILENAMELENGTH], bimFileFn[MAXFILENAMELENGTH];
+	char intervalListFn[MAXFILENAMELENGTH], testName[100]; // for intVarAssoc
 	int useFreqs[2],nSubs[2],nCc[2],writeComments,writeScoreFile;
 	int dontExtractVariants,keepTempFiles,doNotRun,onlyExtractVariants;
 	int input(FILE *fp,analysisSpecs &spec);
@@ -38,6 +40,7 @@ public:
 	int firstGeneNum,lastGeneNum;
 };
 
+#define MISSINGPHENOTYPE -999 // value used internally to indicate subject without a defined phenotype
 #ifndef hereOK
 #define hereOK() fprintf(stderr,"Got to line %d in %s OK\n",__LINE__,__FILE__)
 #endif

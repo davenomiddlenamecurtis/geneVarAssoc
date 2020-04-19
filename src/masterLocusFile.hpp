@@ -49,8 +49,10 @@ along with geneVarAssoc.If not, see <http://www.gnu.org/licenses/>.
 #include <string>
 #include <map>
 #include <list>
-typedef std::pair<std::string,int> TStrIntPair;
-typedef std::map<std::string,int> TStrIntMap;
+typedef std::pair<std::string, int> TStrIntPair;
+typedef std::map<std::string, int> TStrIntMap;
+typedef std::pair<std::string, float> TStrFloatPair;
+typedef std::map<std::string, float> TStrFloatMap;
 
 
 #ifndef FILEPOSITION
@@ -113,7 +115,7 @@ public:
 		showHapLocusNames=useHaplotypes=0;
 		useProbs=0;
 		count_hom_as_het=0;
-		useTrios=0;
+		isQuantitative=useTrios=0;
 		dontMergeAlleles=ignoreAlleles=0;
 		mergeAltAlleles = 1;
 		omitIntrons = 0;
@@ -126,10 +128,10 @@ public:
 		removeVcfSpaces = 0;
 	} 
 int onlycc01,unknownIfUntyped,unknownIfNoPass,altIsCommon,sc,ec,skipIfNoPass,useConsequenceWeights,onlyUseSNPs,nExc,doRecessiveTest,addChrInVCF[MAXVCFFILES],useHaplotypes, showHapLocusNames,count_hom_as_het,useTrios,
-ignoreAlleles,dontMergeAlleles,useProbs,wildIfUnknown,debug,omitIntrons,spliceRegionSize;
+ignoreAlleles,dontMergeAlleles,useProbs,wildIfUnknown,debug,omitIntrons,spliceRegionSize,isQuantitative;
 int useEnsembl,willNeedEnsemblConsequence,willNeedInbuiltConsequence,mergeAltAlleles,numVcfFieldsToSkip,removeVcfSpaces;
-int *phenotypes;
-TStrIntMap subPhenos;
+float *phenotypes;
+TStrFloatMap subPhenos;
 long sp,ep;
 float GQThreshold,proportionCalledToPass,hetDevThreshold,hetDevThresholdSq,depthThreshold,ABThreshold;
 float weightThreshold,LDThreshold,wf;
@@ -309,7 +311,7 @@ public:
 	int outputProbs(probTriple **all,analysisSpecs &spec);
 	int outputCalls(strEntry **call,analysisSpecs &spec);
 	int outputSubNames(strEntry *subName,analysisSpecs &spec);
-	int outputAffectionStatus(int *cc,analysisSpecs &spec);
+	int outputAffectionStatus(float *cc,analysisSpecs &spec);
 	int outputMergedVCFHeader(FILE *fo);
 	int outputMergedVcfGenotypes(FILE *fo,analysisSpecs const &spec);
 	int outputAltFrequencies(float *freqs,int cc,analysisSpecs const &spec);

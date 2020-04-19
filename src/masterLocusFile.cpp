@@ -585,15 +585,15 @@ int masterLocusFile::writeScoreAssocFiles(masterLocusFile &subFile,char *root, f
 	{
 		if(spec.phenotypes==NULL) // should have been allocated when IDsAndPhenotypesFileName read
 		{
-			spec.phenotypes=(int*)malloc(sizeof(int)*totalSub);
+			spec.phenotypes=(float*)malloc(sizeof(float)*totalSub);
 			assert(spec.phenotypes!=0);
 		}
-		TStrIntMap::iterator it;
+		TStrFloatMap::iterator it;
 		for(s=0;s<totalSub;++s)
 		{
 			it=spec.subPhenos.find(subName[s]);
 			if (it==spec.subPhenos.end())
-				spec.phenotypes[s]=-1;
+				spec.phenotypes[s]=MISSINGPHENOTYPE;
 			else
 				spec.phenotypes[s]=it->second;
 		}
@@ -604,11 +604,13 @@ int masterLocusFile::writeScoreAssocFiles(masterLocusFile &subFile,char *root, f
 	{
 		if (spec.phenotypes)
 		{
-			int ccc=spec.phenotypes[s];
-			if (ccc!=0 && ccc!=1)
+			if (spec.phenotypes[s]==MISSINGPHENOTYPE)
 				continue;
 		}
-		fprintf(fp,"%s\t%d\t",subName[s],spec.phenotypes?spec.phenotypes[s]:subFile.cc[i]);
+		if (spec.isQuantitative)
+			fprintf(fp, "%s\t%9.5f\t", subName[s], spec.phenotypes[s]);
+		else
+			fprintf(fp,"%s\t%d\t",subName[s],int(spec.phenotypes?spec.phenotypes[s]:subFile.cc[i]));
 		for (l=0;l<lc;++l)
 			if (spec.useProbs)
 			{
@@ -776,7 +778,9 @@ int masterLocusFile::writeScoreAssocFiles(masterLocusFile &subFile,char *root, f
 	sprintf(strchr(commandString,'\0')," --outfile %s.sao",root);
 	if (writeScorefile)
 		sprintf(strchr(commandString,'\0')," --scorefile %s.sco",root);
-	sprintf(strchr(commandString,'\0')," --weightfactor %f",spec.wf);
+	sprintf(strchr(commandString, '\0'), " --weightfactor %f", spec.wf);
+	if (spec.isQuantitative)
+		sprintf(strchr(commandString, '\0'), " --isquantitative 1");
 	for (l = 0; l < spec.nScoreassocArgs; ++l)
 		sprintf(strchr(commandString, '\0'), " %s %s", spec.scoreassocArgs[l][0], spec.scoreassocArgs[l][1]);
 	checkSystem();

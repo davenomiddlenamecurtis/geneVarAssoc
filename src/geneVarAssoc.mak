@@ -5,6 +5,11 @@
 # Destination for executables, change this if you want
 DCBIN = ../bin
 
+# Please note that this makefile call itself. If you save a local copy for yourself then you must change the below accordingly.
+# For example, if you change this file and call it mymakefile.mak, you also need to change the command below to read:
+#	make -f ../src/mymakefile.mak INOBJ=INOBJ CFLAGS=$(CFLAGS) MAXSUB=${MAXSUB} MAXVCFFILES=${MAXVCFFILES} ; \
+# The line needs to finish with a backspace character with no spaces after it.
+
 C = gcc
 CC = g++
 MAXVCFFILES = 10

@@ -121,7 +121,8 @@ public:
 	~refseqGeneInfo() { geneListFile && fclose(geneListFile); baitsFile && fclose(baitsFile); }
 	void setListFile(char *fn) { strcpy(geneListFileName,fn); }
 	void setBaitsFile(char *fn) { strcpy(baitsFileName,fn); }
-	int tbiExtractGene(char *tbiFn,char *outFn,int appendToOld,int addChrInVCF,int removeSpaces,int omitIntrons,int spliceRegionSize);
+	int tbiExtractGene(char* tbiFn, char* outFn, int appendToOld, int addChrInVCF, int removeSpaces, int omitIntrons, int spliceRegionSize);
+	int plinkExtractGene(char* bedFilename, char* famFilename, char* bimFilename, char* outFn, int omitIntrons, int spliceRegionSize);
 	consequenceType getEffect(int pos,char *all0,char *all1,int promoterLength=PROMOTERLENGTH,int downstreamLength=DOWNSTREAMLENGTH,int getKozak=0);
 	const char *tellEffect();
 	consequenceType tellWorstConsequence() { return worstConsequence; }

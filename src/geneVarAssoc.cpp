@@ -28,7 +28,7 @@ along with geneVarAssoc.If not, see <http://www.gnu.org/licenses/>.
 // SSS uses .:.:.:.:. to mean unknown??
 
 #define PROGRAM "geneVarAassoc"
-#define GVAVERSION "5.21"
+#define GVAVERSION "6.0"
 
 int main(int argc,char *argv[])
 {
@@ -81,14 +81,26 @@ int main(int argc,char *argv[])
 	vf.openFiles(fn,fn2);
 	extractedOK=1;
 	int ff=0;
+	if (gp.bedFileFn[0])
+	{
+		if (gp.nCc[0] || gp.nCc[1])
+		{
+			dcerror(2,"Should not use --bed-file %s if also using --case-file or --cont-file.\n", gp.bedFileFn);
+			return 1;
+		}
+		strcpy(gp.ccFn[0][gp.nCc[0]++], gp.bedFileFn); // pretend bedFile is a control file for now
+	}
 	for (i=0;i<gp.nCc[0];++i)
 		{
 			gcont.setVariantFileName(gp.ccFn[0][i]);
 			sprintf(fn,"gva.%s.cont.%d.vcf",geneName,i+1);
 			if (gp.dontExtractVariants)
 				printf("Will not attempt to produce %s because --dont-extract-variants was set\n",fn);
-			else if (!gcont.extractVariants(r,fn,0,spec.addChrInVCF[ff++],spec.removeVcfSpaces,spec.omitIntrons, spec.spliceRegionSize))
-				extractedOK=0;
+			else 
+				//if (!gcont.extractVariants(r,fn,0,spec.addChrInVCF[ff++],spec.removeVcfSpaces,spec.omitIntrons, spec.spliceRegionSize))
+				//extractedOK=0;
+				if (!r.tbiExtractGene(gp.ccFn[0][i], fn, 0, spec.addChrInVCF[ff++], spec.removeVcfSpaces, spec.omitIntrons, spec.spliceRegionSize))
+					extractedOK = 0;
 			vf.addLocusFile(fn,VCFFILE);
 			if (!vf.readLocusFileEntries(fn,spec,0))
 				extractedOK=0;
@@ -99,8 +111,10 @@ int main(int argc,char *argv[])
 			sprintf(fn,"gva.%s.case.%d.vcf",geneName,i+1);
 			if (gp.dontExtractVariants)
 				printf("Will not attempt to produce %s because --dont-extract-variants was set\n",fn);
-			else if (!gcase.extractVariants(r,fn,0,spec.addChrInVCF[ff++], spec.removeVcfSpaces,spec.omitIntrons,spec.spliceRegionSize))
-				extractedOK=0;
+			else // if (!gcase.extractVariants(r,fn,0,spec.addChrInVCF[ff++], spec.removeVcfSpaces,spec.omitIntrons,spec.spliceRegionSize))
+				// extractedOK=0;
+			if (!r.tbiExtractGene(gp.ccFn[1][i], fn, 0, spec.addChrInVCF[ff++], spec.removeVcfSpaces, spec.omitIntrons, spec.spliceRegionSize))
+				extractedOK = 0;
 			vf.addLocusFile(fn,VCFFILE);
 			if (!vf.readLocusFileEntries(fn,spec,1))
 				extractedOK=0;
