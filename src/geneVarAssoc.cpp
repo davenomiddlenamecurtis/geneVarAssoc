@@ -96,11 +96,22 @@ int main(int argc,char *argv[])
 			sprintf(fn,"gva.%s.cont.%d.vcf",geneName,i+1);
 			if (gp.dontExtractVariants)
 				printf("Will not attempt to produce %s because --dont-extract-variants was set\n",fn);
-			else 
+			else
 				//if (!gcont.extractVariants(r,fn,0,spec.addChrInVCF[ff++],spec.removeVcfSpaces,spec.omitIntrons, spec.spliceRegionSize))
 				//extractedOK=0;
-				if (!r.tbiExtractGene(gp.ccFn[0][i], fn, 0, spec.addChrInVCF[ff++], spec.removeVcfSpaces, spec.omitIntrons, spec.spliceRegionSize))
-					extractedOK = 0;
+			{
+				if (gp.bedFileFn[0] == '\0') 
+				{
+					if (!r.tbiExtractGene(gp.ccFn[0][i], fn, 0, spec.addChrInVCF[ff++], spec.removeVcfSpaces, spec.omitIntrons, spec.spliceRegionSize))
+						extractedOK = 0;
+				}
+				else 
+				{
+					if (!r.plinkExtractGene(gp.bedFileFn,gp.famFileFn,gp.bimFileFn, fn, spec.omitIntrons, spec.spliceRegionSize))
+						extractedOK = 0;
+
+				}
+			}
 			vf.addLocusFile(fn,VCFFILE);
 			if (!vf.readLocusFileEntries(fn,spec,0))
 				extractedOK=0;
