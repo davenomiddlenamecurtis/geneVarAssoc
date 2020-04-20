@@ -59,7 +59,7 @@ int main(int argc,char *argv[])
 		exit(1);
 
 	strcpy(geneName,gp.geneName);
-	masterLocusFile vf(gp.nCc[0]+gp.nCc[1]);
+	masterLocusFile vf(gp.bedFileFn[0]?1: gp.nCc[0]+gp.nCc[1]);
 	
 	r.setListFile(gp.geneListFn);
 	r.setBaitsFile(gp.baitFn);
