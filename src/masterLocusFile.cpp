@@ -525,7 +525,7 @@ int masterLocusFile::loadNext(analysisSpecs &spec)
 #define MAXCOMMENTLENGTH 250000 // can be 200K if multiple transcripts
 char comment[MAXCOMMENTLENGTH];
 // may be long VEP output
-int masterLocusFile::writeScoreAssocFiles(masterLocusFile &subFile,char *root, float wf, int *useFreqs, int *suppliedNSubs, int writeNames, int writeComments, int writeScorefile,analysisSpecs &spec)
+int masterLocusFile::p (masterLocusFile &subFile,char *root, float wf, int *useFreqs, int *suppliedNSubs, int writeNames, int writeComments, int writeScorefile,analysisSpecs &spec)
 // allow information about subjects to be provided by a different masterLocusFile 
 // however we are assuming both files refer to identical set of subjects
 {
