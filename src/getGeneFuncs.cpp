@@ -823,7 +823,7 @@ int refseqGeneInfo::plinkExtractGene(char* bedFilename, char* famFilename, char*
 		geneName);
 	fclose(rf);
 	}
-	sprintf(geneLine, "plink --bed %s --fam %s --bim %s --extract range range.temp.txt --vcf --recode --out %s",
+	sprintf(geneLine, "plink --bed %s --fam %s --bim %s --extract range range.temp.txt --recode vcf --out %s",
 		bedFilename, famFilename, bimFilename, outFn);
 	printf("Running command: %s\n", geneLine);
 	systemStatus = system(geneLine);
