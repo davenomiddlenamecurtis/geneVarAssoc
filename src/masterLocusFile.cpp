@@ -610,7 +610,12 @@ int masterLocusFile::writeScoreAssocFiles(masterLocusFile &subFile,char *root, f
 		if (spec.isQuantitative)
 			fprintf(fp, "%s\t%9.5f\t", subName[s], spec.phenotypes[s]);
 		else
-			fprintf(fp,"%s\t%d\t",subName[s],int(spec.phenotypes?spec.phenotypes[s]:subFile.cc[i]));
+		{
+			int cc_pheno = spec.phenotypes ? spec.phenotypes[s] : subFile.cc[i];
+			if (cc_pheno != 0 && cc_pheno != 1)
+				continue; // no longer output subjects with unknown phenotype
+			fprintf(fp, "%s\t%d\t", subName[s],cc_pheno );
+		}
 		for (l=0;l<lc;++l)
 			if (spec.useProbs)
 			{
