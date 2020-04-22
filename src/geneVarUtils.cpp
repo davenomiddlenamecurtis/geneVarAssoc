@@ -377,7 +377,7 @@ int gvaParams::readParms(int argc,char *argv[],analysisSpecs &spec)
 			if (phenotypeFile == NULL)
 				dcerror(1,"Could not open ID and phenotype file: %s\n",phenotypeFileName[i]);
 			nCc[0] = 0;
-			for (; phen=-1,fgets(line,1999,phenotypeFile) && sscanf(line,"%s %f",ID,&phen) >=1; ++s) // allow that phen may be NA
+			for (; phen=MISSINGPHENOTYPE,fgets(line,1999,phenotypeFile) && sscanf(line,"%s %f",ID,&phen) >=1; ++s) // allow that phen may be NA
 				spec.subPhenos.insert(TStrFloatPair(ID,phen));
 			fclose(phenotypeFile);
 			}
