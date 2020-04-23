@@ -76,7 +76,7 @@ void weightTable::init(char *n,consequenceReport consequence[],int nConsequence)
 #define MAXINFOLENGTHSTR "20000"
 char lineBuff[MAXINFOLENGTH+1],tempBuff[MAXINFOLENGTH+1]; // need these to be big for e.g. VEP on TTN
 
-dcexpr_val *performTabixQuery(const char *fn,int addChr,int lower,char *lookupStr)
+dcexpr_val *performTabixQuery(const char *fn,int addChr,int lower,char *lookupStr,int convert23toX)
 {
 	char fnBuff[1000],*ptr,*tptr,queryBuff[1000],chrStr[10],altAll[1000];
 	int noEntry,c,f,l;
@@ -84,8 +84,8 @@ dcexpr_val *performTabixQuery(const char *fn,int addChr,int lower,char *lookupSt
 	FILE *fq;
 	strcpy(fnBuff,fn);
 	int chr=geneVarParser::thisLocus->getChr();
-	if (chr==23)
-		sprintf(chrStr,"X");
+	if (chr==23 && convert23toX)
+		sprintf(chrStr,"X"); // this is going to be optional
 	else
 		sprintf(chrStr,"%d",chr);
 	if(ptr=strchr(fnBuff,'*'))
@@ -155,32 +155,62 @@ dcexpr_val *performTabixQuery(const char *fn,int addChr,int lower,char *lookupSt
 	return rv;
 }
 
-dcexpr_val *vcfAddChrLookup_func(dcvnode* b1, dcvnode *b2)
+dcexpr_val* vcfAddChrLookup_func(dcvnode* b1, dcvnode* b2)
 {
-	dcexpr_val *r1, *r2;
+	dcexpr_val* r1, * r2;
 	EVAL_BOTH;
-	dcexpr_val *rv;
-	rv = performTabixQuery((char*)(*r2), 1, 0, (char*)(*r1));
+	dcexpr_val* rv;
+	rv = performTabixQuery((char*)(*r2), 1, 0, (char*)(*r1), 0);
 	delete r1; delete r2;
 	return rv;
 }
 
-dcexpr_val *vcfAddLowerChrLookup_func(dcvnode* b1, dcvnode *b2)
+dcexpr_val* vcfAddChrLookup23toX_func(dcvnode* b1, dcvnode* b2)
 {
-	dcexpr_val *r1, *r2;
+	dcexpr_val* r1, * r2;
 	EVAL_BOTH;
-	dcexpr_val *rv;
-	rv = performTabixQuery((char*)(*r2), 1, 1, (char*)(*r1));
+	dcexpr_val* rv;
+	rv = performTabixQuery((char*)(*r2), 1, 0, (char*)(*r1), 1);
 	delete r1; delete r2;
 	return rv;
 }
 
-dcexpr_val *vcfLookup_func(dcvnode* b1,dcvnode *b2)
+dcexpr_val* vcfAddLowerChrLookup_func(dcvnode* b1, dcvnode* b2)
 {
-	dcexpr_val *r1,*r2;
+	dcexpr_val* r1, * r2;
 	EVAL_BOTH;
-	dcexpr_val *rv;
-	rv=performTabixQuery((char*)(*r2),0,0,(char*)(*r1));
+	dcexpr_val* rv;
+	rv = performTabixQuery((char*)(*r2), 1, 1, (char*)(*r1), 0);
+	delete r1; delete r2;
+	return rv;
+}
+
+dcexpr_val* vcfAddLowerChrLookup23toX_func(dcvnode* b1, dcvnode* b2)
+{
+	dcexpr_val* r1, * r2;
+	EVAL_BOTH;
+	dcexpr_val* rv;
+	rv = performTabixQuery((char*)(*r2), 1, 1, (char*)(*r1), 1);
+	delete r1; delete r2;
+	return rv;
+}
+
+dcexpr_val* vcfLookup_func(dcvnode* b1, dcvnode* b2)
+{
+	dcexpr_val* r1, * r2;
+	EVAL_BOTH;
+	dcexpr_val* rv;
+	rv = performTabixQuery((char*)(*r2), 0, 0, (char*)(*r1), 0);
+	delete r1; delete r2;
+	return rv;
+}
+
+dcexpr_val* vcfLookup23toX_func(dcvnode* b1, dcvnode* b2)
+{
+	dcexpr_val* r1, * r2;
+	EVAL_BOTH;
+	dcexpr_val* rv;
+	rv = performTabixQuery((char*)(*r2), 0, 0, (char*)(*r1), 1);
 	delete r1; delete r2;
 	return rv;
 }
@@ -481,9 +511,12 @@ int initGeneVarParser()
 	add_bin_op_next("STARTSWITH",startsWith_func);
 	add_bin_op_same("STRCAT",strcat_func);
 	add_bin_op_same("GETWEIGHT",getWeight_func);
-	add_bin_op_same("VCFLOOKUP",vcfLookup_func);
+	add_bin_op_same("VCFLOOKUP", vcfLookup_func);
 	add_bin_op_same("VCFADDCHRLOOKUP", vcfAddChrLookup_func);
 	add_bin_op_same("VCFADDLOWERCHRLOOKUP", vcfAddLowerChrLookup_func);
+	add_bin_op_same("VCFLOOKUP23TOX", vcfLookup23toX_func);
+	add_bin_op_same("VCFADDCHRLOOKUP23TOX", vcfAddChrLookup23toX_func);
+	add_bin_op_same("VCFADDLOWERCHRLOOKUP23TOX", vcfAddLowerChrLookup23toX_func);
 	add_un_op("ANNOT",annot_func);
 	add_un_op("ATTRIB",attrib_func);
 	add_un_op("GETPOLYPHEN",extract_polyphen_func);
