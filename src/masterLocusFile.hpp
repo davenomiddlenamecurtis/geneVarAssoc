@@ -20,7 +20,10 @@ along with geneVarAssoc.If not, see <http://www.gnu.org/licenses/>.
 #ifndef masterLocusFileHPP
 #define masterLocusFileHPP
 
+#ifndef MAXALL
 #define MAXALL 10 // maximum number of alleles occurring at any locus
+#endif
+
 #define MAXALLLENGTH 200
 // #define MAXALLLENGTH 300 // maximum length of the character string describing each REF allele 
 // or all ALT alleles with commas separating them
