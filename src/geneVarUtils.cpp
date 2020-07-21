@@ -64,12 +64,13 @@ int gvaParams::readParms(int argc,char *argv[],analysisSpecs &spec)
 	spec.useProbs=0;
 	spec.useEnsembl=spec.willNeedEnsemblConsequence=spec.willNeedInbuiltConsequence=0;
 	spec.consequenceThreshold=NULL_CONSEQUENCE;
+	spec.consequenceWeightThreshold = 0;
 	spec.useConsequenceWeights=0;
 	spec.onlyUseSNPs=0;
 	writeComments=1;
 	writeScoreFile=0;
 	spec.doRecessiveTest=0;
-	spec.weightThreshold=0;
+	spec.recWeightThreshold=0;
 	spec.LDThreshold=1.0;
 	spec.unknownIfUntyped=0;
 	spec.skipIfNoPass=0;
@@ -222,7 +223,9 @@ int gvaParams::readParms(int argc,char *argv[],analysisSpecs &spec)
 		else if (FILLARG("--use-ensembl"))
 			spec.useEnsembl = atoi(arg);
 		else if (FILLARG("--consequence-threshold"))
-			spec.consequenceThreshold=atof(arg);
+			spec.consequenceThreshold = atof(arg);
+		else if (FILLARG("--consequence-weight-threshold"))
+			spec.consequenceWeightThreshold = atof(arg);
 		else if (FILLARG("--use-consequence-weights"))
 			spec.useConsequenceWeights=atoi(arg);
 		else if (FILLARG("--only-use-SNPs"))
@@ -233,8 +236,8 @@ int gvaParams::readParms(int argc,char *argv[],analysisSpecs &spec)
 			writeScoreFile=atoi(arg);
 		else if (FILLARG("--do-recessive-test"))
 			spec.doRecessiveTest=atoi(arg);
-		else if (FILLARG("--weight-threshold"))
-			spec.weightThreshold=atof(arg);
+		else if (FILLARG("--rec-weight-threshold"))
+			spec.recWeightThreshold=atof(arg);
 		else if (FILLARG("--LD-threshold"))
 			spec.LDThreshold=atof(arg);
 		else if (FILLARG("--add-chr"))
@@ -427,7 +430,7 @@ int gvaParams::readParms(int argc,char *argv[],analysisSpecs &spec)
 #endif
 				strcpy(ccFn[i][f],line);
 			}
-	if ((spec.consequenceThreshold || spec.useConsequenceWeights) && spec.weightExpression[0]=='\0')
+	if ((spec.consequenceThreshold || spec.consequenceWeightThreshold || spec.useConsequenceWeights) && spec.weightExpression[0]=='\0')
 	{
 		if (spec.useEnsembl)
 			spec.willNeedEnsemblConsequence=1;

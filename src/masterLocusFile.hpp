@@ -105,6 +105,7 @@ public:
 		proportionCalledToPass=0.95;
 		useConsequenceWeights=0;
 		consequenceThreshold=NULL_CONSEQUENCE;
+		consequenceWeightThreshold = 0;
 		useEnsembl=useEnsembl=willNeedEnsemblConsequence=willNeedInbuiltConsequence=0;
 		GQThreshold=-1;
 		hetDevThreshold=hetDevThresholdSq=-1;
@@ -112,7 +113,7 @@ public:
 		ABThreshold = -1;
 		onlyUseSNPs=0;
 		doRecessiveTest=0;
-		weightThreshold=0;
+		recWeightThreshold=0;
 		LDThreshold=1;
 		phenotypes=NULL;
 		showHapLocusNames=useHaplotypes=0;
@@ -137,8 +138,8 @@ float *phenotypes;
 TStrFloatMap subPhenos;
 long sp,ep;
 float GQThreshold,proportionCalledToPass,hetDevThreshold,hetDevThresholdSq,depthThreshold,ABThreshold;
-float weightThreshold,LDThreshold,wf;
-float consequenceThreshold;
+float recWeightThreshold,LDThreshold,wf;
+float consequenceThreshold,consequenceWeightThreshold;
 char exclusionStr[20][200];
 char triosFn[200];
 char alleleFreqStr[100],alleleNumberStr[100],alleleCountStr[100],
