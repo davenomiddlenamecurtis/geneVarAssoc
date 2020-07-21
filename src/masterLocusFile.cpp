@@ -938,7 +938,7 @@ if (recPos!=0L)
 			{
 				// we are going to use one of the inbuilt annotations to see if we exceed consequenceThreshold
 				// then if weight funcion specified use that weight instead
-				if (spec.consequenceThreshold || spec.consequenceWeightThreshold || (spec.useConsequenceWeights&&spec.weightExpression[0] == '\0'))
+				if (spec.consequenceThreshold || (spec.useConsequenceWeights&&spec.weightExpression[0] == '\0'))
 				{
 					if (spec.useEnsembl)
 					{
@@ -957,8 +957,6 @@ if (recPos!=0L)
 						locusWeight[splitLocusCount] = e_consequence[cons].weight;
 						if (cons < spec.consequenceThreshold)
 							useLocus[splitLocusCount] = 0;
-						if (locusWeight[splitLocusCount] < spec.consequenceWeightThreshold)
-							useLocus[splitLocusCount] = 0;
 					}
 					else
 					{
@@ -976,8 +974,6 @@ if (recPos!=0L)
 						}
 						locusWeight[splitLocusCount] = consequence[cons].weight;
 						if (cons < spec.consequenceThreshold)
-							useLocus[splitLocusCount] = 0;
-						if (locusWeight[splitLocusCount] < spec.consequenceWeightThreshold)
 							useLocus[splitLocusCount] = 0;
 					}
 				}

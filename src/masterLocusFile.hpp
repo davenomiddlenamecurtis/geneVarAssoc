@@ -105,7 +105,6 @@ public:
 		proportionCalledToPass=0.95;
 		useConsequenceWeights=0;
 		consequenceThreshold=NULL_CONSEQUENCE;
-		consequenceWeightThreshold = 0;
 		useEnsembl=useEnsembl=willNeedEnsemblConsequence=willNeedInbuiltConsequence=0;
 		GQThreshold=-1;
 		hetDevThreshold=hetDevThresholdSq=-1;
@@ -139,7 +138,7 @@ TStrFloatMap subPhenos;
 long sp,ep;
 float GQThreshold,proportionCalledToPass,hetDevThreshold,hetDevThresholdSq,depthThreshold,ABThreshold;
 float recWeightThreshold,LDThreshold,wf;
-float consequenceThreshold,consequenceWeightThreshold;
+float consequenceThreshold;
 char exclusionStr[20][200];
 char triosFn[200];
 char alleleFreqStr[100],alleleNumberStr[100],alleleCountStr[100],

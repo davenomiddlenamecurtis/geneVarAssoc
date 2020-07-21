@@ -64,7 +64,6 @@ int gvaParams::readParms(int argc,char *argv[],analysisSpecs &spec)
 	spec.useProbs=0;
 	spec.useEnsembl=spec.willNeedEnsemblConsequence=spec.willNeedInbuiltConsequence=0;
 	spec.consequenceThreshold=NULL_CONSEQUENCE;
-	spec.consequenceWeightThreshold = 0;
 	spec.useConsequenceWeights=0;
 	spec.onlyUseSNPs=0;
 	writeComments=1;
@@ -224,8 +223,6 @@ int gvaParams::readParms(int argc,char *argv[],analysisSpecs &spec)
 			spec.useEnsembl = atoi(arg);
 		else if (FILLARG("--consequence-threshold"))
 			spec.consequenceThreshold = atof(arg);
-		else if (FILLARG("--consequence-weight-threshold"))
-			spec.consequenceWeightThreshold = atof(arg);
 		else if (FILLARG("--use-consequence-weights"))
 			spec.useConsequenceWeights=atoi(arg);
 		else if (FILLARG("--only-use-SNPs"))
@@ -430,7 +427,7 @@ int gvaParams::readParms(int argc,char *argv[],analysisSpecs &spec)
 #endif
 				strcpy(ccFn[i][f],line);
 			}
-	if ((spec.consequenceThreshold || spec.consequenceWeightThreshold || spec.useConsequenceWeights) && spec.weightExpression[0]=='\0')
+	if ((spec.consequenceThreshold || spec.useConsequenceWeights) && spec.weightExpression[0]=='\0')
 	{
 		if (spec.useEnsembl)
 			spec.willNeedEnsemblConsequence=1;
