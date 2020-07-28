@@ -490,7 +490,7 @@ int refseqGeneInfo::getNextGene(int transcriptionStartCanVary)
 				break;
 		}
 		// check that both geneName and txStart have not changed - occasional genes are present in multiple locations (!)
-		if (sscanf(geneLine,"%*d %*s %s %c %d %*d %d %d %*d %*s %*s %*d %s",
+		if (sscanf(geneLine,"%*d %*s %s %c %d %d %d %*d %*d %*s %*s %*d %s",
 			lineChr,&lineStrand,&lineTxStart,&lineTxEnd,&lineCdsStart,lineName)!=6)
 		{ dcerror(1,"Not enough parameters in line: %s",geneLine); return 0; }
 		if (strchr(lineChr,'_'))
