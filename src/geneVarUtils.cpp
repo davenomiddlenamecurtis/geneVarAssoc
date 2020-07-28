@@ -275,6 +275,8 @@ int gvaParams::readParms(int argc,char *argv[],analysisSpecs &spec)
 			spec.mergeAltAlleles = atoi(arg);
 		else if (FILLARG("--omit-introns"))
 			spec.omitIntrons = atoi(arg);
+		else if (FILLARG("--use-utrs"))
+			spec.useUTRs = atoi(arg);
 		else if (FILLARG("--splice-region-size"))
 			spec.spliceRegionSize = atoi(arg);
 		else if(FILLARG("--reference-path"))
