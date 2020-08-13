@@ -998,8 +998,10 @@ if (recPos!=0L)
 						val = (double)(*rv);
 						delete rv;
 						if (val != 0)
+						{
 							useLocus[splitLocusCount] = 0;
-						break;
+							break;
+						}
 					}
 				}
 			}
