@@ -29,7 +29,7 @@ along with geneVarAssoc.If not, see <http://www.gnu.org/licenses/>.
 #define DOWNSTREAMLENGTH 1000
 // defaults
 #define MAXEXONPERGENE 1000
-#define MAXTRANSCRIPTPERGENE 100
+#define MAXTRANSCRIPTPERGENE 150
 #define NSPLICEBASES 6
 
 // assume all starts 0-based, all ends 1-based, variants etc. 1-based
