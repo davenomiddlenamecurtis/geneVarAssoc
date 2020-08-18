@@ -231,12 +231,18 @@ int gvaParams::readParms(int argc,char *argv[],analysisSpecs &spec)
 			writeComments=atoi(arg);
 		else if (FILLARG("--write-score-file"))
 			writeScoreFile=atoi(arg);
+#if 0
 		else if (FILLARG("--do-recessive-test"))
 			spec.doRecessiveTest=atoi(arg);
 		else if (FILLARG("--rec-weight-threshold"))
 			spec.recWeightThreshold=atof(arg);
 		else if (FILLARG("--LD-threshold"))
 			spec.LDThreshold=atof(arg);
+		else if (FILLARG("--use-haplotypes"))
+			spec.useHaplotypes = atoi(arg);
+		else if (FILLARG("--show-hap-locus-names"))
+			spec.showHapLocusNames = atoi(arg);
+#endif
 		else if (FILLARG("--add-chr"))
 			strcpy(addChrStr, arg);
 		else if (FILLARG("--unknown-if-untyped"))
@@ -251,10 +257,6 @@ int gvaParams::readParms(int argc,char *argv[],analysisSpecs &spec)
 			spec.ignoreAlleles = atoi(arg);
 		else if (FILLARG("--dont-merge-alleles")) // do not merge allelic systems from different vcf lines
 			spec.dontMergeAlleles = atoi(arg);
-		else if (FILLARG("--use-haplotypes"))
-		spec.useHaplotypes = atoi(arg);
-		else if (FILLARG("--show-hap-locus-names"))
-		spec.showHapLocusNames = atoi(arg);
 		else if (FILLARG("--use-probs"))
 			spec.useProbs=atoi(arg);
 		else if (FILLARG("--dont-extract-variants"))
