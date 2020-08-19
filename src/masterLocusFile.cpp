@@ -507,6 +507,120 @@ int masterLocusFile::loadFirst(analysisSpecs &spec)
 		return load(tempRecord,currentRecPos);
 }
 
+int masterLocusFile::writeFlatFile(masterLocusFile& subFile, char* fn, int totalSub, strEntry* subName,analysisSpecs& spec)
+{
+	int lc,s,ss,i,all,l;
+	FILE* fp;
+	long* subPos;
+	allelePair* a;
+	probTriple* p;
+	assert(subPos = (long *)calloc(totalSub, sizeof(long)));
+	lc= 0;
+	if (gotoFirstInRange(spec))
+		do
+		{
+			nAlls[lc++] = tempRecord.nAlls;
+		} while (gotoNextInRange(spec));
+
+	if (spec.useProbs)
+		assert(p= (probTriple*)calloc(totalSub, sizeof(probTriple)));
+	else
+		assert(a= (allelePair*)calloc(totalSub, sizeof(allelePair)));
+	fp = fopen(fn, "wb"); // binary because I had problems with fseek() and text files
+	for (s = 0, i = 0; i < subFile.nLocusFiles; ++i)
+		for (ss = 0; ss < subFile.nSubs[i]; ++s, ++ss)
+		{
+			if (spec.phenotypes)
+			{
+				if (spec.phenotypes[s] == MISSINGPHENOTYPE)
+					continue;
+			}
+			if (spec.isQuantitative)
+				fprintf(fp, "%s\t%9.5f\t", subName[s], spec.phenotypes[s]);
+			else
+			{
+				int cc_pheno = spec.phenotypes ? spec.phenotypes[s] : subFile.cc[i];
+				if (cc_pheno != 0 && cc_pheno != 1)
+					continue; // no longer output subjects with unknown phenotype
+				fprintf(fp, "%s\t%d\t", subName[s], cc_pheno);
+			}
+			subPos[s] = ftell(fp);
+			for (l = 0; l < lc; ++l)
+			{
+				if (spec.useProbs)
+				{
+					fprintf(fp, "%5.3f %5.3f %5.3f\t", 0, 0, 0);
+				}
+				else
+				{
+					if (spec.mergeAltAlleles)
+					{
+						fprintf(fp, "%d %d\t", 0, 0);
+					}
+					else
+						for (all = 1; all < nAlls[l]; ++all)
+						{
+							fprintf(fp, "%d %d\t", 0, 0);
+						}
+				}
+			}
+			fprintf(fp, "\n");
+		}
+// subPos[s] is the position to write the next genotype / probs
+	l = 0;
+	if (gotoFirstInRange(spec))
+		do
+		{
+			if (spec.useProbs)
+				outputCurrentProbs(p, spec);
+			else
+				outputCurrentAlleles(a, spec);
+			for (s = 0, i = 0; i < subFile.nLocusFiles; ++i)
+				for (ss = 0; ss < subFile.nSubs[i]; ++s, ++ss)
+				{
+					if (spec.phenotypes)
+					{
+						if (spec.phenotypes[s] == MISSINGPHENOTYPE)
+							continue;
+					}
+					if (!spec.isQuantitative)
+					{
+						int cc_pheno = spec.phenotypes ? spec.phenotypes[s] : subFile.cc[i];
+						if (cc_pheno != 0 && cc_pheno != 1)
+							continue;
+					}
+					fseek(fp, subPos[s], SEEK_SET);
+						if (spec.useProbs)
+							fprintf(fp, "%5.3f %5.3f %5.3f\t", p[s][0], p[s][1], p[s][2]);
+						else
+						{
+							if (spec.mergeAltAlleles)
+							{
+								fprintf(fp, "%d %d\t",
+									(a[s][0] > 1) ? 2 : a[s][0],
+									(a[s][1] > 1) ? 2 : a[s][1]); // force to be biallelic
+							}
+							else
+								for (all = 1; all < nAlls[l]; ++all)
+								{
+									fprintf(fp, "%d %d\t",
+										(a[s][0] == all + 1) ? 2 : a[s][0] == 0 ? 0 : 1,
+										(a[s][1] == all + 1) ? 2 : a[s][1] == 0 ? 0 : 1);
+								}
+						}
+						subPos[s] = ftell(fp);
+				}
+			++l;
+		} while (gotoNextInRange(spec));
+	fclose(fp);
+	if (spec.useProbs)
+		free(p);
+	else
+		free(a);
+	free(subPos);
+	return lc;
+}
+
 int masterLocusFile::loadNext(analysisSpecs &spec)
 {
 	const char *testKey;
@@ -559,28 +673,29 @@ int masterLocusFile::writeScoreAssocFiles(masterLocusFile &subFile,char *root, f
 		dcerror(99, "The total number of valid subjects is zero in masterLocusFile::writeScoreAssocFiles()");
 		return 0;
 	}
-	subName=(strEntry *)calloc(totalSub,sizeof(strEntry));
+	assert(subName=(strEntry *)calloc(totalSub,sizeof(strEntry)));
 // hereOK();
 	subFile.outputSubNames(subName,spec);
 // hereOK();
 	nValid=countNumberInRange(spec);
-	if (spec.useProbs)
+	if (!spec.useFlatFile)
 	{
-		assert((p = (probTriple **)calloc(nValid, sizeof(probTriple*))) != 0);
-		for (l = 0; l < nValid; ++l)
-			p[l] = (probTriple *)calloc(totalSub, sizeof(probTriple));
-		lc = outputProbs(p, spec);
-	}
-	else
-	{
-		assert((a = (allelePair **)calloc(nValid, sizeof(allelePair*))) != 0);
-		for (l = 0; l < nValid; ++l)
-			a[l] = (allelePair *)calloc(totalSub, sizeof(allelePair));
-		lc = outputAlleles(a, spec);
+		if (spec.useProbs)
+		{
+			assert((p = (probTriple**)calloc(nValid, sizeof(probTriple*))) != 0);
+			for (l = 0; l < nValid; ++l)
+				assert(p[l] = (probTriple*)calloc(totalSub, sizeof(probTriple)));
+			lc = outputProbs(p, spec);
+		}
+		else
+		{
+			assert((a = (allelePair**)calloc(nValid, sizeof(allelePair*))) != 0);
+			for (l = 0; l < nValid; ++l)
+				assert(a[l] = (allelePair*)calloc(totalSub, sizeof(allelePair)));
+			lc = outputAlleles(a, spec);
+		}
 	}
 // hereOK();
-	sprintf(fn,"%s.dat",root);
-	fp=fopen(fn,"w");
 	if(spec.subPhenos.size()>0)
 	{
 		if(spec.phenotypes==NULL) // should have been allocated when IDsAndPhenotypesFileName read
@@ -599,47 +714,56 @@ int masterLocusFile::writeScoreAssocFiles(masterLocusFile &subFile,char *root, f
 		}
 	}
 	checkSystem();
-	for (s=0,i=0;i<subFile.nLocusFiles;++i)
-	for (ss=0;ss<subFile.nSubs[i];++s,++ss)
+	sprintf(fn, "%s.dat", root);
+	if (spec.useFlatFile)
 	{
-		if (spec.phenotypes)
-		{
-			if (spec.phenotypes[s]==MISSINGPHENOTYPE)
-				continue;
-		}
-		if (spec.isQuantitative)
-			fprintf(fp, "%s\t%9.5f\t", subName[s], spec.phenotypes[s]);
-		else
-		{
-			int cc_pheno = spec.phenotypes ? spec.phenotypes[s] : subFile.cc[i];
-			if (cc_pheno != 0 && cc_pheno != 1)
-				continue; // no longer output subjects with unknown phenotype
-			fprintf(fp, "%s\t%d\t", subName[s],cc_pheno );
-		}
-		for (l=0;l<lc;++l)
-			if (spec.useProbs)
-			{
-				fprintf(fp, "%5.3f %5.3f %5.3f\t",p[l][s][0],p[l][s][1],p[l][s][2]);
-			}
-			else
-			{
-				if (spec.mergeAltAlleles)
-				{
-					fprintf(fp, "%d %d\t",
-						(a[l][s][0] > 1) ? 2 : a[l][s][0],
-						(a[l][s][1] > 1) ? 2 : a[l][s][1]); // force to be biallelic
-				}
-				else
-					for (all = 1; all < nAlls[l];++all)
-					{
-						fprintf(fp, "%d %d\t",
-							(a[l][s][0] == all+1) ? 2 : a[l][s][0] == 0 ? 0 : 1,
-							(a[l][s][1] == all+1) ? 2 : a[l][s][1] == 0 ? 0 : 1);
-					}
-			}
-		fprintf(fp,"\n");
+		lc=writeFlatFile(subFile, fn, totalSub, subName, spec);
 	}
-	fclose(fp);
+	else
+	{
+		fp = fopen(fn, "w");
+		for (s = 0, i = 0; i < subFile.nLocusFiles; ++i)
+			for (ss = 0; ss < subFile.nSubs[i]; ++s, ++ss)
+			{
+				if (spec.phenotypes)
+				{
+					if (spec.phenotypes[s] == MISSINGPHENOTYPE)
+						continue;
+				}
+				if (spec.isQuantitative)
+					fprintf(fp, "%s\t%9.5f\t", subName[s], spec.phenotypes[s]);
+				else
+				{
+					int cc_pheno = spec.phenotypes ? spec.phenotypes[s] : subFile.cc[i];
+					if (cc_pheno != 0 && cc_pheno != 1)
+						continue; // no longer output subjects with unknown phenotype
+					fprintf(fp, "%s\t%d\t", subName[s], cc_pheno);
+				}
+				for (l = 0; l < lc; ++l)
+					if (spec.useProbs)
+					{
+						fprintf(fp, "%5.3f %5.3f %5.3f\t", p[l][s][0], p[l][s][1], p[l][s][2]);
+					}
+					else
+					{
+						if (spec.mergeAltAlleles)
+						{
+							fprintf(fp, "%d %d\t",
+								(a[l][s][0] > 1) ? 2 : a[l][s][0],
+								(a[l][s][1] > 1) ? 2 : a[l][s][1]); // force to be biallelic
+						}
+						else
+							for (all = 1; all < nAlls[l]; ++all)
+							{
+								fprintf(fp, "%d %d\t",
+									(a[l][s][0] == all + 1) ? 2 : a[l][s][0] == 0 ? 0 : 1,
+									(a[l][s][1] == all + 1) ? 2 : a[l][s][1] == 0 ? 0 : 1);
+							}
+					}
+				fprintf(fp, "\n");
+			}
+		fclose(fp);
+	}
 	checkSystem();
 	if (!spec.mergeAltAlleles)
 	{
@@ -799,17 +923,20 @@ int masterLocusFile::writeScoreAssocFiles(masterLocusFile &subFile,char *root, f
 	fp=fopen(fn,"w");
 	fprintf(fp,"%s\n",commandString);
 	fclose(fp);
-	if (spec.useProbs)
+	if (!spec.useFlatFile)
 	{
-		for (l = 0; l < nValid; ++l)
-			free(p[l]);
-		free(p);
-	}
-	else
-	{
-		for (l = 0; l < nValid; ++l)
-			free(a[l]);
-		free(a);
+		if (spec.useProbs)
+		{
+			for (l = 0; l < nValid; ++l)
+				free(p[l]);
+			free(p);
+		}
+		else
+		{
+			for (l = 0; l < nValid; ++l)
+				free(a[l]);
+			free(a);
+		}
 	}
 	free(subName);
 	return 1;

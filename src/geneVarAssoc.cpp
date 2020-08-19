@@ -30,10 +30,11 @@ along with geneVarAssoc.If not, see <http://www.gnu.org/licenses/>.
 #define PROGRAM "geneVarAassoc"
 #define GVAVERSION "7.0"
 
+refseqGeneInfo r; // moved off stack
+
 int main(int argc,char *argv[])
 {
 	geneExtractor gcase,gcont;
-	refseqGeneInfo r;
 	char fn[100],fn2[100],line[1000],geneName[100];
 	int i,extractedOK;
 	FILE *fp;

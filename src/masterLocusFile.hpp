@@ -96,6 +96,7 @@ class analysisSpecs {
 public:
 	analysisSpecs() 
 	{ 
+		useFlatFile = 1;
 		unknownIfUntyped=1; // if there are no calls for a variant in the VCF file assume it has not been covered rather than all wildtype
 		unknownIfNoPass=0; altIsCommon=0; 
 		wildIfUnknown=0;
@@ -134,6 +135,7 @@ public:
 int onlycc01,unknownIfUntyped,unknownIfNoPass,altIsCommon,sc,ec,skipIfNoPass,useConsequenceWeights,onlyUseSNPs,nExc,doRecessiveTest,addChrInVCF[MAXVCFFILES],useHaplotypes, showHapLocusNames,count_hom_as_het,useTrios,
 ignoreAlleles,dontMergeAlleles,useProbs,wildIfUnknown,debug,omitIntrons,useUTRs,spliceRegionSize,isQuantitative;
 int useEnsembl,willNeedEnsemblConsequence,willNeedInbuiltConsequence,mergeAltAlleles,numVcfFieldsToSkip,removeVcfSpaces;
+int useFlatFile;
 float *phenotypes;
 TStrFloatMap subPhenos;
 long sp,ep;
@@ -324,8 +326,9 @@ public:
 	int getEnsemblConsequences(analysisSpecs const &spec);
 	int getQuickConsequences(refseqGeneInfo &r,analysisSpecs const &spec,int redo=0);
 	int writeScoreAssocFiles(char *root,float wf,int *useFreqs,int *suppliedNSubs,int writeNames,int writeComments,int writeScorefile,analysisSpecs &spec);
-	int writeScoreAssocFiles(masterLocusFile &subFile,char *root,float wf,int *useFreqs,int *suppliedNSubs,int writeNames,int writeComments,int writeScorefile,analysisSpecs &spec);
-//	int writeVars(char *fn,int *useFreqs,analysisSpecs &spec);
+	int writeScoreAssocFiles(masterLocusFile& subFile, char* root, float wf, int* useFreqs, int* suppliedNSubs, int writeNames, int writeComments, int writeScorefile, analysisSpecs& spec);
+	int writeFlatFile(masterLocusFile& subFile, char *fn, int nSubs, strEntry* subName, analysisSpecs& spec);
+	//	int writeVars(char *fn,int *useFreqs,analysisSpecs &spec);
 	int writeGenos(char *fn,int *useFreqs,analysisSpecs &spec);
 	int writeGenoCounts(FILE *fo[2],char *geneName,long *varNum,analysisSpecs &spec,allelePair **a);
 	int writeAltSubs(char *fn,analysisSpecs &spec);
