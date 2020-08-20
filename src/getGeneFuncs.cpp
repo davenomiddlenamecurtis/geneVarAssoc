@@ -636,7 +636,7 @@ void refseqGeneInfo::getAllExons()
 	gotAllExons = 1;
 }
 
-int refseqGeneInfo::tbiExtractGene(char* tbiFilename, char* outFn, int appendToOld, int addChrInVCF, int removeSpaces, int omitIntrons, int useUTRs, int spliceRegionSize)
+int refseqGeneInfo::tbiExtractGene(char* tbiFilename, char* outFn, int appendToOld, int addChrInVCF, int removeSpaces, int omitIntrons, int spliceRegionSize)
 {
 	int i, startPos, endPos, foundOne, systemStatus;
 	char buff[1000], * tbiFn, * ptr, tbiFnBuff[1000];
@@ -737,8 +737,8 @@ int refseqGeneInfo::tbiExtractGene(char* tbiFilename, char* outFn, int appendToO
 	{
 		sprintf(geneLine, "tabix %s%s %s:%d-%d", tbiFn, appendToOld ? "" : " -h",
 			chr + (addChrInVCF ? 0 : 3),
-			(useUTRs?txStart:firstExonStart) - ((strand == '+') ? upstream : downstream),
-			(useUTRs ? txEnd : lastExonEnd) + ((strand == '-') ? upstream : downstream));
+			firstExonStart - ((strand == '+') ? upstream : downstream),
+			lastExonEnd + ((strand == '-') ? upstream : downstream));
 		sprintf(strchr(geneLine, '\0'), "%s%s %s", removeSpaces ? "| sed s/' '/'_'/g " : "", appendToOld ? ">>" : ">", outFn);
 		printf("Running command: %s\n", geneLine);
 		systemStatus = system(geneLine);
@@ -748,7 +748,7 @@ int refseqGeneInfo::tbiExtractGene(char* tbiFilename, char* outFn, int appendToO
 }
 
 
-int refseqGeneInfo::plinkExtractGene(char* bedFilename, char* famFilename, char* bimFilename, char *outFn,int omitIntrons, int useUTRs, int spliceRegionSize)
+int refseqGeneInfo::plinkExtractGene(char* bedFilename, char* famFilename, char* bimFilename, char *outFn,int omitIntrons, int spliceRegionSize)
 {
 	int i,startPos,endPos,foundOne,systemStatus;
 	char buff[1000],*bedFn,*ptr,bedFnBuff[1000];
@@ -818,8 +818,8 @@ int refseqGeneInfo::plinkExtractGene(char* bedFilename, char* famFilename, char*
 	else
 	{
 	fprintf(rf,"%s %d %d %s",chr+3,
-		(useUTRs?txStart:firstExonStart) - ((strand=='+')?upstream:downstream),
-		(useUTRs?txEnd:lastExonEnd) + ((strand=='-')?upstream:downstream),
+		firstExonStart - ((strand=='+')?upstream:downstream),
+		lastExonEnd + ((strand=='-')?upstream:downstream),
 		geneName);
 	fclose(rf);
 	}
@@ -929,10 +929,10 @@ int geneExtractor::downloadGene(refseqGeneInfo &g,char *outFn)
 	firstHalf[ptr-variantFileName]='\0';
 	strcpy(secondHalf,ptr+3);
 	sprintf(tbiFn,"%s%s%s",firstHalf,g.getChr(),secondHalf);
-	return g.tbiExtractGene(tbiFn,outFn,0,0,0,0,0,0);
+	return g.tbiExtractGene(tbiFn,outFn,0,0,0,0,0);
 }
 
-int geneExtractor::extractVariants(refseqGeneInfo &g,char *outFn,int appendToOld,int addChrInVCF,int removeSpaces,int omitIntrons, int useUTRs, int spliceRegionSize)
+int geneExtractor::extractVariants(refseqGeneInfo &g,char *outFn,int appendToOld,int addChrInVCF,int removeSpaces,int omitIntrons, int spliceRegionSize)
 // extract vcf file from local tbi file
 {
 	if (variantFileName[0]=='\0')
@@ -941,7 +941,7 @@ int geneExtractor::extractVariants(refseqGeneInfo &g,char *outFn,int appendToOld
 		return 0;
 	}
 	else 
-		return g.tbiExtractGene(variantFileName,outFn,appendToOld,addChrInVCF,removeSpaces, omitIntrons, useUTRs, spliceRegionSize);
+		return g.tbiExtractGene(variantFileName,outFn,appendToOld,addChrInVCF,removeSpaces, omitIntrons, spliceRegionSize);
 }
 
 
