@@ -507,9 +507,9 @@ int masterLocusFile::loadFirst(analysisSpecs &spec)
 		return load(tempRecord,currentRecPos);
 }
 
-int masterLocusFile::writeFlatFile(masterLocusFile& subFile, char* fn, int totalSub, strEntry* subName,analysisSpecs& spec)
+int masterLocusFile::writeFlatFile(masterLocusFile& subFile, char* fn, int totalSub, strEntry* subName,analysisSpecs& spec,int *useLocus)
 {
-	int lc,s,ss,i,all,l;
+	int lc,s,ss,i,all,l,ll,lll;
 	FILE* fp;
 	long* subPos;
 	allelePair* a;
@@ -545,22 +545,25 @@ int masterLocusFile::writeFlatFile(masterLocusFile& subFile, char* fn, int total
 				fprintf(fp, "%s\t%d\t", subName[s], cc_pheno);
 			}
 			subPos[s] = ftell(fp);
-			for (l = 0; l < lc; ++l)
+			for (l = 0,ll=0; l < lc; ++l)
 			{
 				if (spec.useProbs)
 				{
-					fprintf(fp, "%5.3f %5.3f %5.3f\t", 0, 0, 0);
+					if (useLocus[ll++])
+						fprintf(fp, "%5.3f %5.3f %5.3f\t", 0, 0, 0);
 				}
 				else
 				{
 					if (spec.mergeAltAlleles)
 					{
-						fprintf(fp, "%d %d\t", 0, 0);
+						if (useLocus[ll++])
+							fprintf(fp, "%d %d\t", 0, 0);
 					}
 					else
 						for (all = 1; all < nAlls[l]; ++all)
 						{
-							fprintf(fp, "%d %d\t", 0, 0);
+							if (useLocus[ll++])
+								fprintf(fp, "%d %d\t", 0, 0);
 						}
 				}
 			}
@@ -568,6 +571,7 @@ int masterLocusFile::writeFlatFile(masterLocusFile& subFile, char* fn, int total
 		}
 // subPos[s] is the position to write the next genotype / probs
 	l = 0;
+	ll = 0;
 	if (gotoFirstInRange(spec))
 		do
 		{
@@ -590,20 +594,25 @@ int masterLocusFile::writeFlatFile(masterLocusFile& subFile, char* fn, int total
 							continue;
 					}
 					fseek(fp, subPos[s], SEEK_SET);
-						if (spec.useProbs)
+					if (spec.useProbs)
+					{
+						if (useLocus[ll])
 							fprintf(fp, "%5.3f %5.3f %5.3f\t", p[s][0], p[s][1], p[s][2]);
-						else
-						{
+					}
+					else
+					{
 							if (spec.mergeAltAlleles)
 							{
-								fprintf(fp, "%d %d\t",
-									(a[s][0] > 1) ? 2 : a[s][0],
-									(a[s][1] > 1) ? 2 : a[s][1]); // force to be biallelic
+								if (useLocus[ll])
+									fprintf(fp, "%d %d\t",
+										(a[s][0] > 1) ? 2 : a[s][0],
+										(a[s][1] > 1) ? 2 : a[s][1]); // force to be biallelic
 							}
 							else
-								for (all = 1; all < nAlls[l]; ++all)
+								for (all = 1,lll=ll; all < nAlls[l]; ++all)
 								{
-									fprintf(fp, "%d %d\t",
+									if (useLocus[lll++])
+										fprintf(fp, "%d %d\t",
 										(a[s][0] == all + 1) ? 2 : a[s][0] == 0 ? 0 : 1,
 										(a[s][1] == all + 1) ? 2 : a[s][1] == 0 ? 0 : 1);
 								}
@@ -611,6 +620,7 @@ int masterLocusFile::writeFlatFile(masterLocusFile& subFile, char* fn, int total
 						subPos[s] = ftell(fp);
 				}
 			++l;
+			ll += spec.mergeAltAlleles ? 1 : (nAlls[l]-1);
 		} while (gotoNextInRange(spec));
 	fclose(fp);
 	if (spec.useProbs)
@@ -646,7 +656,7 @@ int masterLocusFile::writeScoreAssocFiles(masterLocusFile &subFile,char *root, f
 	char fn[100],buff[MAXALL*MAXALLLENGTH],buff2[1000],*ptr,alleles[MAXSTR+1],commandString[1000],posStr[100];
 	allelePair **a;
 	probTriple **p;
-	int totalSub,lc,s,l,ss,i,c,nValid,all,numSplitLoci;
+	int totalSub,lc,s,l,ss,i,c,nValid,all,numSplitLoci,numIncludedLoci,ll;
 	FILE *fp;
 	FILEPOSITION recPos;
 	const char *testKey;
@@ -713,11 +723,13 @@ int masterLocusFile::writeScoreAssocFiles(masterLocusFile &subFile,char *root, f
 				spec.phenotypes[s]=it->second;
 		}
 	}
+	numSplitLoci = outputSAInfo(useLocus, locusWeight, spec);
+	// useLocus has numSplitLoci entries
 	checkSystem();
 	sprintf(fn, "%s.dat", root);
 	if (spec.useFlatFile)
 	{
-		lc=writeFlatFile(subFile, fn, totalSub, subName, spec);
+		lc=writeFlatFile(subFile, fn, totalSub, subName, spec,useLocus);
 	}
 	else
 	{
@@ -739,25 +751,28 @@ int masterLocusFile::writeScoreAssocFiles(masterLocusFile &subFile,char *root, f
 						continue; // no longer output subjects with unknown phenotype
 					fprintf(fp, "%s\t%d\t", subName[s], cc_pheno);
 				}
-				for (l = 0; l < lc; ++l)
+				for (l =0,ll=0; l< lc; ++l)
 					if (spec.useProbs)
 					{
-						fprintf(fp, "%5.3f %5.3f %5.3f\t", p[l][s][0], p[l][s][1], p[l][s][2]);
+						if (useLocus[ll++])
+							fprintf(fp, "%5.3f %5.3f %5.3f\t", p[l][s][0], p[l][s][1], p[l][s][2]);
 					}
 					else
 					{
 						if (spec.mergeAltAlleles)
 						{
-							fprintf(fp, "%d %d\t",
-								(a[l][s][0] > 1) ? 2 : a[l][s][0],
-								(a[l][s][1] > 1) ? 2 : a[l][s][1]); // force to be biallelic
+							if (useLocus[ll++])
+								fprintf(fp, "%d %d\t",
+									(a[l][s][0] > 1) ? 2 : a[l][s][0],
+									(a[l][s][1] > 1) ? 2 : a[l][s][1]); // force to be biallelic
 						}
 						else
 							for (all = 1; all < nAlls[l]; ++all)
 							{
-								fprintf(fp, "%d %d\t",
-									(a[l][s][0] == all + 1) ? 2 : a[l][s][0] == 0 ? 0 : 1,
-									(a[l][s][1] == all + 1) ? 2 : a[l][s][1] == 0 ? 0 : 1);
+								if (useLocus[ll++])
+									fprintf(fp, "%d %d\t",
+										(a[l][s][0] == all + 1) ? 2 : a[l][s][0] == 0 ? 0 : 1,
+										(a[l][s][1] == all + 1) ? 2 : a[l][s][1] == 0 ? 0 : 1);
 							}
 					}
 				fprintf(fp, "\n");
@@ -765,17 +780,23 @@ int masterLocusFile::writeScoreAssocFiles(masterLocusFile &subFile,char *root, f
 		fclose(fp);
 	}
 	checkSystem();
+#if 0
 	if (!spec.mergeAltAlleles)
 	{
 		for (numSplitLoci = 0, l = 0; l < lc; ++l)
 			numSplitLoci += nAlls[l] - 1;
 	}
-	sprintf(commandString,"scoreassoc %s %s --numloci %d",spec.useProbs?"--gendatafile":"--gcdatafile",fn,spec.mergeAltAlleles?lc:numSplitLoci);
-	outputSAInfo(useLocus,locusWeight,spec);
+#endif
+	numIncludedLoci = 0;
+	for (ll = 0; ll < numSplitLoci; ++ll)
+		if (useLocus[ll])
+			++numIncludedLoci;
+	sprintf(commandString,"scoreassoc %s %s --numloci %d",spec.useProbs?"--gendatafile":"--gcdatafile",
+		fn, numIncludedLoci);
 	sprintf(fn,"%s.lf.par",root);
 	fp=fopen(fn,"w");
-	for (l=0;l<(spec.mergeAltAlleles ? lc : numSplitLoci);++l)
-			fprintf(fp,"%d ",useLocus[l]);
+	for (l=0;l< numIncludedLoci;++l)
+			fprintf(fp,"1 ");  // idea is now we only output valid loci
 	fprintf(fp,"\n");
 	fclose(fp);
 	sprintf(strchr(commandString,'\0')," --locusfilterfile %s",fn);
@@ -795,8 +816,9 @@ int masterLocusFile::writeScoreAssocFiles(masterLocusFile &subFile,char *root, f
 	{
 		sprintf(fn,"%s.lw.par",root);
 		fp=fopen(fn,"w");
-		for (l=0;l<(spec.mergeAltAlleles ? lc : numSplitLoci);++l)
-			fprintf(fp,"%8.5f ",locusWeight[l]);
+		for (l=0;l<numSplitLoci;++l)
+			if (useLocus[l])
+				fprintf(fp,"%8.5f ",locusWeight[l]);
 		fprintf(fp,"\n");
 		fclose(fp);
 	sprintf(strchr(commandString,'\0')," --locusweightfile %s",fn);
@@ -817,10 +839,12 @@ int masterLocusFile::writeScoreAssocFiles(masterLocusFile &subFile,char *root, f
 			sprintf(fn,"%s.%s.freq.par",root,i?"case":"cont");
 			fp=fopen(fn,"w");
 			for (l=0;l<lc;++l)
-				fprintf(fp,"%8.6f ",freqs[l]);
+				if (useLocus[l])
+					fprintf(fp,"%8.6f ",freqs[l]);
 			fprintf(fp,"\n");
 			for (l=0;l<lc;++l)
-				fprintf(fp,"%8d ",suppliedNSubs[i]);  
+				if (useLocus[l])
+					fprintf(fp,"%8d ",suppliedNSubs[i]);
 			// assume that if AF available nSubs is unknown
 			// change this later to use nSubs if available
 			fprintf(fp,"\n");
@@ -835,6 +859,7 @@ int masterLocusFile::writeScoreAssocFiles(masterLocusFile &subFile,char *root, f
 		sprintf(fn,"%s.comm.par",root);
 		fp=fopen(fn,"w");
 		recPos=findFirstInRange(spec);
+		ll = 0;
 	if (recPos!=0L)
 		while (1)
 		{
@@ -846,6 +871,8 @@ int masterLocusFile::writeScoreAssocFiles(masterLocusFile &subFile,char *root, f
 			load(tempRecord,recPos);
 			for (all = 0; all < (spec.mergeAltAlleles ? 1 : tempRecord.nAlls - 1); ++all)
 			{
+				if (useLocus[ll++] == 0)
+					continue;
 				if (spec.mergeAltAlleles || tempRecord.nAlls == 2)
 					sprintf(posStr, "%d:%ld", tempRecord.chr, tempRecord.pos);
 				else
@@ -1150,7 +1177,7 @@ if (recPos!=0L)
 		}
 	}
 }
-return locusCount;
+return splitLocusCount;
 }
 
 int masterLocusFile::gotoFirstInRange(analysisSpecs &spec)
@@ -1219,14 +1246,13 @@ int masterLocusFile::outputProbs(probTriple **prob, analysisSpecs &spec)
 	int locusCount, subCount;
 	FILEPOSITION recPos;
 	const char *testKey;
-	int c, i, altIsCommon;
+	int c, i, altIsCommon,ll;
 	locusCount = 0;
 // hereOK();
 	if (gotoFirstInRange(spec))
 	do
 	{
-// hereOK();
-		outputCurrentProbs(prob[locusCount++], spec);
+		outputCurrentProbs(prob[locusCount++], spec); 
 	} while (gotoNextInRange(spec));
 // hereOK();
 	return locusCount;

@@ -326,7 +326,7 @@ public:
 	int getQuickConsequences(refseqGeneInfo &r,analysisSpecs const &spec,int redo=0);
 	int writeScoreAssocFiles(char *root,float wf,int *useFreqs,int *suppliedNSubs,int writeNames,int writeComments,int writeScorefile,analysisSpecs &spec);
 	int writeScoreAssocFiles(masterLocusFile& subFile, char* root, float wf, int* useFreqs, int* suppliedNSubs, int writeNames, int writeComments, int writeScorefile, analysisSpecs& spec);
-	int writeFlatFile(masterLocusFile& subFile, char *fn, int nSubs, strEntry* subName, analysisSpecs& spec);
+	int writeFlatFile(masterLocusFile& subFile, char *fn, int nSubs, strEntry* subName, analysisSpecs& spec,int *useLocus);
 	//	int writeVars(char *fn,int *useFreqs,analysisSpecs &spec);
 	int writeGenos(char *fn,int *useFreqs,analysisSpecs &spec);
 	int writeGenoCounts(FILE *fo[2],char *geneName,long *varNum,analysisSpecs &spec,allelePair **a);
