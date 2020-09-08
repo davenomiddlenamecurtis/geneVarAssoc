@@ -619,8 +619,8 @@ int masterLocusFile::writeFlatFile(masterLocusFile& subFile, char* fn, int total
 						}
 						subPos[s] = ftell(fp);
 				}
+			ll += (spec.useProbs||spec.mergeAltAlleles) ? 1 : (nAlls[l] - 1);
 			++l;
-			ll += spec.mergeAltAlleles ? 1 : (nAlls[l]-1);
 		} while (gotoNextInRange(spec));
 	fclose(fp);
 	if (spec.useProbs)
