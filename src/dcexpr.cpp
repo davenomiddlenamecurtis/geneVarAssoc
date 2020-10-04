@@ -329,11 +329,11 @@ dcexpr_val *equ_op(dcvnode *b1,dcvnode *b2)
 { 
 dcexpr_val *r1,*r2;
 EVAL_BOTH;
-double rv;
+double rv,rv1,rv2;
 if (r1->is_string_really() && r2->is_string_really())
   rv=!strcmp((char*)(*r1),(char*)(*r2));
 else
-  rv=double(*r1) == double(*r2);
+  rv=(rv1=double(*r1)) == (rv2=double(*r2));
 delete r1; delete r2;
 return new dcexpr_double(rv);
 }
