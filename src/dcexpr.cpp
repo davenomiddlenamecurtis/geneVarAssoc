@@ -667,7 +667,9 @@ const char *express::get_next(const char *s)
  }
  else if (len=0,(i=sscanf(s,"%lf%n",&dummy,&len))>=1)
    {
-   sprintf(dc_expr_buff,"%g",dummy);
+     strncpy(dc_expr_buff,s,len);
+     dc_expr_buff[len] = '\0';
+   // sprintf(dc_expr_buff,"%g",dummy);
    strcpy(token,dc_expr_buff);
 #if 0   
    return s+(i==2?len-1:strlen(s));  // i is 1 at end of string
