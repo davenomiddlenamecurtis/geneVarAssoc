@@ -471,7 +471,7 @@ bool geneVarParser::parserIsInited=0;
 masterLocus *geneVarParser::thisLocus;
 int geneVarParser::thisAltAllele;
 int geneVarParser::mergeAltAlleles;
-refseqGeneInfo *geneVarParser::thisGene;
+refseqGeneInfo *geneVarParser::thisGene=0; // because not used by intVarAssoc
 double geneVarParser::thisWeight;
 std::map<std::string,std::string> geneVarParser::queryCache;
 extern int initGeneVarParser();
@@ -489,10 +489,17 @@ dcexpr_val *geneVarParser::eval()
 {
 	dcexpr_val *rv;
 	if (express::debugFile)
-		fprintf(express::debugFile,"Evaluating expression using gene %s and variant at %d:%ld:\n",
-			geneVarParser::thisGene->getGene(),
-			geneVarParser::thisLocus->getChr(),geneVarParser::thisLocus->getPos());
-	rv=express::eval();
+	{
+		if (geneVarParser::thisGene)
+			fprintf(express::debugFile, "Evaluating expression using gene %s and variant at %d:%ld:\n",
+				geneVarParser::thisGene->getGene(),
+				geneVarParser::thisLocus->getChr(), geneVarParser::thisLocus->getPos());
+		else
+			fprintf(express::debugFile, "Evaluating expression using variant at %d:%ld:\n",
+				geneVarParser::thisLocus->getChr(), geneVarParser::thisLocus->getPos());
+	}
+
+	rv = express::eval();
 	if (express::debugFile)
 		fprintf(express::debugFile,"Final result of expression evaluation: %s\n",(char*)(*rv));
 	return rv;
