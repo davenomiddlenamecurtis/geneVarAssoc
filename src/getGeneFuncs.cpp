@@ -751,7 +751,7 @@ int refseqGeneInfo::tbiExtractGene(char* tbiFilename, char* outFn, int appendToO
 int refseqGeneInfo::plinkExtractGene(char* bedFilename, char* famFilename, char* bimFilename, char *outFn,int omitIntrons, int spliceRegionSize)
 {
 	int i,startPos,endPos,foundOne,systemStatus;
-	char buff[1000],*bedFn,*ptr,bedFnBuff[1000];
+	char buff[1000], * bedFn, * ptr, bedFnBuff[1000], * bimFn, bimFnBuff[1000];
 	long lineStart;
 	FILE* rf;
 	rf = fopen("range.temp.txt", "w");
@@ -772,6 +772,19 @@ int refseqGeneInfo::plinkExtractGene(char* bedFilename, char* famFilename, char*
 		strcat(bedFnBuff,ptr+1);
 		bedFn=bedFnBuff;
 	}
+	if ((ptr = strchr(bimFilename, '*')) == 0)
+		bimFn = bimFilename;
+	else
+	{
+		strcpy(bimFnBuff, bimFilename);
+		ptr = strchr(bimFnBuff, '*');
+		*ptr = '\0';
+		strcat(bimFnBuff, chr + 3); // because first three chars of chr are "chr"
+		ptr = strchr(bimFilename, '*');
+		strcat(bimFnBuff, ptr + 1);
+		bimFn = bimFnBuff;
+	}
+
 
 	// code to extract according to baits
 	if (baitsFileName[0]!='\0')
@@ -827,7 +840,7 @@ int refseqGeneInfo::plinkExtractGene(char* bedFilename, char* famFilename, char*
 	if ((ptr = strstr(buff, ".vcf")) != 0)
 		*ptr = '\0'; // because plink appends .vcf to outfile name
 	sprintf(geneLine, "plink --bed %s --fam %s --bim %s --extract range range.temp.txt --recode vcf-iid --out %s",
-		bedFilename, famFilename, bimFilename, buff);
+		bedFn, famFilename, bimFn, buff);
 	printf("Running command: %s\n", geneLine);
 	systemStatus = system(geneLine);
 	return 1;
@@ -944,4 +957,56 @@ int geneExtractor::extractVariants(refseqGeneInfo &g,char *outFn,int appendToOld
 		return g.tbiExtractGene(variantFileName,outFn,appendToOld,addChrInVCF,removeSpaces, omitIntrons, spliceRegionSize);
 }
 
+int refseqGeneInfo::getGeneIntervals(intervalList& iList, int omitIntrons, int spliceRegionSize)
+{
+	int i, startPos, endPos, foundOne;
+	char buff[1000];
+	long lineStart;
+	if (baitsFileName[0] != '\0')
+	{
+		if (baitsFile == 0)
+		{
+			if ((baitsFile = fopen(baitsFileName, "rb")) == 0)
+			{
+				dcerror(7, "Could not open baits file: %s", baitsFileName);
+				return 0;
+			}
+		}
+		// We will start slow and stupid
+		fseek(baitsFile, 0L, SEEK_SET);
+		do
+		{
+			lineStart = ftell(baitsFile);
+			if (!fgets(buff, 999, baitsFile))
+				return 0; // no bait found for this transcript
+		} while (strncmp(buff, chr + 3, strlen(chr + 3)) || (sscanf(buff, "%*s %*d %d", &endPos), endPos - baitMargin < firstExonStart));
+
+		fseek(baitsFile, lineStart, SEEK_SET);
+		foundOne = 0; // what can happen is small transcript in refseq file may be missed completely
+		while (fgets(buff, 999, baitsFile) && !strncmp(buff, chr + 3, strlen(chr + 3)) && (sscanf(buff, "%*s %d %d", &startPos, &endPos), startPos - baitMargin <= lastExonEnd))
+		{
+			foundOne = 1;
+			iList.append(chr + 3, startPos - baitMargin, endPos + baitMargin);
+		}
+		if (foundOne == 0)
+		{
+			printf("Did not find any baits for %s\n", geneName);
+			return 0;
+		}
+	}
+	else if (omitIntrons)
+	{
+		if (!gotAllExons)
+			getAllExons();
+		for (i = 0; i < allExonCount; ++i)
+			iList.append(chr + 3, exonStarts[i] - spliceRegionSize, exonEnds[i] + spliceRegionSize);
+	}
+	else
+	{
+		iList.append(chr + 3,
+			firstExonStart - ((strand == '+') ? upstream : downstream),
+			lastExonEnd + ((strand == '-') ? upstream : downstream));
+	}
+	return 1;
+}
 

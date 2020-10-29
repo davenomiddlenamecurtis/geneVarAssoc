@@ -29,9 +29,15 @@ along with geneVarAssoc.If not, see <http://www.gnu.org/licenses/>.
 int __cdecl intervalCompare(const void *ii1,const void *ii2)
 {
 	interval *i1,*i2;
+	int c1, c2;
 	i1=(interval*)ii1;
 	i2=(interval*)ii2;
-	return(i1->st>i2->st?1:i1->st<i2->st?-1:0);
+	if ((i1->chr[0] == 'X') != (i2->chr[0] == 'X'))
+		return((i1->chr[0] == 'X') ? 1 : -1);
+	else if ((c1 = atoi(i1->chr)) != (c2 = atoi(i2->chr)))
+		return(c1>c2?1:c1<c2?-1:0);
+	else
+		return(i1->st>i2->st?1:i1->st<i2->st?-1:0);
 }
 
 
@@ -69,7 +75,7 @@ void intervalList::merge()
 	int i,j;
 	for (i=0;i<nInts-1;)
 	{
-		if (ints[i].en>=ints[i+1].st)
+		if (!strcmp(ints[i].chr, ints[i+1].chr) && ints[i].en>=ints[i+1].st)
 		{
 			if (ints[i+1].en>ints[i].en)
 				ints[i].en=ints[i+1].en;
@@ -82,12 +88,22 @@ void intervalList::merge()
 	}
 }
 
-void intervalList::append(int s,int e)
+void intervalList::append(int s, int e)
 {
-	if (nInts>maxInts-1)
-		resize(maxInts+10);
-	ints[nInts].st=s;
-	ints[nInts].en=e;
+	if (nInts > maxInts - 1)
+		resize(maxInts + 10);
+	ints[nInts].st = s;
+	ints[nInts].en = e;
+	++nInts;
+}
+
+void intervalList::append(char *c,int s, int e)
+{
+	if (nInts > maxInts - 1)
+		resize(maxInts + 10);
+	strcpy(ints[nInts].chr, c);
+	ints[nInts].st = s;
+	ints[nInts].en = e;
 	++nInts;
 }
 
@@ -101,6 +117,9 @@ void intervalList::append(intervalList &iL)
 }
 
 int intervalList::getAllMatches(char *seq,char *toMatch,int start)
+// used by refseqTranscript::get3PrimeMatches() which is not used
+// looks like it is to search a 3prime sequence for particular sequence matches
+// NB it does not set chr
 {
 	char *ptr;
 	int foundAny,s,e;

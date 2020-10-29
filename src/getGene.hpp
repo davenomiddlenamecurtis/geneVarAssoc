@@ -88,7 +88,6 @@ friend class ggParams;
 	FILE *baitsFile;
 	int baitMargin; // correction to add to listings in baits file to get actual bait coordinates
 	char geneName[100];
-	static char geneLine[GENELINELENGTH];
 	char chr[10];
 	int gotAllExons,allExonCount;
 	int exonStarts[MAXEXONPERGENE],exonEnds[MAXEXONPERGENE];
@@ -101,6 +100,7 @@ friend class ggParams;
 	refseqTranscript transcript[MAXTRANSCRIPTPERGENE];
 	void getAllExons();
 public:
+	static char geneLine[GENELINELENGTH];
 	void setReferencePath(char *s);
 	int getChrNum() { return chr[3]=='Y'?24:chr[3]=='X'?23:atoi(chr+3); } // chr21
 	char *getChr() { return chr; }
@@ -126,6 +126,7 @@ public:
 	void setBaitsFile(char *fn) { strcpy(baitsFileName,fn); }
 	int tbiExtractGene(char* tbiFn, char* outFn, int appendToOld, int addChrInVCF, int removeSpaces, int omitIntrons, int spliceRegionSize);
 	int plinkExtractGene(char* bedFilename, char* famFilename, char* bimFilename, char* outFn, int omitIntrons, int spliceRegionSize);
+	int getGeneIntervals(intervalList& iList, int omitIntrons, int spliceRegionSize);
 	consequenceType getEffect(int pos,char *all0,char *all1,int promoterLength=PROMOTERLENGTH,int downstreamLength=DOWNSTREAMLENGTH,int getKozak=0);
 	const char *tellEffect();
 	consequenceType tellWorstConsequence() { return worstConsequence; }

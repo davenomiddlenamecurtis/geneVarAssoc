@@ -40,6 +40,9 @@ public:
 	int firstGeneNum,lastGeneNum;
 };
 
+int tbiExtractIntervals(char* tbiFilename, char* outFn, int appendToOld, int addChrInVCF, int removeSpaces, intervalList& iList);
+int plinkExtractIntervals(char* bedFilename, char* famFilename, char* bimFilename, char* outFn, intervalList& iList, char* geneName);
+
 #define MISSINGPHENOTYPE -999 // value used internally to indicate subject without a defined phenotype
 #ifndef hereOK
 #define hereOK() fprintf(stderr,"Got to line %d in %s OK\n",__LINE__,__FILE__)

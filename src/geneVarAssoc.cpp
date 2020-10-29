@@ -30,7 +30,9 @@ along with geneVarAssoc.If not, see <http://www.gnu.org/licenses/>.
 #define PROGRAM "geneVarAassoc"
 #define GVAVERSION "7.0"
 
-refseqGeneInfo r; // moved off stack
+refseqGeneInfo r; // moved all of these off stack
+analysisSpecs spec;
+gvaParams gp;
 
 int main(int argc,char *argv[])
 {
@@ -38,9 +40,8 @@ int main(int argc,char *argv[])
 	char fn[100],fn2[100],line[1000],geneName[100];
 	int i,extractedOK;
 	FILE *fp;
-	gvaParams gp;
-	analysisSpecs spec;
 	weightTable *wt;
+	intervalList iList;
 
 	printf("%s %s\nRunning ",PROGRAM,GVAVERSION);
 	for (i=0;i<argc;++i)
@@ -75,6 +76,15 @@ int main(int argc,char *argv[])
 		dcerror(1,"Could not find gene: %s\n",geneName);
 		return 1;
 	}
+	if (!gp.dontExtractVariants)
+	{
+		r.getGeneIntervals(iList, spec.omitIntrons, spec.spliceRegionSize);
+		if (iList.nInts == 0)
+		{
+			dcerror(1, "Could not find any valid intervals for gene: %s\n", geneName);
+			return 1;
+		}
+	}
 	sprintf(fn,"gva.%s.db",geneName);
 	sprintf(fn2,"gva.%s.vdx",geneName);
 	unlink(fn);
@@ -103,12 +113,14 @@ int main(int argc,char *argv[])
 			{
 				if (gp.bedFileFn[0] == '\0') 
 				{
-					if (!r.tbiExtractGene(gp.ccFn[0][i], fn, 0, spec.addChrInVCF[ff++], spec.removeVcfSpaces, spec.omitIntrons, spec.spliceRegionSize))
+//					if (!r.tbiExtractGene(gp.ccFn[0][i], fn, 0, spec.addChrInVCF[ff++], spec.removeVcfSpaces, spec.omitIntrons, spec.spliceRegionSize))
+					if (!tbiExtractIntervals(gp.ccFn[0][i], fn, 0, spec.addChrInVCF[ff++], spec.removeVcfSpaces,iList))
 						extractedOK = 0;
 				}
 				else 
 				{
-					if (!r.plinkExtractGene(gp.bedFileFn,gp.famFileFn,gp.bimFileFn, fn, spec.omitIntrons, spec.spliceRegionSize))
+//					if (!r.plinkExtractGene(gp.bedFileFn,gp.famFileFn,gp.bimFileFn, fn, spec.omitIntrons, spec.spliceRegionSize))
+					if (!plinkExtractIntervals(gp.bedFileFn, gp.famFileFn, gp.bimFileFn, fn, iList,geneName))
 						extractedOK = 0;
 
 				}
@@ -125,8 +137,11 @@ int main(int argc,char *argv[])
 				printf("Will not attempt to produce %s because --dont-extract-variants was set\n",fn);
 			else // if (!gcase.extractVariants(r,fn,0,spec.addChrInVCF[ff++], spec.removeVcfSpaces,spec.omitIntrons,spec.spliceRegionSize))
 				// extractedOK=0;
-			if (!r.tbiExtractGene(gp.ccFn[1][i], fn, 0, spec.addChrInVCF[ff++], spec.removeVcfSpaces, spec.omitIntrons, spec.spliceRegionSize))
-				extractedOK = 0;
+//			if (!r.tbiExtractGene(gp.ccFn[1][i], fn, 0, spec.addChrInVCF[ff++], spec.removeVcfSpaces, spec.omitIntrons, spec.spliceRegionSize))
+			{
+				if (!tbiExtractIntervals(gp.ccFn[1][i], fn, 0, spec.addChrInVCF[ff++], spec.removeVcfSpaces, iList))
+					extractedOK = 0;
+			}
 			vf.addLocusFile(fn,VCFFILE);
 			if (!vf.readLocusFileEntries(fn,spec,1))
 				extractedOK=0;

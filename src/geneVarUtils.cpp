@@ -489,3 +489,108 @@ int gvaParams::getNextArg(char *nextArg, int argc,char *argv[], FILE *fp[MAXDEPT
 	else
 		return 0;
 }
+
+int plinkExtractIntervals(char* bedFilename, char* famFilename, char* bimFilename, char* outFn,intervalList& iList, char *geneName)
+{
+	int i, startPos, endPos, foundOne, systemStatus;
+	char buff[1000], * bedFn, * ptr, bedFnBuff[1000], * bimFn, bimFnBuff[1000];
+	long lineStart;
+	FILE* rf;
+	rf = fopen("range.temp.txt", "w");
+	if (rf == 0)
+	{
+		dcerror(5, "Could not open file: range.temp.txt for writing\n");
+		return 0;
+	}
+	if ((ptr = strchr(bedFilename, '*')) == 0)
+		bedFn = bedFilename;
+	else
+	{
+		strcpy(bedFnBuff, bedFilename);
+		ptr = strchr(bedFnBuff, '*');
+		*ptr = '\0';
+		strcat(bedFnBuff, iList.ints[0].chr);
+		ptr = strchr(bedFilename, '*');
+		strcat(bedFnBuff, ptr + 1);
+		bedFn = bedFnBuff;
+	}
+	if ((ptr = strchr(bimFilename, '*')) == 0)
+		bimFn = bimFilename;
+	else
+	{
+		strcpy(bimFnBuff, bimFilename);
+		ptr = strchr(bimFnBuff, '*');
+		*ptr = '\0';
+		strcat(bimFnBuff, iList.ints[0].chr);
+		ptr = strchr(bimFilename, '*');
+		strcat(bimFnBuff, ptr + 1);
+		bimFn = bimFnBuff;
+	}
+	rf = fopen("range.temp.txt", "w");
+	if (rf == 0)
+	{
+		dcerror(5, "Could not open file: range.temp.txt for writing\n");
+		return 0;
+	}
+	if (geneName == 0)
+		geneName = "NOGENE";
+	for (i=0;i<iList.nInts;++i)
+		fprintf(rf, "%s %d %d %s\n", iList.ints[i].chr, iList.ints[i].st, iList.ints[i].en,geneName);
+	fclose(rf);
+	strcpy(buff, outFn);
+	if ((ptr = strstr(buff, ".vcf")) != 0)
+		*ptr = '\0'; // because plink appends .vcf to outfile name
+	sprintf(refseqGeneInfo::geneLine, "plink --bed %s --fam %s --bim %s --extract range range.temp.txt --recode vcf-iid --out %s",
+		bedFn, famFilename, bimFn, buff);
+	printf("Running command: %s\n", refseqGeneInfo::geneLine);
+	systemStatus = system(refseqGeneInfo::geneLine);
+	return 1;
+}
+
+int tbiExtractIntervals(char* tbiFilename, char* outFn, int appendToOld, int addChrInVCF, int removeSpaces, intervalList& iList)
+{
+	int i, systemStatus;
+	char buff[1000], * tbiFn, * ptr, tbiFnBuff[1000];
+	long lineStart;
+	if ((ptr = strchr(tbiFilename, '*')) == 0)
+		tbiFn = tbiFilename;
+	else
+	{
+		strcpy(tbiFnBuff, tbiFilename);
+		ptr = strchr(tbiFnBuff, '*');
+		*ptr = '\0';
+		strcat(tbiFnBuff, iList.ints[0].chr);
+		ptr = strchr(tbiFilename, '*');
+		strcat(tbiFnBuff, ptr + 1);
+		tbiFn = tbiFnBuff;
+	}
+
+	sprintf(refseqGeneInfo::geneLine, "tabix %s%s ", tbiFn, appendToOld ? "" : " -h");
+	for (i = 0; i < iList.nInts; ++i)
+	{
+		sprintf(strchr(refseqGeneInfo::geneLine, '\0'), "%s%s:%d-%d ",
+			addChrInVCF ? "chr" : "", iList.ints[i].chr, iList.ints[i].st, iList.ints[i].en);
+		if (strlen(refseqGeneInfo::geneLine) > 3900) // line getting long, extract baits so far then go back for more - maximum is 4000?
+			{
+				sprintf(strchr(refseqGeneInfo::geneLine, '\0'), "%s %s %s", removeSpaces ? "| sed s/' '/'_'/g " : "", appendToOld ? ">>" : ">", outFn);
+				printf("Running command: %s\n", refseqGeneInfo::geneLine);
+				checkSystem();
+				systemStatus = system(refseqGeneInfo::geneLine);
+				// printf("system returned %d\n",systemStatus);
+				appendToOld = 1;
+				sprintf(refseqGeneInfo::geneLine, "tabix %s ", tbiFn);
+			}
+		}
+	sprintf(buff, "tabix %s ", tbiFn);
+	if (strlen(refseqGeneInfo::geneLine) > strlen(buff))
+	{
+		sprintf(strchr(refseqGeneInfo::geneLine, '\0'), "%s %s %s", removeSpaces ? "| sed s/' '/'_'/g " : "", appendToOld ? ">>" : ">", outFn);
+		printf("Running command: %s\n", refseqGeneInfo::geneLine);
+		checkSystem();
+		systemStatus = system(refseqGeneInfo::geneLine);
+	}
+		// printf("system returned %d\n",systemStatus);
+	return 1;
+}
+
+
