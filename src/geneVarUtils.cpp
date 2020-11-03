@@ -540,8 +540,9 @@ int plinkExtractIntervals(char* bedFilename, char* famFilename, char* bimFilenam
 	strcpy(buff, outFn);
 	if ((ptr = strstr(buff, ".vcf")) != 0)
 		*ptr = '\0'; // because plink appends .vcf to outfile name
-	sprintf(refseqGeneInfo::geneLine, "plink --bed %s --fam %s --bim %s --extract range range.temp.txt --recode vcf-iid --out %s",
+	sprintf(refseqGeneInfo::geneLine, "plink --bed %s --fam %s --bim %s --extract range range.temp.txt --set-hh-missing --recode vcf-iid --out %s",
 		bedFn, famFilename, bimFn, buff);
+	// added --set-hh-missing because was getting Warning: 40548 het. haploid genotypes present
 	printf("Running command: %s\n", refseqGeneInfo::geneLine);
 	systemStatus = system(refseqGeneInfo::geneLine);
 	return 1;
