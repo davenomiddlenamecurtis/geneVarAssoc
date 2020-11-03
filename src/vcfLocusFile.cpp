@@ -369,32 +369,44 @@ int vcfLocalLocus::outputAlleles(allelePair *all,FILE *f,FILEPOSITION filePos,in
 int vcfLocusFile::readHeaderInfo()
 {
 	char *ptr;
-	int s;
+	int s,ch,sk;
+	long fPos;
 	fseek(fp,0,SEEK_SET);
 	do {
-		if (!fgets(locusFile::buff,BUFFSIZE-1,fp))
+		fPos = ftell(fp); // I hope this will work OK with text file
+		if (!fgets(locusFile::buff, BUFFSIZE - 1, fp))
 		{
-			dcerror(99,"Could not find line beginning #CHROM in VCF file\n");
+			dcerror(99, "Could not find line beginning #CHROM in VCF file");
 			return 0;
 		}
-	} while (strncmp(locusFile::buff,"#CHROM",strlen("#CHROM")));
-	// this will need changing to do properly later
-	for (ptr=locusFile::buff,s=0;s<nFieldsToSkip;++s)
+	} while (strncmp(buff, "#CHROM", strlen("#CHROM")));
+	for (ch = fgetc(fp), sk = 0; sk < nFieldsToSkip; ++sk)
 	{
-		while (!isspace(*ptr))
-			++ptr;
-		while (isspace(*ptr))
-			++ptr;
-		if (*ptr=='\0')
+		while (!isspace(ch))
+			ch = fgetc(fp);
+		while (isspace(ch))
+		{
+			if (ch == '\n')
+				break;
+			ch = fgetc(fp);
+		}
+		if (ch == '\n')
 			break; // end of line with no entries
 	}
 	nSubs=0;
-	for (;*ptr;++nSubs) // count subjects
+	while (ch != '\n')
 	{
-		while (!isspace(*ptr))
-			++ptr;
-		while (isspace(*ptr))
-			++ptr;
+		while (!isspace(ch))
+		{
+			ch = fgetc(fp);
+		}
+		++nSubs;
+		while (isspace(ch))
+		{
+			if (ch == '\n')
+				break;
+			ch = fgetc(fp);
+		}
 	}
 return nSubs;
 }

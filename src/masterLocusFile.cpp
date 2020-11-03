@@ -171,7 +171,7 @@ const char *masterLocus::getID() //access function
 #endif
 }
 
-int masterLocusFile::getTotalSubs()
+int masterLocusFile::getTotalSubs   ()
 {
 	int s,i;
 	for (s=0,i=0;i<nLocusFiles;++i)

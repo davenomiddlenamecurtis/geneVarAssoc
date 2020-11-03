@@ -205,7 +205,7 @@ int vcfLocusFile::outputSubNames(strEntry *subName, analysisSpecs &spec)
 		while (isspace(ch))
 		{
 			if (ch == '\n')
-				break;
+				break; 
 			ch = fgetc(fp);
 		}
 		if (ch=='\n')
