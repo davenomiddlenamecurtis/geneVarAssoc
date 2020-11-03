@@ -184,34 +184,49 @@ return 1;
 int vcfLocusFile::outputSubNames(strEntry *subName, analysisSpecs &spec)
 {
 	int s,sk;
-	char *sPtr,*ptr;
+	char *sPtr,*ptr,ch;
+	long fPos;
 	s=0;
 	fseek(fp,0L,SEEK_SET);
 	do {
+		fPos = ftell(fp); // I hope this will work OK with text file
 		if (!fgets(locusFile::buff,BUFFSIZE-1,fp))
 		{
 			dcerror(99,"Could not find line beginning #CHROM in VCF file");
 			return 0;
 		}
 	} while (strncmp(buff,"#CHROM",strlen("#CHROM")));
-	for (ptr=buff,sk=0;sk<nFieldsToSkip;++sk)
+	fseek(fp, fPos, SEEK_SET);
+
+	for (ch=fgetc(fp),sk=0;sk<nFieldsToSkip;++sk)
 	{
-		while (!isspace(*ptr))
-			++ptr;
-		while (isspace(*ptr))
-			++ptr;
-		if (*ptr=='\0')
+		while (!isspace(ch))
+			ch = fgetc(fp);
+		while (isspace(ch))
+		{
+			if (ch == '\n')
+				break;
+			ch = fgetc(fp);
+		}
+		if (ch=='\n')
 			break; // end of line with no entries
 	}
-	while (*ptr)
+	while (ch!='\n')
 	{
 		sPtr=subName[s];
-		while (!isspace(*ptr))
-			*sPtr++=*ptr++;
+		while (!isspace(ch))
+		{
+			*sPtr++ = ch;
+			ch = fgetc(fp);
+		}
 		*sPtr='\0';
 		++s;
-		while (isspace(*ptr))
-			++ptr;
+		while (isspace(ch))
+		{
+			if (ch == '\n')
+				break;
+			ch = fgetc(fp);
+		}
 	}
 return s;
 }
