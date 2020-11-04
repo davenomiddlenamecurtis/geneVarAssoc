@@ -380,6 +380,7 @@ int vcfLocusFile::readHeaderInfo()
 			return 0;
 		}
 	} while (strncmp(buff, "#CHROM", strlen("#CHROM")));
+	fseek(fp, fpos, SEEK_SET);
 	for (ch = fgetc(fp), sk = 0; sk < nFieldsToSkip; ++sk)
 	{
 		while (!isspace(ch))
