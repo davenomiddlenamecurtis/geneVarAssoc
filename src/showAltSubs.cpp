@@ -6,9 +6,9 @@
 #include <ctype.h>
 #include <string.h>
 
-int masterLocusFile::writeAltSubs(char *fn, analysisSpecs &spec)
+int masterLocusFile::writeAltSubs(char *fn, analysisSpecs &spec,char *posName,char *altAll)
 {
-	int i,totalSub;
+	int i,totalSub,altAllNum,a;
 	FILE *fo;
 	totalSub=0;
 	for (i=0,totalSub=0;i<nLocusFiles;++i)
@@ -20,13 +20,41 @@ int masterLocusFile::writeAltSubs(char *fn, analysisSpecs &spec)
 	openLocusFiles();
 	outputSubNames(subName,spec);
 	if (gotoFirstInRange(spec))
-		outputCurrentAlleles(all,spec);
+	{
+		if (altAll[0] == '\0')
+			outputCurrentAlleles(all, spec);
+		else {
+			altAllNum = -1;
+			do {
+				for (a = 0; a < tempRecord.nAlls; ++a)
+				{
+					if (!strcmp(altAll, tempRecord.alls[a]))
+					{
+						altAllNum = a;
+						outputCurrentAlleles(all, spec);
+						break;
+					}
+				}
+				if (altAllNum != -1)
+					break;
+			} while (gotoNextInRange(spec));
+			if (altAllNum == -1)
+				dcerror(1, "Could not find variant with allele %s at position %s\n", altAll,posName);
+		}
+	}
+	else
+	{
+		dcerror(1, "No valid variants found at position %s\n", posName);
+		free(all);
+		free(subName);
+		return 0;
+	}
 	if (fn==0)
 		fo=stdout;
 	else
 		fo=fopen(fn,"w");
 	for (i=0;i<totalSub;++i)
-		if (all[i][0]!=0 && (all[i][0]!=01|| all[i][1]!=1))
+		if (all[i][0]!=0 && (altAllNum==-1 && (all[i][0]!=1 || all[i][1]!=1) || (all[i][0] == altAllNum || all[i][1] == altAllNum)))
 			fprintf(fo,"%s\t%d %d\n",subName[i],all[i][0],all[i][1]);
 	if (fn!=0)
 		fclose(fo);
@@ -38,16 +66,19 @@ int masterLocusFile::writeAltSubs(char *fn, analysisSpecs &spec)
 int main(int argc,char *argv[])
 {
 	char fn[100],fn2[100],line[1000],posSpec[100],vcfFn[100],vcfFnBuff[100],chrStr[20],*ptr;
-	int i,totalSub,cc;
+	int i,totalSub,cc,p, extractedOK;
 	FILE *fp;
 	gvaParams gp;
 	analysisSpecs spec;
+	intervalList iList;
 	if (!gp.readParms(argc,argv,spec))
 		exit(1);
 	spec.useConsequenceWeights=0; // I am not going to annotate these variants
 	masterLocusFile vf(gp.nCc[0]+gp.nCc[1]);
-	if ((ptr=strchr(gp.posName,':'))==0)
-		dcerror(1,"Usage: showAltSubs --arg-file something.arg --position 7:12139555");
+	if (sscanf(gp.posName, "%[^:]:%d", chrStr, p)!=2)
+		dcerror(1,"Usage: showAltSubs --arg-file something.arg --position 7:12139555 [--allele G]");
+	iList.append(chrStr, p, p);
+
 	*ptr='\0';
 	spec.sc = spec.ec = gp.posName[0] == 'X' ? 23 : atoi(gp.posName);
 	spec.sp = spec.ep = atol(ptr + 1);
@@ -57,25 +88,45 @@ int main(int argc,char *argv[])
 	unlink(fn);
 	unlink(fn2);
 	vf.openFiles(fn,fn2);
+	if (gp.bedFileFn[0])
+	{
+		if (gp.nCc[0] || gp.nCc[1])
+		{
+			dcerror(2, "Should not use --bed-file %s if also using --case-file or --cont-file.\n", gp.bedFileFn);
+			return 1;
+		}
+		strcpy(gp.ccFn[0][gp.nCc[0]++], gp.bedFileFn); // pretend bedFile is a control file for now
+	}
+	extractedOK = 1;
+	int ff = 0; 
 	for (cc=0;cc<2;++cc)
 		for (i=0;i<gp.nCc[cc];++i)
 		{
-			strcpy(vcfFn,gp.ccFn[cc][i]);
-			if (strchr(vcfFn,'*'))
-			{
-				strcpy(vcfFnBuff,vcfFn);
-				*strchr(vcfFnBuff,'*')='\0';
-				strcat(vcfFnBuff,gp.posName);
-				strcat(vcfFnBuff,strchr(vcfFn,'*')+1);
-				strcpy(vcfFn,vcfFnBuff);
-			}
 			sprintf(fn,"gva.altSubs.%s.%d.vcf",cc?"case":"cont",i+1);
-			sprintf(line,"tabix -h %s %s >%s",vcfFn,posSpec,fn);
-			system(line);
+			if (gp.dontExtractVariants)
+				printf("Will not attempt to produce %s because --dont-extract-variants was set\n", fn);
+			else
+			{
+				if (gp.bedFileFn[0] == '\0')
+				{
+					//					if (!r.tbiExtractGene(gp.ccFn[0][i], fn, 0, spec.addChrInVCF[ff++], spec.removeVcfSpaces, spec.omitIntrons, spec.spliceRegionSize))
+					if (!tbiExtractIntervals(gp.ccFn[0][i], fn, 0, spec.addChrInVCF[ff++], spec.removeVcfSpaces, iList))
+						extractedOK = 0;
+				}
+				else
+				{
+					//					if (!r.plinkExtractGene(gp.bedFileFn,gp.famFileFn,gp.bimFileFn, fn, spec.omitIntrons, spec.spliceRegionSize))
+					if (!plinkExtractIntervals(gp.bedFileFn, gp.famFileFn, gp.bimFileFn, fn, iList, "NOGENE"))
+						extractedOK = 0;
+
+				}
+			}
 			vf.addLocusFile(fn,VCFFILE);
-			vf.readLocusFileEntries(fn,spec,1); // this is just an easy way to make sure that files are known about
+			if (!vf.readLocusFileEntries(fn, spec, 1)) // this is just an easy way to make sure that files are known about
+				extractedOK = 0;
 		}
 	// sprintf(fn,"%s_%s.aso",argv[2],ptr+1);
-	vf.writeAltSubs(0,spec);
+	if (extractedOK)
+		vf.writeAltSubs(0,spec, gp.posName, gp.altAll);
 	return 0;
 }

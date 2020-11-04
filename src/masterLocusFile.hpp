@@ -97,6 +97,7 @@ public:
 	analysisSpecs() 
 	{ 
 		useFlatFile = 1;
+		useTransposedFile = 0;
 		unknownIfUntyped=1; // if there are no calls for a variant in the VCF file assume it has not been covered rather than all wildtype
 		unknownIfNoPass=0; altIsCommon=0; 
 		wildIfUnknown=0;
@@ -134,7 +135,7 @@ public:
 int onlycc01,unknownIfUntyped,unknownIfNoPass,altIsCommon,sc,ec,skipIfNoPass,useConsequenceWeights,onlyUseSNPs,nExc,doRecessiveTest,addChrInVCF[MAXVCFFILES],useHaplotypes, showHapLocusNames,count_hom_as_het,useTrios,
 ignoreAlleles,dontMergeAlleles,useProbs,wildIfUnknown,debug,omitIntrons,spliceRegionSize,isQuantitative;
 int useEnsembl,willNeedEnsemblConsequence,willNeedInbuiltConsequence,mergeAltAlleles,numVcfFieldsToSkip,removeVcfSpaces;
-int useFlatFile;
+int useFlatFile,useTransposedFile;
 float *phenotypes;
 TStrFloatMap subPhenos;
 long sp,ep;
@@ -326,11 +327,12 @@ public:
 	int getQuickConsequences(refseqGeneInfo &r,analysisSpecs const &spec,int redo=0);
 	int writeScoreAssocFiles(char *root,float wf,int *useFreqs,int *suppliedNSubs,int writeNames,int writeComments,int writeScorefile,analysisSpecs &spec);
 	int writeScoreAssocFiles(masterLocusFile& subFile, char* root, float wf, int* useFreqs, int* suppliedNSubs, int writeNames, int writeComments, int writeScorefile, analysisSpecs& spec);
-	int writeFlatFile(masterLocusFile& subFile, char *fn, int nSubs, strEntry* subName, analysisSpecs& spec,int *useLocus);
+	int writeFlatFile(masterLocusFile& subFile, char* fn, int nSubs, strEntry* subName, analysisSpecs& spec, int* useLocus);
+	int writeTransposedFile(masterLocusFile& subFile, char* fn, int nSubs, strEntry* subName, analysisSpecs& spec, int* useLocus);
 	//	int writeVars(char *fn,int *useFreqs,analysisSpecs &spec);
 	int writeGenos(char *fn,int *useFreqs,analysisSpecs &spec);
 	int writeGenoCounts(FILE *fo[2],char *geneName,long *varNum,analysisSpecs &spec,allelePair **a);
-	int writeAltSubs(char *fn,analysisSpecs &spec);
+	int writeAltSubs(char *fn,analysisSpecs &spec, char* posName, char* altAll);
 	int gotoFirstInRange(analysisSpecs &spec);
 	int gotoNextInRange(analysisSpecs &spec);
 	int countNumberInRange(analysisSpecs &spec);

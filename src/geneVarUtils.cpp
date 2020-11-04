@@ -38,7 +38,7 @@ int gvaParams::readParms(int argc,char *argv[],analysisSpecs &spec)
 	FILE *phenotypeFile;
 	nPhenotypeFile=nIDsAndPhenotypeFile=nSamplesFile=0;
 	spec.nScoreassocArgs = 0;
-	geneListFn[0]=baitFn[0]=ccFn[2][MAXVCFPERCC][0]=referencePath[0]=geneName[0]=sequencePath[0]=posName[0]=intervalListFn[0]='\0';
+	geneListFn[0]=baitFn[0]=ccFn[2][MAXVCFPERCC][0]=referencePath[0]=geneName[0]=sequencePath[0]=posName[0]=altAll[0]=intervalListFn[0]='\0';
 	bedFileFn[0] = bimFileFn[0] = famFileFn[0] = '\0';
 	// testName can be set by calling function, e.g. default "gva" for geneVarAssoc
 	strcpy(spec.vepCommand,"perl variant_effect_predictor.pl");
@@ -79,7 +79,7 @@ int gvaParams::readParms(int argc,char *argv[],analysisSpecs &spec)
 	spec.depthThreshold=spec.hetDevThreshold=spec.hetDevThresholdSq=spec.ABThreshold=-1;
 	spec.ignoreAlleles=0;
 	spec.dontMergeAlleles = 0;
-	*referencePath=*sequencePath=*posName='\0';
+	*referencePath=*sequencePath=*posName=*altAll='\0';
 	*spec.alleleFreqStr=*spec.alleleNumberStr=*spec.alleleCountStr='\0';
 	spec.nExc=0;
 	dontExtractVariants= onlyExtractVariants=0;
@@ -186,7 +186,9 @@ int gvaParams::readParms(int argc,char *argv[],analysisSpecs &spec)
 			nCc[1]=1;
 		}
 		else if (FILLARG("--position"))
-			strcpy(posName,arg);
+			strcpy(posName, arg);
+		else if (FILLARG("--alt-all"))
+			strcpy(altAll, arg);
 		else if (FILLARG("--num-case"))
 			nSubs[1]=atoi(arg);
 		else if (FILLARG("--cont-file"))
@@ -219,6 +221,10 @@ int gvaParams::readParms(int argc,char *argv[],analysisSpecs &spec)
 			spec.wf=atof(arg);
 		else if (FILLARG("--isquantitative"))
 			spec.isQuantitative = atoi(arg);
+		else if (FILLARG("--use-flat-file"))
+			spec.useFlatFile = atoi(arg);
+		else if (FILLARG("--use-transposed-file"))
+			spec.useTransposedFile = atoi(arg);
 		else if (FILLARG("--use-ensembl"))
 			spec.useEnsembl = atoi(arg);
 		else if (FILLARG("--consequence-threshold"))

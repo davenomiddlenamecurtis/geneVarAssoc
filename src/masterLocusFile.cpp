@@ -550,20 +550,23 @@ int masterLocusFile::writeFlatFile(masterLocusFile& subFile, char* fn, int total
 				if (spec.useProbs)
 				{
 					if (useLocus[ll++])
-						fprintf(fp, "%5.3f %5.3f %5.3f\t", 0, 0, 0);
+						fprintf(fp, "0.000 0.000 0.000\t");
+//						fprintf(fp, "%5.3f %5.3f %5.3f\t", 0, 0, 0);
 				}
 				else
 				{
 					if (spec.mergeAltAlleles)
 					{
 						if (useLocus[ll++])
-							fprintf(fp, "%d %d\t", 0, 0);
+							fprintf(fp, "0 0\t");
+//							fprintf(fp, "%d %d\t", 0, 0);
 					}
 					else
 						for (all = 1; all < nAlls[l]; ++all)
 						{
 							if (useLocus[ll++])
-								fprintf(fp, "%d %d\t", 0, 0);
+								fprintf(fp, "0 0\t");
+//								fprintf(fp, "%d %d\t", 0, 0);
 						}
 				}
 			}
@@ -631,6 +634,104 @@ int masterLocusFile::writeFlatFile(masterLocusFile& subFile, char* fn, int total
 	return lc;
 }
 
+int masterLocusFile::writeTransposedFile(masterLocusFile& subFile, char* fn, int totalSub, strEntry* subName, analysisSpecs& spec, int* useLocus)
+{
+	int lc, s, ss, i, all, l, ll, lll;
+	FILE* fp;
+	allelePair* a;
+	probTriple* p;
+	int *useSub;
+	assert((useSub = (int*)calloc(totalSub, sizeof(int)))!=0);
+	lc = 0;
+	if (gotoFirstInRange(spec))
+		do
+		{
+			nAlls[lc++] = tempRecord.nAlls;
+		} while (gotoNextInRange(spec));
+
+		if (spec.useProbs)
+			assert(p = (probTriple*)calloc(totalSub, sizeof(probTriple)));
+		else
+			assert(a = (allelePair*)calloc(totalSub, sizeof(allelePair)));
+		fp = fopen(fn, "w");
+		for (s = 0, i = 0; i < subFile.nLocusFiles; ++i)
+			for (ss = 0; ss < subFile.nSubs[i]; ++s, ++ss)
+			{
+				if (spec.phenotypes)
+				{
+					if (spec.phenotypes[s] == MISSINGPHENOTYPE)
+						continue;
+				}
+				else
+				{
+					int cc_pheno = spec.phenotypes ? spec.phenotypes[s] : subFile.cc[i];
+					if (cc_pheno != 0 && cc_pheno != 1)
+						continue; // no longer output subjects with unknown phenotype
+				}
+				fprintf(fp, "%s\t", subName[s]);
+				useSub[s] = 1;
+			}
+		fprintf(fp, "\n");
+		for (s = 0, i = 0; i < subFile.nLocusFiles; ++i)
+			for (ss = 0; ss < subFile.nSubs[i]; ++s, ++ss)
+			{
+				if (!useSub[s])
+					continue;
+				if (spec.isQuantitative)
+					fprintf(fp, "%9.5f\t", spec.phenotypes[s]);
+				else
+				{
+					int cc_pheno = spec.phenotypes ? spec.phenotypes[s] : subFile.cc[i];
+					fprintf(fp, "%d\t", cc_pheno);
+				}
+			}
+		fprintf(fp, "\n");
+
+
+		l = 0;
+		ll = 0;
+		if (gotoFirstInRange(spec))
+			do
+			{
+				if (spec.useProbs)
+					outputCurrentProbs(p, spec);
+				else
+					outputCurrentAlleles(a, spec);
+				for (all = 1; all < ((spec.useProbs || spec.mergeAltAlleles) ? 1 : nAlls[l]); ++all)
+				{
+					if (useLocus[ll + all - 1])
+					{
+						for (s = 0, i = 0; i < subFile.nLocusFiles; ++i)
+							for (ss = 0; ss < subFile.nSubs[i]; ++s, ++ss)
+							{
+								if (!useSub[s])
+									continue;
+								if (spec.useProbs)
+									fprintf(fp, "%5.3f %5.3f %5.3f\t", p[s][0], p[s][1], p[s][2]);
+								else if (spec.mergeAltAlleles)
+									fprintf(fp, "%d %d\t",
+										(a[s][0] > 1) ? 2 : a[s][0],
+										(a[s][1] > 1) ? 2 : a[s][1]); // force to be biallelic
+								else
+									fprintf(fp, "%d %d\t",
+										(a[s][0] == all + 1) ? 2 : a[s][0] == 0 ? 0 : 1,
+										(a[s][1] == all + 1) ? 2 : a[s][1] == 0 ? 0 : 1);
+							}
+						fprintf(fp, "\n");
+					}
+				}
+				ll += (spec.useProbs || spec.mergeAltAlleles) ? 1 : (nAlls[l] - 1);
+				++l;
+			} while (gotoNextInRange(spec));
+			fclose(fp);
+			if (spec.useProbs)
+				free(p);
+			else
+				free(a);
+			free(useSub);
+			return lc;
+}
+
 int masterLocusFile::loadNext(analysisSpecs &spec)
 {
 	const char *testKey;
@@ -688,7 +789,7 @@ int masterLocusFile::writeScoreAssocFiles(masterLocusFile &subFile,char *root, f
 	subFile.outputSubNames(subName,spec);
 // hereOK();
 	nValid=countNumberInRange(spec);
-	if (!spec.useFlatFile)
+	if (!spec.useFlatFile && !spec.useTransposedFile)
 	{
 		if (spec.useProbs)
 		{
@@ -727,10 +828,10 @@ int masterLocusFile::writeScoreAssocFiles(masterLocusFile &subFile,char *root, f
 	// useLocus has numSplitLoci entries
 	checkSystem();
 	sprintf(fn, "%s.dat", root);
-	if (spec.useFlatFile)
-	{
+	if (spec.useTransposedFile)
+		lc = writeTransposedFile(subFile, fn, totalSub, subName, spec, useLocus);
+	else if (spec.useFlatFile)
 		lc=writeFlatFile(subFile, fn, totalSub, subName, spec,useLocus);
-	}
 	else
 	{
 		fp = fopen(fn, "w");
@@ -939,6 +1040,8 @@ int masterLocusFile::writeScoreAssocFiles(masterLocusFile &subFile,char *root, f
 	sprintf(strchr(commandString, '\0'), " --weightfactor %f", spec.wf);
 	if (spec.isQuantitative)
 		sprintf(strchr(commandString, '\0'), " --isquantitative 1");
+	if (spec.useTransposedFile)
+		sprintf(strchr(commandString, '\0'), " --transposedata 1");
 	for (l = 0; l < spec.nScoreassocArgs; ++l)
 		sprintf(strchr(commandString, '\0'), " %s %s", spec.scoreassocArgs[l][0], spec.scoreassocArgs[l][1]);
 	checkSystem();

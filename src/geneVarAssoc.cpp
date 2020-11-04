@@ -139,8 +139,19 @@ int main(int argc,char *argv[])
 				// extractedOK=0;
 //			if (!r.tbiExtractGene(gp.ccFn[1][i], fn, 0, spec.addChrInVCF[ff++], spec.removeVcfSpaces, spec.omitIntrons, spec.spliceRegionSize))
 			{
-				if (!tbiExtractIntervals(gp.ccFn[1][i], fn, 0, spec.addChrInVCF[ff++], spec.removeVcfSpaces, iList))
-					extractedOK = 0;
+				if (gp.bedFileFn[0] == '\0')
+				{
+					//					if (!r.tbiExtractGene(gp.ccFn[0][i], fn, 0, spec.addChrInVCF[ff++], spec.removeVcfSpaces, spec.omitIntrons, spec.spliceRegionSize))
+					if (!tbiExtractIntervals(gp.ccFn[0][i], fn, 0, spec.addChrInVCF[ff++], spec.removeVcfSpaces, iList))
+						extractedOK = 0;
+				}
+				else
+				{
+					//					if (!r.plinkExtractGene(gp.bedFileFn,gp.famFileFn,gp.bimFileFn, fn, spec.omitIntrons, spec.spliceRegionSize))
+					if (!plinkExtractIntervals(gp.bedFileFn, gp.famFileFn, gp.bimFileFn, fn, iList, geneName))
+						extractedOK = 0;
+
+				}
 			}
 			vf.addLocusFile(fn,VCFFILE);
 			if (!vf.readLocusFileEntries(fn,spec,1))
