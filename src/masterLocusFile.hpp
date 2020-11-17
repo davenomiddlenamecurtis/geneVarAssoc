@@ -272,7 +272,9 @@ public:
 
 
 typedef locusFile *LOCUSFILEPTR;
+#ifndef MAXLOCIINSCOREASSOCFILE 
 #define MAXLOCIINSCOREASSOCFILE 25000
+#endif
 
 class masterLocusFile  {
 	dcIndex index;
