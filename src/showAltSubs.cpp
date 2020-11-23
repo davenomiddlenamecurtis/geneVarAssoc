@@ -54,7 +54,7 @@ int masterLocusFile::writeAltSubs(char *fn, analysisSpecs &spec,char *posName,ch
 	else
 		fo=fopen(fn,"w");
 	for (i=0;i<totalSub;++i)
-		if (all[i][0]!=0 && (altAllNum==-1 && (all[i][0]!=1 || all[i][1]!=1) || (all[i][0] == altAllNum || all[i][1] == altAllNum)))
+		if (all[i][0]!=0 && (altAllNum==-1 && (all[i][0]!=1 || all[i][1]!=1) || (all[i][0] == altAllNum+1 || all[i][1] == altAllNum+1))) // all[i][0] is 1 for REF allele
 			fprintf(fo,"%s\t%d %d\n",subName[i],all[i][0],all[i][1]);
 	if (fn!=0)
 		fclose(fo);
