@@ -1178,6 +1178,12 @@ if (recPos!=0L)
 			break;
 		for (all = 1; all < (spec.mergeAltAlleles?2:tempRecord.nAlls); ++all)
 		{
+			if (splitLocusCount >= MAXLOCIINSCOREASSOCFILE)
+			{
+				dcerror.kill();
+				dcerror(1, "Number of variants exceeds MAXLOCIINSCOREASSOCFILE (%d) in masterLocusFile::outputSAInfo()\nNeed to increase MAXLOCIINSCOREASSOCFILE and recompile\n", MAXLOCIINSCOREASSOCFILE);
+				return 0;
+			}
 			locusWeight[splitLocusCount] = 1.0; // default if nothing else changes it
 			useLocus[splitLocusCount] = 1;
 			load(tempRecord, recPos);

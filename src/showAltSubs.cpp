@@ -19,12 +19,12 @@ int masterLocusFile::writeAltSubs(char *fn, analysisSpecs &spec,char *posName,ch
 	subName=(strEntry *)calloc(totalSub,sizeof(strEntry));
 	openLocusFiles();
 	outputSubNames(subName,spec);
+	altAllNum = -1;
 	if (gotoFirstInRange(spec))
 	{
 		if (altAll[0] == '\0')
-			outputCurrentAlleles(all, spec);
+			outputCurrentAlleles(all, spec); // just use the first variant at this position
 		else {
-			altAllNum = -1;
 			do {
 				for (a = 0; a < tempRecord.nAlls; ++a)
 				{
