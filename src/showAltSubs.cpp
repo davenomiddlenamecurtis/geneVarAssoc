@@ -80,7 +80,7 @@ int main(int argc,char *argv[])
 	iList.append(chrStr, p, p);
 
 	spec.sc = spec.ec = gp.posName[0] == 'X' ? 23 : atoi(gp.posName);
-	spec.sp = spec.ep = atol(ptr + 1);
+	spec.sp = spec.ep = p;
 	sprintf(fn,"gva.altSubs.db");
 	sprintf(fn2,"gva.altSubs.vdx");
 	unlink(fn);
