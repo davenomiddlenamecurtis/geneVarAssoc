@@ -1661,7 +1661,7 @@ int masterLocusFile::addLocusFile(char *fn, locusFileType t)
 	}
 	if (i==nLocusFiles)
 	{
-		dcerror(99,"Cannot add %s to master locus file because it already contains nLocusFiles=%d",fn,nLocusFiles);
+		dcerror(99,"Cannot add %s to master locus file because it already contains %d locusFiles, which is equal to nLocusFiles",fn,nLocusFiles);
 		return 0;
 	}
 }

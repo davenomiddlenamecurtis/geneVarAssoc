@@ -74,7 +74,7 @@ int main(int argc,char *argv[])
 	if (!gp.readParms(argc,argv,spec))
 		exit(1);
 	spec.useConsequenceWeights=0; // I am not going to annotate these variants
-	masterLocusFile vf(gp.nCc[0]+gp.nCc[1]);
+	masterLocusFile vf(gp.bedFileFn[0] ? 1 : gp.nCc[0]+gp.nCc[1]);
 	if (sscanf(gp.posName, "%[^:]:%d", chrStr, &p)!=2)
 		dcerror(1,"Usage: showAltSubs --arg-file something.arg --position 7:12139555 [--allele G]");
 	iList.append(chrStr, p, p);
