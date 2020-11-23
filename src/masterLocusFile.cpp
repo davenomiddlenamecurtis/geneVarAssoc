@@ -972,12 +972,17 @@ int masterLocusFile::writeScoreAssocFiles(masterLocusFile &subFile,char *root, f
 			load(tempRecord,recPos);
 			for (all = 0; all < (spec.mergeAltAlleles ? 1 : tempRecord.nAlls - 1); ++all)
 			{
+				int aa;
 				if (useLocus[ll++] == 0)
 					continue;
 				if (spec.mergeAltAlleles || tempRecord.nAlls == 2)
-					sprintf(posStr, "%d:%ld", tempRecord.chr, tempRecord.pos);
+				{
+					sprintf(posStr, "%d:%ld-%s", tempRecord.chr, tempRecord.pos,tempRecord.alls[0]);
+					for (aa = 1; aa < tempRecord.nAlls; ++aa)
+						sprintf(strchr(posStr, '\0'), ",%s", tempRecord.alls[aa]);
+				}
 				else
-					sprintf(posStr, "%d:%ld.%d", tempRecord.chr, tempRecord.pos,all+1);
+					sprintf(posStr, "%d:%ld.%d-%s,%s", tempRecord.chr, tempRecord.pos,all+1, tempRecord.alls[0], tempRecord.alls[all+1]);
 				if (spec.commentExpression[0])
 				{
 					geneVarParser::thisLocus = &tempRecord;
