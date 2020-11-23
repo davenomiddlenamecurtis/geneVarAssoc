@@ -79,7 +79,6 @@ int main(int argc,char *argv[])
 		dcerror(1,"Usage: showAltSubs --arg-file something.arg --position 7:12139555 [--allele G]");
 	iList.append(chrStr, p, p);
 
-	*ptr='\0';
 	spec.sc = spec.ec = gp.posName[0] == 'X' ? 23 : atoi(gp.posName);
 	spec.sp = spec.ep = atol(ptr + 1);
 	sprintf(fn,"gva.altSubs.db");
