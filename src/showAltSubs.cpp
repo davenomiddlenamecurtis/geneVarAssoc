@@ -65,7 +65,7 @@ int masterLocusFile::writeAltSubs(char *fn, analysisSpecs &spec,char *posName,ch
 
 int main(int argc,char *argv[])
 {
-	char fn[100],fn2[100],line[1000],posSpec[100],vcfFn[100],vcfFnBuff[100],chrStr[20],*ptr;
+	char fn[100],fn2[100],line[1000],vcfFn[100],vcfFnBuff[100],chrStr[20],*ptr;
 	int i,totalSub,cc,p, extractedOK;
 	FILE *fp;
 	gvaParams gp;
@@ -75,14 +75,13 @@ int main(int argc,char *argv[])
 		exit(1);
 	spec.useConsequenceWeights=0; // I am not going to annotate these variants
 	masterLocusFile vf(gp.nCc[0]+gp.nCc[1]);
-	if (sscanf(gp.posName, "%[^:]:%d", chrStr, p)!=2)
+	if (sscanf(gp.posName, "%[^:]:%d", chrStr, &p)!=2)
 		dcerror(1,"Usage: showAltSubs --arg-file something.arg --position 7:12139555 [--allele G]");
 	iList.append(chrStr, p, p);
 
 	*ptr='\0';
 	spec.sc = spec.ec = gp.posName[0] == 'X' ? 23 : atoi(gp.posName);
 	spec.sp = spec.ep = atol(ptr + 1);
-	sprintf(posSpec,"%s%s:%s-%s",spec.addChrInVCF[0]?"chr":"",gp.posName,ptr+1,ptr+1);
 	sprintf(fn,"gva.altSubs.db");
 	sprintf(fn2,"gva.altSubs.vdx");
 	unlink(fn);
