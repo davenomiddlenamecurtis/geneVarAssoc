@@ -97,7 +97,7 @@ public:
 	analysisSpecs() 
 	{ 
 		useFlatFile = 1;
-		useTransposedFile = 0;
+		useTransposedFile = 1;
 		unknownIfUntyped=1; // if there are no calls for a variant in the VCF file assume it has not been covered rather than all wildtype
 		unknownIfNoPass=0; altIsCommon=0; 
 		wildIfUnknown=0;
