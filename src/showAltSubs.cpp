@@ -124,7 +124,11 @@ int main(int argc,char *argv[])
 				extractedOK = 0;
 		}
 	// sprintf(fn,"%s_%s.aso",argv[2],ptr+1);
+	if (gp.testName[0])
+		sprintf(fn, "%s.txt", gp.testName);
+	else
+		sprintf(fn, "sAS.%s.txt", gp.posName);
 	if (extractedOK)
-		vf.writeAltSubs(0,spec, gp.posName, gp.altAll);
+		vf.writeAltSubs(fn,spec, gp.posName, gp.altAll);
 	return 0;
 }
