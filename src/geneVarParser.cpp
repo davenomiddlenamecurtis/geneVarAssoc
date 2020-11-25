@@ -96,7 +96,8 @@ dcexpr_val *performTabixQuery(const char *fn,int addChr,int lower,char *lookupSt
 		ptr=strchr(lineBuff,'*');
 		strcat(fnBuff,lineBuff);
 	}
-	sprintf(queryBuff,"%s:%ld-%s/%s",chrStr,geneVarParser::thisLocus->getPos(), geneVarParser::thisLocus->getAll(0), geneVarParser::thisLocus->getAll(1));
+	sprintf(queryBuff,"%s:%ld-%s/%s",chrStr,geneVarParser::thisLocus->getPos(), geneVarParser::thisLocus->getAll(0), 
+		geneVarParser::thisLocus->getAll(geneVarParser::multilineVEP ? geneVarParser::thisAltAllele : 1));
 	std::map<std::string,std::string>::const_iterator queryIter=geneVarParser::queryCache.find(queryBuff);
 	if (queryIter==geneVarParser::queryCache.end())
 	{
