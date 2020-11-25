@@ -763,6 +763,7 @@ int masterLocusFile::writeScoreAssocFiles(masterLocusFile &subFile,char *root, f
 	const char *testKey;
 	geneVarParser commentParser;
 	geneVarParser::mergeAltAlleles = spec.mergeAltAlleles; // need to make sure this gets set
+	geneVarParser::multilineVEP = spec.multilineVEP; // need to make sure this gets set
 	strEntry *subName;
 	if (spec.commentExpression[0])
 		commentParser.parse(spec.commentExpression); // only have to parse once

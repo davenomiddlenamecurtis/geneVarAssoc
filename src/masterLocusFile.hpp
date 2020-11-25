@@ -98,6 +98,7 @@ public:
 	{ 
 		useFlatFile = 1;
 		useTransposedFile = 0;
+		multilineVEP = 1; // separate VEP lines for different alt alleles, as in UKBB
 		unknownIfUntyped=1; // if there are no calls for a variant in the VCF file assume it has not been covered rather than all wildtype
 		unknownIfNoPass=0; altIsCommon=0; 
 		wildIfUnknown=0;
@@ -135,7 +136,7 @@ public:
 int onlycc01,unknownIfUntyped,unknownIfNoPass,altIsCommon,sc,ec,skipIfNoPass,useConsequenceWeights,onlyUseSNPs,nExc,doRecessiveTest,addChrInVCF[MAXVCFFILES],useHaplotypes, showHapLocusNames,count_hom_as_het,useTrios,
 ignoreAlleles,dontMergeAlleles,useProbs,wildIfUnknown,debug,omitIntrons,spliceRegionSize,isQuantitative;
 int useEnsembl,willNeedEnsemblConsequence,willNeedInbuiltConsequence,mergeAltAlleles,numVcfFieldsToSkip,removeVcfSpaces;
-int useFlatFile,useTransposedFile;
+int useFlatFile,useTransposedFile,multilineVEP;
 float *phenotypes;
 TStrFloatMap subPhenos;
 long sp,ep;

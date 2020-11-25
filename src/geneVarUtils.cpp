@@ -225,6 +225,8 @@ int gvaParams::readParms(int argc,char *argv[],analysisSpecs &spec)
 			spec.useFlatFile = atoi(arg);
 		else if (FILLARG("--use-transposed-file"))
 			spec.useTransposedFile = atoi(arg);
+		else if (FILLARG("--multiline-vep"))
+			spec.multilineVEP = atoi(arg);
 		else if (FILLARG("--use-ensembl"))
 			spec.useEnsembl = atoi(arg);
 		else if (FILLARG("--consequence-threshold"))

@@ -79,6 +79,7 @@ char lineBuff[MAXINFOLENGTH+1],tempBuff[MAXINFOLENGTH+1]; // need these to be bi
 dcexpr_val *performTabixQuery(const char *fn,int addChr,int lower,char *lookupStr,int convert23toX)
 {
 	char fnBuff[1000],*ptr,*tptr,queryBuff[1000],chrStr[10],altAll[1000];
+	long pos;
 	int noEntry,c,f,l;
 	dcexpr_val *rv;
 	FILE *fq;
@@ -113,7 +114,9 @@ dcexpr_val *performTabixQuery(const char *fn,int addChr,int lower,char *lookupSt
 		{
 			while (fgets(tempBuff, MAXINFOLENGTH, fq))
 			{
-				if (sscanf(tempBuff, "%*s %*s %*s %*s %[^ \t,]", altAll) == 1 && !strcmp(altAll, geneVarParser::thisLocus->getAll(1)))
+				if (sscanf(tempBuff, "%*s %ld %*s %*s %[^ \t,]", &pos, altAll) == 2
+					&& pos==geneVarParser::thisLocus->getPos() // this test is here because the tabix command pulls out all overlapping indels
+					&& !strcmp(altAll, geneVarParser::thisLocus->getAll(1)))
 				{
 					noEntry = 0;
 					sscanf(tempBuff, "%*s %*s %*s %*s %*s %*s %*s %" MAXINFOLENGTHSTR "s", lineBuff);
@@ -236,6 +239,8 @@ dcexpr_string *getAlleleAnnotation(dcexpr_val *r1)
 	dcexpr_string *rv;
 	altAllStr = geneVarParser::thisLocus->getAll(geneVarParser::thisAltAllele);
 	// allele identifier looks like this CSQ=T| or this ,T| and there can be multiple entries for each allele
+	// this does not work for some indels where the VCF alleles are e.g. CT C but allele is given as -
+	// but we do not need this test if we already have an allele-specific enty, as with multilineVEP
 	lineBuff[0] = '\0';
 	sprintf(tempBuff, "%s|", altAllStr);
 	if (!strncmp(CSQEntry, altAllStr,strlen(altAllStr)))
@@ -276,7 +281,7 @@ dcexpr_val *extract_sift_func(dcvnode *b1)
 	char *ptr;
 	char *annotation;
 	dcexpr_string *alleleSpecificAnnotation = 0;
-	if (geneVarParser::mergeAltAlleles == 1)
+	if (geneVarParser::mergeAltAlleles == 1 || geneVarParser::multilineVEP==1)
 		annotation = (char*)(*r1);
 	else
 	{
@@ -297,7 +302,7 @@ dcexpr_val *extract_polyphen_func(dcvnode *b1)
 	EVAL_R1;
 	char *annotation;
 	dcexpr_string *alleleSpecificAnnotation = 0;
-	if (geneVarParser::mergeAltAlleles == 1)
+	if (geneVarParser::mergeAltAlleles == 1 || geneVarParser::multilineVEP==1)
 		annotation = (char*)(*r1);
 	else
 	{
@@ -318,7 +323,7 @@ dcexpr_val *extract_vep_func(dcvnode *b1)
 	EVAL_R1;
 	char *annotation;
 	dcexpr_string *alleleSpecificAnnotation=0;
-	if (geneVarParser::mergeAltAlleles == 1)
+	if (geneVarParser::mergeAltAlleles == 1 || geneVarParser::multilineVEP==1)
 		annotation = (char*)(*r1);
 	else
 	{
@@ -471,6 +476,7 @@ bool geneVarParser::parserIsInited=0;
 masterLocus *geneVarParser::thisLocus;
 int geneVarParser::thisAltAllele;
 int geneVarParser::mergeAltAlleles;
+int geneVarParser::multilineVEP;
 refseqGeneInfo *geneVarParser::thisGene=0; // because not used by intVarAssoc
 double geneVarParser::thisWeight;
 std::map<std::string,std::string> geneVarParser::queryCache;

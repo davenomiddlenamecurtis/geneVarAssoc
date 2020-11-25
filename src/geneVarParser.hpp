@@ -32,7 +32,7 @@ public:
 	static int thisAltAllele;
 	static double thisWeight;
 	static std::map<std::string,std::string> queryCache;
-	static int mergeAltAlleles;
+	static int mergeAltAlleles,multilineVEP;
 	geneVarParser();
 	~geneVarParser() { ; }
 	int init(masterLocus &m, refseqGeneInfo &r) { thisLocus = &m; thisGene = &r; thisAltAllele = 0; }
