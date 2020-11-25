@@ -30,12 +30,13 @@ along with geneVarAssoc.If not, see <http://www.gnu.org/licenses/>.
 
 int main(int argc,char *argv[])
 {
-	char fn[100],fn2[100],line[1000],intStr[100],chr[10], * tbiFn, * ptr, tbiFnBuff[1000];
-	int i,first,extractedOK;
+	char fn[100],fn2[100],line[1000], chrStr[100], startStr[100], endStr[100], chr[10], * tbiFn, * ptr, tbiFnBuff[1000];
+	int i,first,extractedOK,cc;
 	FILE *fp,*fi;
 	gvaParams gp;
 	analysisSpecs spec;
 	weightTable *wt;
+	intervalList iList;
 
 	printf("%s %s\nRunning ",PROGRAM,IVAVERSION);
 	for (i=0;i<argc;++i)
@@ -54,7 +55,7 @@ int main(int argc,char *argv[])
 	strcpy(gp.testName,"iva");
 	if (!gp.readParms(argc,argv,spec))
 		exit(1);
-	masterLocusFile vf(gp.nCc[0]+gp.nCc[1]);
+	masterLocusFile vf(gp.bedFileFn[0] ? 1 : gp.nCc[0] + gp.nCc[1]);
 
 	if (gp.intervalListFn[0]=='\0')
 	{
@@ -66,64 +67,73 @@ int main(int argc,char *argv[])
 		dcerror(1,"Cannot use inbuilt annotation routines with intVarAssoc\n");
 		exit(1);
 	}
-	fi=fopen(gp.intervalListFn,"r");
+	fi = fopen(gp.intervalListFn, "r");
+	if (!fi)
+	{
+		dcerror(1, "Could not open interval list file %s\n", gp.intervalListFn);
+		exit(1);
+	}
 	sprintf(fn,"gva.%s.db",gp.testName);
 	sprintf(fn2,"gva.%s.vdx",gp.testName);
 	unlink(fn);
 	unlink(fn2);
 	vf.openFiles(fn,fn2);
-	first=1;
-	if (gp.dontExtractVariants)
-		printf("Will not attempt to produce %s because --dont-extract-variants was set\n",fn);
-	else
-		while (fgets(line,999,fi) && sscanf(line,"%s",intStr)==1)
+	extractedOK = 1;
+	int ff = 0;
+	while (fgets(line, 999, fi) && sscanf(line, "%[^:]:%[^-]-%s", chrStr, startStr,endStr) == 3)
+			iList.append(chrStr, atoi(startStr), atoi(endStr));
+	if (gp.bedFileFn[0])
+		{
+			if (gp.nCc[0] || gp.nCc[1])
+			{
+				dcerror(2, "Should not use --bed-file %s if also using --case-file or --cont-file.\n", gp.bedFileFn);
+				return 1;
+			}
+			strcpy(gp.ccFn[0][gp.nCc[0]++], gp.bedFileFn); // pretend bedFile is a control file for now
+		}
+	extractedOK = 1;
+	for (i = 0; i < gp.nCc[0]; ++i)
 	{
-		printf("%s\n",intStr);
-		int ff=0;
-		for (i=0;i<gp.nCc[0];++i)
+		sprintf(fn, "iva.cont.%d.vcf", i + 1);
+		if (gp.dontExtractVariants)
+			printf("Will not attempt to produce %s because --dont-extract-variants was set\n", fn);
+		else
+			//if (!gcont.extractVariants(r,fn,0,spec.addChrInVCF[ff++],spec.removeVcfSpaces,spec.omitIntrons, spec.spliceRegionSize))
+			//extractedOK=0;
 		{
-			if ((ptr = strchr(gp.ccFn[0][i], '*')) == 0)
-				tbiFn = gp.ccFn[0][i];
+			if (gp.bedFileFn[0] == '\0')
+			{
+				//					if (!r.tbiExtractGene(gp.ccFn[0][i], fn, 0, spec.addChrInVCF[ff++], spec.removeVcfSpaces, spec.omitIntrons, spec.spliceRegionSize))
+				if (!tbiExtractIntervals(gp.ccFn[0][i], fn, 0, spec.addChrInVCF[ff++], spec.removeVcfSpaces, iList))
+					extractedOK = 0;
+			}
 			else
 			{
-				sscanf(intStr, "%[^:]", chr);
-				strcpy(tbiFnBuff, gp.ccFn[0][i]);
-				ptr = strchr(tbiFnBuff, '*');
-				*ptr = '\0';
-				strcat(tbiFnBuff,chr);
-				ptr = strchr(gp.ccFn[0][i], '*');
-				strcat(tbiFnBuff, ptr + 1);
-				tbiFn = tbiFnBuff;
-			}
-			sprintf(fn,"%s.cont.%d.vcf",gp.testName,i+1);
-			sprintf(line,"tabix %s %s %s%s %s %s", tbiFn,first==1?"-h":"",spec.addChrInVCF[ff++]?"chr":"",intStr,first?">":">>",fn);
-			checkSystem();
-			printf("Executing command:\n%s\n", line);
-			system(line);
-		}
-		for (i=0;i<gp.nCc[1];++i)
-		{
-			if ((ptr = strchr(gp.ccFn[1][i], '*')) == 0)
-				tbiFn = gp.ccFn[1][i];
-			else
-			{
-				sscanf(intStr, "%[^:]", chr);
-				strcpy(tbiFnBuff, gp.ccFn[1][i]);
-				ptr = strchr(tbiFnBuff, '*');
-				*ptr = '\0';
-				strcat(tbiFnBuff, chr);
-				ptr = strchr(gp.ccFn[1][i], '*');
-				strcat(tbiFnBuff, ptr + 1);
-				tbiFn = tbiFnBuff;
-			}
+				//					if (!r.plinkExtractGene(gp.bedFileFn,gp.famFileFn,gp.bimFileFn, fn, spec.omitIntrons, spec.spliceRegionSize))
+				if (!plinkExtractIntervals(gp.bedFileFn, gp.famFileFn, gp.bimFileFn, fn, iList, "intervals"))
+					extractedOK = 0;
 
-			sprintf(fn,"%s.case.%d.vcf",gp.testName,i+1);
-			sprintf(line,"tabix %s %s %s%s %s %s",tbiFn,first==1?"-h":"",spec.addChrInVCF[ff++]?"chr":"",intStr,first?">":">>",fn);
-			checkSystem();
-			printf("Executing command:\n%s\n", line);
-			system(line);
+			}
 		}
-		first=0;
+		vf.addLocusFile(fn, VCFFILE);
+		if (!vf.readLocusFileEntries(fn, spec, 0))
+			extractedOK = 0;
+	}
+	for (i = 0; i < gp.nCc[1]; ++i)
+	{
+		sprintf(fn, "iva.case.%d.vcf", i + 1);
+		if (gp.dontExtractVariants)
+			printf("Will not attempt to produce %s because --dont-extract-variants was set\n", fn);
+		else // if (!gcase.extractVariants(r,fn,0,spec.addChrInVCF[ff++], spec.removeVcfSpaces,spec.omitIntrons,spec.spliceRegionSize))
+			// extractedOK=0;
+//			if (!r.tbiExtractGene(gp.ccFn[1][i], fn, 0, spec.addChrInVCF[ff++], spec.removeVcfSpaces, spec.omitIntrons, spec.spliceRegionSize))
+		{
+			if (!tbiExtractIntervals(gp.ccFn[1][i], fn, 0, spec.addChrInVCF[ff++], spec.removeVcfSpaces, iList))
+				extractedOK = 0;
+		}
+		vf.addLocusFile(fn, VCFFILE);
+		if (!vf.readLocusFileEntries(fn, spec, 1))
+			extractedOK = 0;
 	}
 	if (gp.onlyExtractVariants)
 	{

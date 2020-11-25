@@ -127,7 +127,7 @@ int main(int argc,char *argv[])
 	if (gp.testName[0])
 		sprintf(fn, "%s.txt", gp.testName);
 	else
-		sprintf(fn, "sAS.%s.txt", gp.posName);
+		sprintf(fn, "altSubs.%s.txt", gp.posName);
 	if (extractedOK)
 		vf.writeAltSubs(fn,spec, gp.posName, gp.altAll);
 	return 0;
