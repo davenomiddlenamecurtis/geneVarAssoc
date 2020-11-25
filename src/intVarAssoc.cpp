@@ -140,18 +140,6 @@ int main(int argc,char *argv[])
 		printf("Exiting because --only-extract-variants was set\n");
 		exit(0);
 	}
-	for (i=0;i<gp.nCc[0];++i)
-		{
-			sprintf(fn,"%s.cont.%d.vcf",gp.testName,i+1);
-			vf.addLocusFile(fn,VCFFILE);
-			vf.readLocusFileEntries(fn,spec,0);
-		}
-	for (i=0;i<gp.nCc[1];++i)
-		{
-			sprintf(fn,"%s.case.%d.vcf",gp.testName,i+1);
-			vf.addLocusFile(fn,VCFFILE);
-			vf.readLocusFileEntries(fn,spec,1);
-		}
 	if (spec.willNeedEnsemblConsequence)
 	{
 		printf("Annotating using VEP...\n");

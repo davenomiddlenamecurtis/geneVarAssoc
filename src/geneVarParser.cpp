@@ -116,7 +116,7 @@ dcexpr_val *performTabixQuery(const char *fn,int addChr,int lower,char *lookupSt
 			{
 				if (sscanf(tempBuff, "%*s %ld %*s %*s %[^ \t,]", &pos, altAll) == 2
 					&& pos==geneVarParser::thisLocus->getPos() // this test is here because the tabix command pulls out all overlapping indels
-					&& !strcmp(altAll, geneVarParser::thisLocus->getAll(1)))
+					&& !strcmp(altAll, geneVarParser::thisLocus->getAll(geneVarParser::multilineVEP?geneVarParser::thisAltAllele:1)))
 				{
 					noEntry = 0;
 					sscanf(tempBuff, "%*s %*s %*s %*s %*s %*s %*s %" MAXINFOLENGTHSTR "s", lineBuff);
