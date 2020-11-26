@@ -990,17 +990,17 @@ int masterLocusFile::writeScoreAssocFiles(masterLocusFile &subFile,char *root, f
 					geneVarParser::thisAltAllele = all + 1;
 					dcexpr_val*rv = commentParser.eval();
 					if (spec.mergeAltAlleles||tempRecord.nAlls==2)
-						sprintf(comment, "%s:%s:%s", posStr, tempRecord.getID(), (char*)(*rv));
+						sprintf(comment, "%s:%s", posStr, (char*)(*rv));
 					else
-						sprintf(comment, "%s:%s:%s", posStr, tempRecord.getID(), (char*)(*rv));
+						sprintf(comment, "%s:%s", posStr, (char*)(*rv));
 					delete rv;
 				}
 				else if (tempRecord.ensemblConsequence[all+1][0] != '\0')
-					sprintf(comment, "%s:%s:%s", posStr, tempRecord.getID(), tempRecord.ensemblConsequence[all+1]);
+					sprintf(comment, "%s:%s", posStr, tempRecord.ensemblConsequence[all+1]);
 				else if (tempRecord.quickConsequence[all+1][0] != '\0')
-					sprintf(comment, "%s:%s:%s", posStr, tempRecord.getID(), tempRecord.quickConsequence[all+1]);
+					sprintf(comment, "%s:%s", posStr, tempRecord.quickConsequence[all+1]);
 				else
-					sprintf(comment, "%s:%s:", posStr, tempRecord.getID());
+					sprintf(comment, "%s:", posStr);
 				for (ptr = comment; *ptr; ++ptr)
 					if (isspace(*ptr))
 						*ptr = '_';
