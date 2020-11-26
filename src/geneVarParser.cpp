@@ -78,7 +78,7 @@ char lineBuff[MAXINFOLENGTH+1],tempBuff[MAXINFOLENGTH+1]; // need these to be bi
 
 dcexpr_val *performTabixQuery(const char *fn,int addChr,int lower,char *lookupStr,int convert23toX)
 {
-	char fnBuff[1000],*ptr,*tptr,queryBuff[1000],chrStr[10],altAll[1000];
+	char fnBuff[1000],*ptr,*tptr,queryBuff[1000],chrStr[10],altAll[1000],refAll[1000],currentRefAll[1000],currentAltAll[1000];
 	long pos;
 	int noEntry,c,f,l;
 	dcexpr_val *rv;
@@ -96,8 +96,9 @@ dcexpr_val *performTabixQuery(const char *fn,int addChr,int lower,char *lookupSt
 		ptr=strchr(lineBuff,'*');
 		strcat(fnBuff,lineBuff);
 	}
-	sprintf(queryBuff,"%s:%ld-%s/%s",chrStr,geneVarParser::thisLocus->getPos(), geneVarParser::thisLocus->getAll(0), 
-		geneVarParser::thisLocus->getAll(geneVarParser::multilineVEP ? geneVarParser::thisAltAllele : 1));
+	strcpy(currentRefAll, geneVarParser::thisLocus->getAll(0));
+	strcpy(currentAltAll,geneVarParser::thisLocus->getAll(geneVarParser::multilineVEP ? geneVarParser::thisAltAllele : 1 ));
+	sprintf(queryBuff,"%s:%ld-%s/%s",chrStr,geneVarParser::thisLocus->getPos(),currentRefAll,currentAltAll);
 	std::map<std::string,std::string>::const_iterator queryIter=geneVarParser::queryCache.find(queryBuff);
 	if (queryIter==geneVarParser::queryCache.end())
 	{
@@ -115,19 +116,22 @@ dcexpr_val *performTabixQuery(const char *fn,int addChr,int lower,char *lookupSt
 		{
 			while (fgets(tempBuff, MAXINFOLENGTH, fq))
 			{
-				if (sscanf(tempBuff, "%*s %ld %*s %*s %[^ \t,]", &pos, altAll) == 2
-					&& pos==geneVarParser::thisLocus->getPos() // this test is here because the tabix command pulls out all overlapping indels
-					&& !strcmp(altAll, geneVarParser::thisLocus->getAll(geneVarParser::multilineVEP?geneVarParser::thisAltAllele:1)))
+				if (sscanf(tempBuff, "%*s %ld %*s %s %[^ \t,]", &pos, refAll, altAll) == 3
+					&& pos==geneVarParser::thisLocus->getPos()) // this test is here because the tabix command pulls out all overlapping indels
 				{
-					noEntry = 0;
-					sscanf(tempBuff, "%*s %*s %*s %*s %*s %*s %*s %" MAXINFOLENGTHSTR "s", lineBuff);
-					break;
+					if ((!strcmp(altAll, currentAltAll) && !strcmp(refAll, currentRefAll))
+						|| (!strcmp(refAll, currentAltAll) && !strcmp(altAll, currentRefAll))) // occasionally be the wrong way round
+					{
+						noEntry = 0;
+						sscanf(tempBuff, "%*s %*s %*s %*s %*s %*s %*s %" MAXINFOLENGTHSTR "s", lineBuff);
+						break;
+					}
 				}
 			}
 			fclose(fq);
 		}
 		if (noEntry)
-			sprintf(lineBuff,"NOVCFLINE_%s_%ld_%s",chrStr, geneVarParser::thisLocus->getPos(), geneVarParser::thisLocus->getAll(1));
+			sprintf(lineBuff,"NOVCFLINE_%s_%ld_%s",chrStr, geneVarParser::thisLocus->getPos(), currentAltAll);
 		geneVarParser::queryCache[queryBuff]=lineBuff;
 	}
 	else
