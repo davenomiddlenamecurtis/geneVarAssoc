@@ -335,7 +335,7 @@ public:
 	//	int writeVars(char *fn,int *useFreqs,analysisSpecs &spec);
 	int writeGenos(char *fn,int *useFreqs,analysisSpecs &spec);
 	int writeGenoCounts(FILE *fo[2],char *geneName,long *varNum,analysisSpecs &spec,allelePair **a);
-	int writeAltSubs(char *fn,analysisSpecs &spec, char* posName, char* altAll);
+	int writeAltSubs(char *fn,analysisSpecs &spec, char* posName, char* refAll, char* altAll);
 	int gotoFirstInRange(analysisSpecs &spec);
 	int gotoNextInRange(analysisSpecs &spec);
 	int countNumberInRange(analysisSpecs &spec);

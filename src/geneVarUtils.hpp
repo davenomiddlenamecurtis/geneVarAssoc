@@ -29,7 +29,7 @@ along with geneVarAssoc.If not, see <http://www.gnu.org/licenses/>.
 class gvaParams {
 public:
 	char geneListFn[MAXFILENAMELENGTH],baitFn[MAXFILENAMELENGTH],ccFn[2][MAXVCFPERCC][MAXFILENAMELENGTH],referencePath[MAXFILENAMELENGTH],
-		geneName[100],sequencePath[100],posName[100],altAll[100];
+		geneName[100],sequencePath[100],posName[100], refAll[100], altAll[100];
 	char bedFileFn[MAXFILENAMELENGTH], famFileFn[MAXFILENAMELENGTH], bimFileFn[MAXFILENAMELENGTH];
 	char intervalListFn[MAXFILENAMELENGTH], testName[100]; // for intVarAssoc
 	int useFreqs[2],nSubs[2],nCc[2],writeComments,writeScoreFile;

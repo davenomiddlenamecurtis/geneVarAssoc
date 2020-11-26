@@ -6,9 +6,9 @@
 #include <ctype.h>
 #include <string.h>
 
-int masterLocusFile::writeAltSubs(char *fn, analysisSpecs &spec,char *posName,char *altAll)
+int masterLocusFile::writeAltSubs(char *fn, analysisSpecs &spec,char *posName, char* refAll, char* altAll)
 {
-	int i,totalSub,altAllNum,a;
+	int i,totalSub,altAllNum,a,refAllNum;
 	FILE *fo;
 	totalSub=0;
 	for (i=0,totalSub=0;i<nLocusFiles;++i)
@@ -26,6 +26,18 @@ int masterLocusFile::writeAltSubs(char *fn, analysisSpecs &spec,char *posName,ch
 			outputCurrentAlleles(all, spec); // just use the first variant at this position
 		else {
 			do {
+				if (refAll[0])
+				{
+					refAllNum = -1;
+					for (a = 0; a < tempRecord.nAlls; ++a)
+						if (!strcmp(refAll, tempRecord.alls[a]))
+						{
+							refAllNum = a; 
+							break;
+						}
+					if (refAllNum == -1)
+						continue; // we do not have the correct allelic system
+				}
 				for (a = 0; a < tempRecord.nAlls; ++a)
 				{
 					if (!strcmp(altAll, tempRecord.alls[a]))
@@ -129,6 +141,6 @@ int main(int argc,char *argv[])
 	else
 		sprintf(fn, "altSubs.%s.txt", gp.posName);
 	if (extractedOK)
-		vf.writeAltSubs(fn,spec, gp.posName, gp.altAll);
+		vf.writeAltSubs(fn,spec, gp.posName,gp.refAll, gp.altAll);
 	return 0;
 }

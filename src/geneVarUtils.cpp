@@ -38,7 +38,7 @@ int gvaParams::readParms(int argc,char *argv[],analysisSpecs &spec)
 	FILE *phenotypeFile;
 	nPhenotypeFile=nIDsAndPhenotypeFile=nSamplesFile=0;
 	spec.nScoreassocArgs = 0;
-	geneListFn[0]=baitFn[0]=ccFn[2][MAXVCFPERCC][0]=referencePath[0]=geneName[0]=sequencePath[0]=posName[0]=altAll[0]=intervalListFn[0]='\0';
+	geneListFn[0]=baitFn[0]=ccFn[2][MAXVCFPERCC][0]=referencePath[0]=geneName[0]=sequencePath[0]=posName[0]= refAll[0] = altAll[0] = intervalListFn[0]='\0';
 	bedFileFn[0] = bimFileFn[0] = famFileFn[0] = '\0';
 	// testName can be set by calling function, e.g. default "gva" for geneVarAssoc
 	strcpy(spec.vepCommand,"perl variant_effect_predictor.pl");
@@ -189,6 +189,8 @@ int gvaParams::readParms(int argc,char *argv[],analysisSpecs &spec)
 			strcpy(posName, arg);
 		else if (FILLARG("--alt-all"))
 			strcpy(altAll, arg);
+		else if (FILLARG("--ref-all"))
+			strcpy(refAll, arg);
 		else if (FILLARG("--num-case"))
 			nSubs[1]=atoi(arg);
 		else if (FILLARG("--cont-file"))
