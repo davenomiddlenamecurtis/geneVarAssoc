@@ -41,6 +41,7 @@ int gvaParams::readParms(int argc,char *argv[],analysisSpecs &spec)
 	geneListFn[0]=baitFn[0]=referencePath[0]=geneName[0]=sequencePath[0]=posName[0]= refAll[0] = altAll[0] = intervalListFn[0]='\0';
 	bedFileFn[0] = bimFileFn[0] = famFileFn[0] = '\0';
 	// testName can be set by calling function, e.g. default "gva" for geneVarAssoc
+	spec.outputRef =  0;
 	strcpy(spec.vepCommand,"perl variant_effect_predictor.pl");
 //	strcpy(spec.weightExpression,"ANNOT(\"DEFAULT\")GETWEIGHT(\"DEFAULTWEIGHTS\")");
 	spec.excludeExpressions.clear();
@@ -185,14 +186,16 @@ int gvaParams::readParms(int argc,char *argv[],analysisSpecs &spec)
 			useFreqs[1]=1;
 			nCc[1]=1;
 		}
+		else if (FILLARG("--num-case"))
+			nSubs[1] = atoi(arg);
 		else if (FILLARG("--position"))
 			strcpy(posName, arg);
 		else if (FILLARG("--alt-all"))
 			strcpy(altAll, arg);
 		else if (FILLARG("--ref-all"))
 			strcpy(refAll, arg);
-		else if (FILLARG("--num-case"))
-			nSubs[1]=atoi(arg);
+		else if (FILLARG("--output-ref"))
+			spec.outputRef = atoi(arg);
 		else if (FILLARG("--cont-file"))
 			strcpy(ccFn[0][nCc[0]++], arg);
 		else if (FILLARG("--case-file"))

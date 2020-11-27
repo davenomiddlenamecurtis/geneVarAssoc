@@ -6,19 +6,19 @@
 #include <ctype.h>
 #include <string.h>
 
-int masterLocusFile::writeAltSubs(char *fn, analysisSpecs &spec,char *posName, char* refAll, char* altAll)
+int masterLocusFile::writeAltSubs(char* fn, analysisSpecs& spec, char* posName, char* refAll, char* altAll)
 {
-	int i,totalSub,altAllNum,a,refAllNum;
-	FILE *fo;
-	totalSub=0;
-	for (i=0,totalSub=0;i<nLocusFiles;++i)
-		totalSub+=nSubs[i];
-	allelePair *all;
-	all=(allelePair *)calloc(totalSub,sizeof(allelePair));
-	strEntry *subName;
-	subName=(strEntry *)calloc(totalSub,sizeof(strEntry));
+	int i, totalSub, altAllNum, a, refAllNum;
+	FILE* fo;
+	totalSub = 0;
+	for (i = 0, totalSub = 0; i < nLocusFiles; ++i)
+		totalSub += nSubs[i];
+	allelePair* all;
+	all = (allelePair*)calloc(totalSub, sizeof(allelePair));
+	strEntry* subName;
+	subName = (strEntry*)calloc(totalSub, sizeof(strEntry));
 	openLocusFiles();
-	outputSubNames(subName,spec);
+	outputSubNames(subName, spec);
 	altAllNum = -1;
 	if (gotoFirstInRange(spec))
 	{
@@ -32,7 +32,7 @@ int masterLocusFile::writeAltSubs(char *fn, analysisSpecs &spec,char *posName, c
 					for (a = 0; a < tempRecord.nAlls; ++a)
 						if (!strcmp(refAll, tempRecord.alls[a]))
 						{
-							refAllNum = a; 
+							refAllNum = a;
 							break;
 						}
 					if (refAllNum == -1)
@@ -51,7 +51,7 @@ int masterLocusFile::writeAltSubs(char *fn, analysisSpecs &spec,char *posName, c
 					break;
 			} while (gotoNextInRange(spec));
 			if (altAllNum == -1)
-				dcerror(1, "Could not find variant with allele %s at position %s\n", altAll,posName);
+				dcerror(1, "Could not find variant with allele %s at position %s\n", altAll, posName);
 		}
 	}
 	else
@@ -61,13 +61,22 @@ int masterLocusFile::writeAltSubs(char *fn, analysisSpecs &spec,char *posName, c
 		free(subName);
 		return 0;
 	}
-	if (fn==0)
-		fo=stdout;
+	if (fn == 0)
+		fo = stdout;
 	else
-		fo=fopen(fn,"w");
-	for (i=0;i<totalSub;++i)
-		if (all[i][0]!=0 && (altAllNum==-1 && (all[i][0]!=1 || all[i][1]!=1) || (all[i][0] == altAllNum+1 || all[i][1] == altAllNum+1))) // all[i][0] is 1 for REF allele
-			fprintf(fo,"%s\t%d %d\n",subName[i],all[i][0],all[i][1]);
+		fo = fopen(fn, "w");
+	if (spec.outputRef)
+	{
+		for (i = 0; i < totalSub; ++i)
+			if (all[i][0] != 0 && (all[i][0] == 1 || all[i][1] == 1))
+				fprintf(fo, "%s\t%d %d\n", subName[i], all[i][0], all[i][1]);
+	}
+	else
+	{
+		for (i = 0; i < totalSub; ++i)
+			if (all[i][0] != 0 && (altAllNum == -1 && (all[i][0] != 1 || all[i][1] != 1) || (all[i][0] == altAllNum + 1 || all[i][1] == altAllNum + 1))) // all[i][0] is 1 for REF allele
+				fprintf(fo, "%s\t%d %d\n", subName[i], all[i][0], all[i][1]);
+	}
 	if (fn!=0)
 		fclose(fo);
 	free(all);
