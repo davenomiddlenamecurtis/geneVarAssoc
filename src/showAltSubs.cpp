@@ -26,18 +26,8 @@ int masterLocusFile::writeAltSubs(char* fn, analysisSpecs& spec, char* posName, 
 			outputCurrentAlleles(all, spec); // just use the first variant at this position
 		else {
 			do {
-				if (refAll[0])
-				{
-					refAllNum = -1;
-					for (a = 0; a < tempRecord.nAlls; ++a)
-						if (!strcmp(refAll, tempRecord.alls[a]))
-						{
-							refAllNum = a;
-							break;
-						}
-					if (refAllNum == -1)
-						continue; // we do not have the correct allelic system
-				}
+				if (refAll[0] && strcmp(refAll, tempRecord.alls[0])))
+					continue;
 				for (a = 0; a < tempRecord.nAlls; ++a)
 				{
 					if (!strcmp(altAll, tempRecord.alls[a]))
