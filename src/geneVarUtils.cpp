@@ -102,7 +102,10 @@ int gvaParams::readParms(int argc,char *argv[],analysisSpecs &spec)
 			dcerror(1,"Expected argument beginning -- but got this: %s\n",arg);
 			return 0;
 		}
-		else if (!strcmp(arg, "--dottest") || !strcmp(arg, "--dolrtest") || !strcmp(arg, "--dolinrtest") || !strcmp(arg, "--varfile") || !strcmp(arg, "--testfile") || !strcmp(arg, "--lintestfile") || !strcmp(arg, "--start-from-fitted") || !strcmp(arg, "--maxmaf"))
+		else if (!strcmp(arg, "--dottest") || !strcmp(arg, "--dolrtest")
+			|| !strcmp(arg, "--dolinrtest") || !strcmp(arg, "--varfile")
+			|| !strcmp(arg, "--testfile") || !strcmp(arg, "--lintestfile")
+			|| !strcmp(arg, "--start-from-fitted") || !strcmp(arg, "--maxmaf") || !strcmp(arg, "--missingzero"))
 		{
 			strcpy(spec.scoreassocArgs[spec.nScoreassocArgs][0], arg);
 			getNextArg(arg, argc, argv, fp, &depth, &argNum);
