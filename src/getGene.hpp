@@ -149,7 +149,7 @@ public:
 #if 0
 annotationMethod yields a string
 it has a name, e.g. defaultAnnot
-weightMap provides a weight (float) for a string
+weightMap provides a weight (double) for a string
 it has a name, e.g. defaultWeightMap
 user can provide a function based on combination of annotationMethods and user-provided weightMaps
 start by implementing this as a default with the quickConsequence string

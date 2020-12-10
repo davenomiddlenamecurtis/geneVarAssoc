@@ -326,7 +326,7 @@ public:
 	int outputMergedVcfGenotypes(FILE *fo,analysisSpecs const &spec);
 	int outputAltFrequencies(float *freqs,int cc,analysisSpecs const &spec);
 	int outputEurAltFrequencies(float *freqs,int cc,analysisSpecs const &spec);
-	int outputSAInfo(int *useLocus,float *locusWeight,analysisSpecs const &spec);
+	int outputSAInfo(int *useLocus,double *locusWeight,analysisSpecs const &spec);
 	int getEnsemblConsequences(analysisSpecs const &spec);
 	int getQuickConsequences(refseqGeneInfo &r,analysisSpecs const &spec,int redo=0);
 	int writeScoreAssocFiles(char *root,float wf,int *useFreqs,int *suppliedNSubs,int writeNames,int writeComments,int writeScorefile,analysisSpecs &spec);

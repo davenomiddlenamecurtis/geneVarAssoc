@@ -42,7 +42,7 @@ public:
 class weightTable {
 public:
 	std::string tableName;
-	std::map<std::string,float> weightMap;
+	std::map<std::string,double> weightMap;
 	weightTable() { ; }
 	~weightTable() { ; }
 	int readFromFile(char *fn,char *n);

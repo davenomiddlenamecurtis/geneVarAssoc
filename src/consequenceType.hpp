@@ -83,7 +83,7 @@ enum e_consequenceType {
 struct consequenceReport_t {
 	int t;
 	char *str;
-	float weight;
+	double weight;
 };
 
 typedef struct consequenceReport_t consequenceReport;

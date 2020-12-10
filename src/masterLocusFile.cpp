@@ -331,7 +331,7 @@ int masterLocus::writePredictorQuery(FILE *fp, analysisSpecs const &spec )
 int masterLocus::getQuickFeature(refseqGeneInfo &r,int a)
 {
 	char thisGeneEffect[100];
-	float oldEffectWeight;
+	double oldEffectWeight;
 	int e;
 	if (nAlls<2)
 		return 1;
@@ -491,7 +491,7 @@ return locusCount;
 
 // #define MAXLOCIINSCOREASSOCFILE 50000
 int useLocus[MAXLOCIINSCOREASSOCFILE];
-float locusWeight[MAXLOCIINSCOREASSOCFILE];
+double locusWeight[MAXLOCIINSCOREASSOCFILE];
 
 int masterLocusFile::writeScoreAssocFiles(char *root, float wf, int *useFreqs, int *suppliedNSubs, int writeNames, int writeComments, int writeScoreFile, analysisSpecs &spec)
 {
@@ -1147,7 +1147,7 @@ if (recPos!=0L)
 return locusCount;
 }
 
-int masterLocusFile::outputSAInfo(int *useLocus,float *locusWeight,analysisSpecs const &spec)
+int masterLocusFile::outputSAInfo(int *useLocus,double *locusWeight,analysisSpecs const &spec)
 {
 	int locusCount,splitLocusCount;
 	FILEPOSITION recPos;

@@ -43,7 +43,7 @@ consequenceReport polyphen_consequence[]={
 int weightTable::readFromFile(char *fn,char *n)
 {
 	char line[1001],buff[1001];
-	float w;
+	double w;
 	int l;
 	FILE *fp;
 	fp=fopen(fn,"r");
@@ -53,7 +53,7 @@ int weightTable::readFromFile(char *fn,char *n)
 		return 0;
 	}
 	tableName=n;
-	for (l=0;fgets(line,1000,fp)&&sscanf(line,"%s %f",buff,&w)==2;++l)
+	for (l=0;fgets(line,1000,fp)&&sscanf(line,"%s %lf",buff,&w)==2;++l)
 	{
 		weightMap[buff]=w;
 	}
@@ -363,7 +363,7 @@ dcexpr_val *getWeight_func(dcvnode* b1,dcvnode *b2)
 	}
 	if (tab!=0)
 	{
-		std::map<std::string,float>::const_iterator weightIter=tab->weightMap.find((char*)(*r1));
+		std::map<std::string,double>::const_iterator weightIter=tab->weightMap.find((char*)(*r1));
 		if(weightIter==tab->weightMap.end())
 		{
 			dcerror(1,"Could not find annotation %s in weight table named %s\n",(char*)(*r1),(char*)(*r2));
