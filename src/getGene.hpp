@@ -118,7 +118,7 @@ public:
 	char getStrand() { return strand; }
 	int goToStart();
 	int findGene(char *name);
-	int getNextGene(int transcriptionStartCanVary=1);
+	int getNextGene(int transcriptionStartCanVary=1,int mustUseThisLine=1);
 	int checkExonLengths();
 	refseqGeneInfo() { upstream=downstream=baitMargin=0; geneListFile=0; geneListFileName[0]='\0'; baitsFile=0; baitsFileName[0]='\0'; chr[0]='\0'; nTranscript=0; }
 	~refseqGeneInfo() { geneListFile && fclose(geneListFile); baitsFile && fclose(baitsFile); }

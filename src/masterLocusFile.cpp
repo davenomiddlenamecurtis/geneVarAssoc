@@ -449,7 +449,7 @@ if (recPos!=0L)
 	}
 	fclose(fp);
 	unlink("predictorOutput.txt");
-	sprintf(line," %s -i predictorQuery.txt -o predictorOutput.txt --most_severe --force_overwrite",spec.vepCommand);
+	sprintf(line," %s -i predictorQuery.txt -o predictorOutput.txt --pick_allele_gene --force_overwrite",spec.vepCommand);
 	checkSystem();
 	system(line);
 	fp=fopen("predictorOutput.txt","rb"); // binary mode can use fseek/ftell

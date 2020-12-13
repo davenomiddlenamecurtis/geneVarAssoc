@@ -460,7 +460,7 @@ int refseqTranscript::getCodingEffect(faSequenceFile &f,int pos,char *a0,char *a
 	return 1;
 }
 
-int refseqGeneInfo::getNextGene(int transcriptionStartCanVary)
+int refseqGeneInfo::getNextGene(int transcriptionStartCanVary, int mustUseThisLine)
 {
 	int firstLine,t;
 	char lineName[100],lineChr[40],lineStrand;
@@ -493,8 +493,13 @@ int refseqGeneInfo::getNextGene(int transcriptionStartCanVary)
 		if (sscanf(geneLine,"%*d %*s %s %c %d %d %d %*d %*d %*s %*s %*d %s",
 			lineChr,&lineStrand,&lineTxStart,&lineTxEnd,&lineCdsStart,lineName)!=6)
 		{ dcerror(1,"Not enough parameters in line: %s",geneLine); return 0; }
-		if (strchr(lineChr,'_'))
-			continue; // ignore genes not assigned to chromosomes
+		if (strchr(lineChr, '_'))
+		{
+			if (mustUseThisLine)
+				return 0;
+			else
+				continue; // ignore genes not assigned to chromosomes
+		}
 		if (firstLine)
 		{
 			firstLine=0;
