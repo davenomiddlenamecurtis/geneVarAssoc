@@ -272,7 +272,7 @@ dcexpr_string* getGeneAnnotation(dcexpr_val* r1)
 	ptr = CSQEntry;
 	while (sscanf(ptr, "%*[^|]|%*[^|]|%*[^|]|%[^|]", testName) == 1)
 	{
-		if (!stricmp(testName, geneName))
+		if (!strcmp(testName, geneName))
 		{
 			while (*ptr && !isspace(*ptr) && *ptr != ',')
 				*sptr++ = *ptr++;
