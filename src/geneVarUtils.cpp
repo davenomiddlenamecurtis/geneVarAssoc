@@ -509,15 +509,11 @@ int gvaParams::getNextArg(char *nextArg, int argc,char *argv[], FILE *fp[MAXDEPT
 int plinkExtractIntervals(char* bedFilename, char* famFilename, char* bimFilename, char* outFn,intervalList& iList, char *geneName)
 {
 	int i, startPos, endPos, foundOne, systemStatus;
-	char buff[1000], * bedFn, * ptr, bedFnBuff[1000], * bimFn, bimFnBuff[1000];
+	char buff[1000], * bedFn, * ptr, bedFnBuff[1000], * bimFn, bimFnBuff[1000],rfFnBuff[1000];
 	long lineStart;
 	FILE* rf;
-	rf = fopen("range.temp.txt", "w");
-	if (rf == 0)
-	{
-		dcerror(5, "Could not open file: range.temp.txt for writing\n");
-		return 0;
-	}
+	if (geneName == 0)
+		geneName = "NOGENE";
 	if ((ptr = strchr(bedFilename, '*')) == 0)
 		bedFn = bedFilename;
 	else
@@ -542,22 +538,21 @@ int plinkExtractIntervals(char* bedFilename, char* famFilename, char* bimFilenam
 		strcat(bimFnBuff, ptr + 1);
 		bimFn = bimFnBuff;
 	}
-	rf = fopen("range.temp.txt", "w");
+	sprintf(rfFnBuff, "range.temp.%s.txt", geneName); // allow analyses to run simultaneously
+	rf = fopen(rfFnBuff, "w");
 	if (rf == 0)
 	{
-		dcerror(5, "Could not open file: range.temp.txt for writing\n");
+		dcerror(5, "Could not open file: %s for writing\n", rfFnBuff);
 		return 0;
 	}
-	if (geneName == 0)
-		geneName = "NOGENE";
 	for (i=0;i<iList.nInts;++i)
 		fprintf(rf, "%s %d %d %s\n", iList.ints[i].chr, iList.ints[i].st, iList.ints[i].en,geneName);
 	fclose(rf);
 	strcpy(buff, outFn);
 	if ((ptr = strstr(buff, ".vcf")) != 0)
 		*ptr = '\0'; // because plink appends .vcf to outfile name
-	sprintf(refseqGeneInfo::geneLine, "plink --bed %s --fam %s --bim %s --extract range range.temp.txt --set-hh-missing --recode vcf-iid --out %s",
-		bedFn, famFilename, bimFn, buff);
+	sprintf(refseqGeneInfo::geneLine, "plink --bed %s --fam %s --bim %s --extract range %s --set-hh-missing --recode vcf-iid --out %s",
+		bedFn, famFilename, bimFn, rfFnBuff,buff);
 	// added --set-hh-missing because was getting Warning: 40548 het. haploid genotypes present
 	printf("Running command: %s\n", refseqGeneInfo::geneLine);
 	systemStatus = system(refseqGeneInfo::geneLine);

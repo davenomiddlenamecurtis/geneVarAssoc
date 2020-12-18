@@ -756,10 +756,11 @@ int refseqGeneInfo::tbiExtractGene(char* tbiFilename, char* outFn, int appendToO
 int refseqGeneInfo::plinkExtractGene(char* bedFilename, char* famFilename, char* bimFilename, char *outFn,int omitIntrons, int spliceRegionSize)
 {
 	int i,startPos,endPos,foundOne,systemStatus;
-	char buff[1000], * bedFn, * ptr, bedFnBuff[1000], * bimFn, bimFnBuff[1000];
+	char buff[1000], * bedFn, * ptr, bedFnBuff[1000], * bimFn, bimFnBuff[1000],rfFnBuff[1000];
 	long lineStart;
 	FILE* rf;
-	rf = fopen("range.temp.txt", "w");
+	sprintf(rfFnBuff, "range.temp.%s.txt", geneName); // allow analyses to run simultaneously
+	rf = fopen(rfFnBuff, "w");
 	if (rf == 0)
 	{
 		dcerror(5, "Could not open file: range.temp.txt for writing\n");
@@ -844,8 +845,8 @@ int refseqGeneInfo::plinkExtractGene(char* bedFilename, char* famFilename, char*
 	strcpy(buff, outFn);
 	if ((ptr = strstr(buff, ".vcf")) != 0)
 		*ptr = '\0'; // because plink appends .vcf to outfile name
-	sprintf(geneLine, "plink --bed %s --fam %s --bim %s --extract range range.temp.txt --recode vcf-iid --out %s",
-		bedFn, famFilename, bimFn, buff);
+	sprintf(geneLine, "plink --bed %s --fam %s --bim %s --extract range %s --set-hh-missing --recode vcf-iid --out %s",
+		bedFn, famFilename, bimFn, rfFnBuff, buff);
 	printf("Running command: %s\n", geneLine);
 	systemStatus = system(geneLine);
 	return 1;

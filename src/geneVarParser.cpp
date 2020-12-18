@@ -78,7 +78,7 @@ char lineBuff[MAXINFOLENGTH+1],tempBuff[MAXINFOLENGTH+1]; // need these to be bi
 
 dcexpr_val *performTabixQuery(const char *fn,int addChr,int lower,char *lookupStr,int convert23toX)
 {
-	char fnBuff[1000],*ptr,*tptr,queryBuff[1000],chrStr[10],altAll[1000],refAll[1000],currentRefAll[1000],currentAltAll[1000];
+	char fnBuff[1000],*ptr,*tptr,queryBuff[1000],chrStr[10],altAll[1000],refAll[1000],currentRefAll[1000],currentAltAll[1000],queryFn[1000];
 	long pos;
 	int noEntry,c,f,l;
 	dcexpr_val *rv;
@@ -103,14 +103,21 @@ dcexpr_val *performTabixQuery(const char *fn,int addChr,int lower,char *lookupSt
 	if (queryIter==geneVarParser::queryCache.end())
 	{
 		int stest;
-		remove("tabixQueryOutput.txt");
-		sprintf(lineBuff, "tabix %s %s%s:%ld-%ld > tabixQueryOutput.txt", fnBuff, addChr ? lower ? "chr" : "CHR" : "", chrStr, geneVarParser::thisLocus->getPos(), geneVarParser::thisLocus->getPos());
+		sprintf(queryFn, "tabixQueryOutput.%s.txt", geneVarParser::thisGene ? geneVarParser::thisGene->getGene() : "NOGENE");
+		remove(queryFn);
+		sprintf(lineBuff, "tabix %s %s%s:%ld-%ld > %s", 
+			fnBuff, 
+			addChr ? lower ? "chr" : "CHR" : "", 
+			chrStr, 
+			geneVarParser::thisLocus->getPos(), 
+			geneVarParser::thisLocus->getPos(),
+			queryFn);
 		checkSystem();
 		if ((stest=system(lineBuff))!=0)
 		{
 			dcerror(1,"Could not execute %s, failed with error %d\n",lineBuff,stest);
 		}
-		fq=fopen("tabixQueryOutput.txt","r");
+		fq=fopen(queryFn,"r");
 		noEntry=1;
 		if (fq)
 		{
