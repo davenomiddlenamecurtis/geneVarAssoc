@@ -341,72 +341,11 @@ dcexpr_string *getAlleleAnnotation(dcexpr_val *r1)
 	return rv; // collection of annotations for this allele, separated by commas
 }
 
-dcexpr_val *extract_sift_func(dcvnode *b1)
+dcexpr_string* getSpecificAnnotation(dcexpr_val* r1)
 {
-	dcexpr_val *r1;
-	EVAL_R1;
-	char *ptr;
-	char *annotation;
-	dcexpr_string *alleleSpecificAnnotation = 0, *geneSpecificAnnotation = 0;
-	if (geneVarParser::mergeAltAlleles == 1 || geneVarParser::multilineVEP==1)
-		annotation = (char*)(*r1);
-	else
-	{
-		alleleSpecificAnnotation = getAlleleAnnotation(r1);
-		annotation = (char*)(*alleleSpecificAnnotation);
-	}
-	if (geneVarParser::thisGene)
-	{
-		geneSpecificAnnotation = getGeneAnnotation(r1);
-		annotation = (char*)(*geneSpecificAnnotation);
-
-	}
-	dcexpr_string *rv;
-	rv = new dcexpr_string(findWorstConsequence(annotation, sift_consequence, NSIFTCONSEQUENCES).str);
-	delete r1;
-	if (alleleSpecificAnnotation)
-		delete alleleSpecificAnnotation;
-	if (geneSpecificAnnotation)
-		delete geneSpecificAnnotation;
-	return rv;
-}
-
-dcexpr_val *extract_polyphen_func(dcvnode *b1)
-{
-	dcexpr_val *r1;
-	EVAL_R1;
-	char *annotation;
+	char* annotation;
 	dcexpr_string* alleleSpecificAnnotation = 0, * geneSpecificAnnotation = 0;
-	if (geneVarParser::mergeAltAlleles == 1 || geneVarParser::multilineVEP==1)
-		annotation = (char*)(*r1);
-	else
-	{
-		alleleSpecificAnnotation = getAlleleAnnotation(r1);
-		annotation = (char*)(*alleleSpecificAnnotation);
-	}
-	if (geneVarParser::thisGene)
-	{
-		geneSpecificAnnotation = getGeneAnnotation(r1);
-		annotation = (char*)(*geneSpecificAnnotation);
-
-	}
-	dcexpr_string *rv;
-	rv = new dcexpr_string(findWorstConsequence(annotation, polyphen_consequence, NPOLYPHENCONSEQUENCES).str);
-	delete r1;
-	if (alleleSpecificAnnotation)
-		delete alleleSpecificAnnotation;
-	if (geneSpecificAnnotation)
-		delete geneSpecificAnnotation;
-	return rv;
-}
-
-dcexpr_val *extract_vep_func(dcvnode *b1)
-{
-	dcexpr_val *r1;
-	EVAL_R1;
-	char *annotation;
-	dcexpr_string* alleleSpecificAnnotation = 0, * geneSpecificAnnotation = 0;
-	if (geneVarParser::mergeAltAlleles == 1 || geneVarParser::multilineVEP==1)
+	if (geneVarParser::mergeAltAlleles == 1 || geneVarParser::multilineVEP == 1)
 		annotation = (char*)(*r1);
 	else
 	{
@@ -429,14 +368,54 @@ dcexpr_val *extract_vep_func(dcvnode *b1)
 		}
 		annotation = (char*)(*geneSpecificAnnotation);
 	}
-	dcexpr_string *rv;
-	rv=new dcexpr_string(findWorstConsequence(annotation,e_consequence,E_NCONSEQUENCETYPES).str);
+	dcexpr_string* rv;
+	rv = new dcexpr_string(annotation);
 	if (r1)
 		delete r1;
 	if (alleleSpecificAnnotation)
 		delete alleleSpecificAnnotation;
 	if (geneSpecificAnnotation)
 		delete geneSpecificAnnotation;
+	return rv;
+}
+
+dcexpr_val *extract_sift_func(dcvnode *b1)
+{
+	dcexpr_val *r1;
+	EVAL_R1;
+	char *ptr;
+	char *annotation;
+	dcexpr_string* specificAnnotation = getSpecificAnnotation(r1);
+	annotation = (char*)(*specificAnnotation);
+	dcexpr_string *rv;
+	rv = new dcexpr_string(findWorstConsequence(annotation, sift_consequence, NSIFTCONSEQUENCES).str);
+	delete specificAnnotation;
+	return rv;
+}
+
+dcexpr_val *extract_polyphen_func(dcvnode *b1)
+{
+	dcexpr_val *r1;
+	EVAL_R1;
+	char *annotation;
+	dcexpr_string* specificAnnotation = getSpecificAnnotation(r1);
+	annotation = (char*)(*specificAnnotation);
+	dcexpr_string* rv;
+	rv = new dcexpr_string(findWorstConsequence(annotation, polyphen_consequence, NPOLYPHENCONSEQUENCES).str);
+	delete r1;
+	return rv;
+}
+
+dcexpr_val* extract_vep_func(dcvnode* b1)
+{
+	dcexpr_val* r1;
+	EVAL_R1;
+	char* annotation;
+	dcexpr_string* specificAnnotation = getSpecificAnnotation(r1);
+	annotation = (char*)(*specificAnnotation);
+	dcexpr_string* rv;
+	rv = new dcexpr_string(findWorstConsequence(annotation, e_consequence, E_NCONSEQUENCETYPES).str);
+	delete r1;
 	return rv;
 }
 
