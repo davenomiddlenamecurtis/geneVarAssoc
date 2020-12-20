@@ -257,7 +257,7 @@ looks like this but no spaces
 
 dcexpr_string* getGeneAnnotation(dcexpr_val* r1)
 {
-	char geneName[100], testName[100], * ptr, * sptr;
+	char geneName[100], testName[100], * ptr, * sptr,allName[100];
 	char* CSQEntry = (char*)(*r1);
 	dcexpr_string* rv;
 	if (geneVarParser::thisGene == 0)
@@ -270,7 +270,7 @@ dcexpr_string* getGeneAnnotation(dcexpr_val* r1)
 	lineBuff[0] = '\0';
 	sptr = lineBuff;
 	ptr = CSQEntry;
-	while (sscanf(ptr, "%*[^|]|%*[^|]|%*[^|]|%[^|]", testName) == 1) // find an annotation for this gene
+	while (testName[0]='\0',sscanf(ptr, "%[^|]|%*[^|]|%*[^|]|%[^|]", allName,testName) >= 1) // find an annotation for this gene, sometimes there is no gene name
 	{
 		if (!strcmp(testName, geneName))
 		{
