@@ -28,7 +28,7 @@ along with geneVarAssoc.If not, see <http://www.gnu.org/licenses/>.
 // SSS uses .:.:.:.:. to mean unknown??
 
 #define PROGRAM "geneVarAassoc"
-#define GVAVERSION "7.0"
+#define GVAVERSION "7.1"
 
 refseqGeneInfo r; // moved all of these off stack
 analysisSpecs spec;

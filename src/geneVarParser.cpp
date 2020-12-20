@@ -127,7 +127,7 @@ dcexpr_val *performTabixQuery(const char *fn,int addChr,int lower,char *lookupSt
 					&& pos==geneVarParser::thisLocus->getPos()) // this test is here because the tabix command pulls out all overlapping indels
 				{
 					if ((!strcmp(altAll, currentAltAll) && !strcmp(refAll, currentRefAll))
-						|| (!strcmp(refAll, currentAltAll) && !strcmp(altAll, currentRefAll))) // occasionally be the wrong way round
+						|| (!strcmp(refAll, currentAltAll) && !strcmp(altAll, currentRefAll))) // occasionally may be the wrong way round
 					{
 						noEntry = 0;
 						sscanf(tempBuff, "%*s %*s %*s %*s %*s %*s %*s %" MAXINFOLENGTHSTR "s", lineBuff);
@@ -279,6 +279,13 @@ dcexpr_string* getGeneAnnotation(dcexpr_val* r1)
 			*sptr++ = ','; // always append comma, probably won't hurt
 			*sptr = '\0';
 			if (*ptr == ',')
+				++ptr;
+			else
+				break;
+		}
+		else
+		{
+			if ((ptr = strchr(ptr, ',')) != 0)
 				++ptr;
 			else
 				break;
