@@ -270,7 +270,7 @@ dcexpr_string* getGeneAnnotation(dcexpr_val* r1)
 	lineBuff[0] = '\0';
 	sptr = lineBuff;
 	ptr = CSQEntry;
-	while (sscanf(ptr, "%*[^|]|%*[^|]|%*[^|]|%[^|]", testName) == 1)
+	while (sscanf(ptr, "%*[^|]|%*[^|]|%*[^|]|%[^|]", testName) == 1) // find an annotation for this gene
 	{
 		if (!strcmp(testName, geneName))
 		{
@@ -278,6 +278,10 @@ dcexpr_string* getGeneAnnotation(dcexpr_val* r1)
 				*sptr++ = *ptr++;
 			*sptr++ = ','; // always append comma, probably won't hurt
 			*sptr = '\0';
+			if (*ptr == ',')
+				++ptr;
+			else
+				break;
 		}
 	}
 	if (lineBuff[0] == '\0')
