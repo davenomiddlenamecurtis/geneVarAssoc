@@ -402,7 +402,7 @@ dcexpr_val *extract_polyphen_func(dcvnode *b1)
 	annotation = (char*)(*specificAnnotation);
 	dcexpr_string* rv;
 	rv = new dcexpr_string(findWorstConsequence(annotation, polyphen_consequence, NPOLYPHENCONSEQUENCES).str);
-	delete r1;
+	delete specificAnnotation;
 	return rv;
 }
 
@@ -415,7 +415,7 @@ dcexpr_val* extract_vep_func(dcvnode* b1)
 	annotation = (char*)(*specificAnnotation);
 	dcexpr_string* rv;
 	rv = new dcexpr_string(findWorstConsequence(annotation, e_consequence, E_NCONSEQUENCETYPES).str);
-	delete r1;
+	delete specificAnnotation;
 	return rv;
 }
 
