@@ -447,9 +447,14 @@ dcexpr_val *getWeight_func(dcvnode* b1,dcvnode *b2)
 		else
 			tab=0;
 	}
+	char* annotation = (char*)(*r1);
+	if (*annotation=='\0')
+	{
+		dcerror(1, "Error in getWeight_func(), empty annotation provided to look up in weight table named %s\n",  (char*)(*r2));
+	}
 	if (tab!=0)
 	{
-		std::map<std::string,double>::const_iterator weightIter=tab->weightMap.find((char*)(*r1));
+		std::map<std::string,double>::const_iterator weightIter=tab->weightMap.find(annotation);
 		if(weightIter==tab->weightMap.end())
 		{
 			dcerror(1,"Could not find annotation %s in weight table named %s\n",(char*)(*r1),(char*)(*r2));
