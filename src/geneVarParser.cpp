@@ -411,17 +411,28 @@ dcexpr_val *extract_vep_func(dcvnode *b1)
 	else
 	{
 		alleleSpecificAnnotation = getAlleleAnnotation(r1);
+		r1 = 0; // because has been deleted
 		annotation = (char*)(*alleleSpecificAnnotation);
 	}
 	if (geneVarParser::thisGene)
 	{
-		geneSpecificAnnotation = getGeneAnnotation(r1);
-		annotation = (char*)(*geneSpecificAnnotation);
+		if (r1)
+		{
+			geneSpecificAnnotation = getGeneAnnotation(r1);
+			r1 = 0;
+		}
+		else
+		{
+			geneSpecificAnnotation = getGeneAnnotation(alleleSpecificAnnotation);
+			alleleSpecificAnnotation = 0;
 
+		}
+		annotation = (char*)(*geneSpecificAnnotation);
 	}
 	dcexpr_string *rv;
 	rv=new dcexpr_string(findWorstConsequence(annotation,e_consequence,E_NCONSEQUENCETYPES).str);
-	delete r1;
+	if (r1)
+		delete r1;
 	if (alleleSpecificAnnotation)
 		delete alleleSpecificAnnotation;
 	if (geneSpecificAnnotation)
