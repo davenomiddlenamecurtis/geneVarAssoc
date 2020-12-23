@@ -460,7 +460,7 @@ int refseqTranscript::getCodingEffect(faSequenceFile &f,int pos,char *a0,char *a
 	return 1;
 }
 
-int refseqGeneInfo::getNextGene(int transcriptionStartCanVary, int mustUseThisLine)
+int refseqGeneInfo::getNextGene(int transcriptionStartCanVary)
 {
 	int firstLine,t;
 	char lineName[100],lineChr[40],lineStrand;
@@ -495,10 +495,7 @@ int refseqGeneInfo::getNextGene(int transcriptionStartCanVary, int mustUseThisLi
 		{ dcerror(1,"Not enough parameters in line: %s",geneLine); return 0; }
 		if (strchr(lineChr, '_'))
 		{
-			if (mustUseThisLine)
-				return 0;
-			else
-				continue; // ignore genes not assigned to chromosomes
+				continue; // ignore lines not properly assigned to chromosomes
 		}
 		if (firstLine)
 		{
@@ -909,7 +906,7 @@ int refseqGeneInfo::findFirstGene(char *chrToFind,int posToFind)
 
 int refseqGeneInfo::findGene(char *name)
 {
-	char lineName[100];
+	char lineChr[100],lineName[100];
 	if (!goToStart())
 		return 0;
 	long startPos;
@@ -920,11 +917,13 @@ int refseqGeneInfo::findGene(char *name)
 			dcerror(3,"Could not find gene called %s in file %s\n",name,geneListFileName);
 			return 0;
 		}
-		if (sscanf(geneLine,"%*d %*s %*s %*c %*d %*d %*d %*d %*d %*s %*s %*d %s",lineName)!=1)
+		if (sscanf(geneLine,"%*d %*s %s %*c %*d %*d %*d %*d %*d %*s %*s %*d %s",lineChr,lineName)!=2)
 		{
 			dcerror(4,"Could not read enough parameters from this line: %s\n",geneLine);
 			return 0;
 		}
+		if (strchr(lineChr, '_'))
+			continue; // ignore lines which do not have a proper chromosome
 	} while (stricmp(name,lineName));
 	fseek(geneListFile,startPos,SEEK_SET); // back to start of first line for this gene
 	return 1;
