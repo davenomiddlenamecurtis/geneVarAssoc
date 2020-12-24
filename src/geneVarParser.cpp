@@ -100,31 +100,32 @@ dcexpr_val *performTabixQuery(const char *fn,int addChr,int lower,char *lookupSt
 	strcpy(currentAltAll,geneVarParser::thisLocus->getAll(geneVarParser::multilineVEP ? geneVarParser::thisAltAllele : 1 ));
 	sprintf(queryBuff,"%s:%ld-%s/%s",chrStr,geneVarParser::thisLocus->getPos(),currentRefAll,currentAltAll);
 	std::map<std::string,std::string>::const_iterator queryIter=geneVarParser::queryCache.find(queryBuff);
-	if (queryIter==geneVarParser::queryCache.end())
+	if (queryIter == geneVarParser::queryCache.end())
 	{
+#if 0
 		int stest;
 		sprintf(queryFn, "tabixQueryOutput.%s.txt", geneVarParser::thisGene ? geneVarParser::thisGene->getGene() : "NOGENE");
-		remove(queryFn);
-		sprintf(lineBuff, "tabix %s %s%s:%ld-%ld > %s", 
-			fnBuff, 
-			addChr ? lower ? "chr" : "CHR" : "", 
-			chrStr, 
-			geneVarParser::thisLocus->getPos(), 
+		remove(queryFn); // I wonder if file was deleted after being written
+		sprintf(lineBuff, "tabix %s %s%s:%ld-%ld > %s",
+			fnBuff,
+			addChr ? lower ? "chr" : "CHR" : "",
+			chrStr,
+			geneVarParser::thisLocus->getPos(),
 			geneVarParser::thisLocus->getPos(),
 			queryFn);
 		checkSystem();
-		if ((stest=system(lineBuff))!=0)
+		if ((stest = system(lineBuff)) != 0)
 		{
-			dcerror(1,"Could not execute %s, failed with error %d\n",lineBuff,stest);
+			dcerror(1, "Could not execute %s, failed with error %d\n", lineBuff, stest);
 		}
-		fq=fopen(queryFn,"r");
-		noEntry=1;
+		fq = fopen(queryFn, "r");
+		noEntry = 1;
 		if (fq)
 		{
 			while (fgets(tempBuff, MAXINFOLENGTH, fq))
 			{
 				if (sscanf(tempBuff, "%*s %ld %*s %s %[^ \t,]", &pos, refAll, altAll) == 3
-					&& pos==geneVarParser::thisLocus->getPos()) // this test is here because the tabix command pulls out all overlapping indels
+					&& pos == geneVarParser::thisLocus->getPos()) // this test is here because the tabix command pulls out all overlapping indels
 				{
 					if ((!strcmp(altAll, currentAltAll) && !strcmp(refAll, currentRefAll))
 						|| (!strcmp(refAll, currentAltAll) && !strcmp(altAll, currentRefAll))) // occasionally may be the wrong way round
@@ -137,6 +138,46 @@ dcexpr_val *performTabixQuery(const char *fn,int addChr,int lower,char *lookupSt
 			}
 			fclose(fq);
 		}
+#else
+		FILE* pipe;
+		sprintf(lineBuff, "tabix %s %s%s:%ld-%ld ", 
+			fnBuff, 
+			addChr ? lower ? "chr" : "CHR" : "", 
+			chrStr, 
+			geneVarParser::thisLocus->getPos(), 
+			geneVarParser::thisLocus->getPos(),
+			queryFn);
+		checkSystem();
+#ifdef MSDOS
+		pipe = _popen(lineBuff,"r");
+#else
+		pipe = popen(lineBuff, "r");
+#endif
+		if (pipe==0)
+		{
+			dcerror(1,"Could not execute %s\n",lineBuff);
+		}
+		noEntry=1;
+		while (fgets(tempBuff, MAXINFOLENGTH, pipe))
+		{
+				if (sscanf(tempBuff, "%*s %ld %*s %s %[^ \t,]", &pos, refAll, altAll) == 3
+					&& pos==geneVarParser::thisLocus->getPos()) // this test is here because the tabix command pulls out all overlapping indels
+				{
+					if ((!strcmp(altAll, currentAltAll) && !strcmp(refAll, currentRefAll))
+						|| (!strcmp(refAll, currentAltAll) && !strcmp(altAll, currentRefAll))) // occasionally may be the wrong way round
+					{
+						noEntry = 0;
+						sscanf(tempBuff, "%*s %*s %*s %*s %*s %*s %*s %" MAXINFOLENGTHSTR "s", lineBuff);
+						break;
+					}
+				}
+		}
+#ifdef MSDOS
+			_pclose(pipe);
+#else
+			pclose(pipe);
+#endif
+#endif
 		if (noEntry)
 			sprintf(lineBuff,"NOVCFLINE_%s_%ld_%s",chrStr, geneVarParser::thisLocus->getPos(), currentAltAll);
 		geneVarParser::queryCache[queryBuff]=lineBuff;
