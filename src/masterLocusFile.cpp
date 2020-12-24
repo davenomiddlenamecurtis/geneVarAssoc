@@ -657,7 +657,7 @@ int masterLocusFile::writeTransposedFile(masterLocusFile& subFile, char* fn, int
 		for (s = 0, i = 0; i < subFile.nLocusFiles; ++i)
 			for (ss = 0; ss < subFile.nSubs[i]; ++s, ++ss)
 			{
-				if (spec.phenotypes)
+				if (spec.phenotypes && spec.isQuantitative)
 				{
 					if (spec.phenotypes[s] == MISSINGPHENOTYPE)
 						continue;
