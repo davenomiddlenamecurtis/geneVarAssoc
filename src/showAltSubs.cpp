@@ -126,7 +126,7 @@ int main(int argc,char *argv[])
 				else
 				{
 					//					if (!r.plinkExtractGene(gp.bedFileFn,gp.famFileFn,gp.bimFileFn, fn, spec.omitIntrons, spec.spliceRegionSize))
-					if (!plinkExtractIntervals(gp.bedFileFn, gp.famFileFn, gp.bimFileFn, fn, iList, "NOGENE"))
+					if (!plinkExtractIntervals(gp.bedFileFn, gp.famFileFn, gp.bimFileFn, fn, iList, gp.testName))
 						extractedOK = 0;
 
 				}
