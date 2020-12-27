@@ -82,6 +82,7 @@ int main(int argc,char *argv[])
 	gvaParams gp;
 	analysisSpecs spec;
 	intervalList iList;
+	strcpy(gp.testName, "altSubs");
 	if (!gp.readParms(argc,argv,spec))
 		exit(1);
 	spec.useConsequenceWeights=0; // I am not going to annotate these variants
@@ -92,8 +93,8 @@ int main(int argc,char *argv[])
 
 	spec.sc = spec.ec = gp.posName[0] == 'X' ? 23 : atoi(gp.posName);
 	spec.sp = spec.ep = p;
-	sprintf(fn,"gva.altSubs.db");
-	sprintf(fn2,"gva.altSubs.vdx");
+	sprintf(fn,"gva.%s.db",gp.testName);
+	sprintf(fn2,"gva.%s.vdx",gp.testName);
 	unlink(fn);
 	unlink(fn2);
 	vf.openFiles(fn,fn2);
@@ -111,7 +112,7 @@ int main(int argc,char *argv[])
 	for (cc=0;cc<2;++cc)
 		for (i=0;i<gp.nCc[cc];++i)
 		{
-			sprintf(fn,"gva.altSubs.%s.%d.vcf",cc?"case":"cont",i+1);
+			sprintf(fn,"gva.%s.%s.%d.vcf",cc?"case":"cont",gp.testName,i+1);
 			if (gp.dontExtractVariants)
 				printf("Will not attempt to produce %s because --dont-extract-variants was set\n", fn);
 			else
@@ -135,10 +136,10 @@ int main(int argc,char *argv[])
 				extractedOK = 0;
 		}
 	// sprintf(fn,"%s_%s.aso",argv[2],ptr+1);
-	if (gp.testName[0])
+//	if (gp.testName[0])
 		sprintf(fn, "%s.txt", gp.testName);
-	else
-		sprintf(fn, "altSubs.%s.txt", gp.posName);
+//	else
+//		sprintf(fn, "altSubs.%s.txt", gp.posName);
 	if (extractedOK)
 		vf.writeAltSubs(fn,spec, gp.posName,gp.refAll, gp.altAll);
 	return 0;
