@@ -23,6 +23,7 @@ along with geneVarAssoc.If not, see <http://www.gnu.org/licenses/>.
 #include <string.h>
 #include <ctype.h>
 #include <assert.h>
+#include <new>
 #ifndef MSDOS
 #define stricmp strcasecmp
 #define strnicmp strncasecmp
@@ -92,7 +93,7 @@ dcexpr_string::dcexpr_string(const char *t,int len)
 { 
 if (len)
   {
-  if ((buff=new char[len+1])!=NULL)
+  if ((buff=new (std::nothrow) char[len+1])!=NULL)
     {
     strncpy(buff,t,len);
     buff[len]='\0';
@@ -101,7 +102,7 @@ if (len)
   }
 else
   {
-  if ((buff=new char[strlen(t)+1])!=NULL)
+  if ((buff=new (std::nothrow) char[strlen(t)+1])!=NULL)
     strcpy(buff,t);
   else dcerror(ENOMEM); 
   }
