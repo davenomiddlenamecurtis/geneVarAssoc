@@ -73,8 +73,8 @@ int main(int argc,char *argv[])
 		dcerror(1, "Could not open interval list file %s\n", gp.intervalListFn);
 		exit(1);
 	}
-	sprintf(fn,"gva.%s.db",gp.testName);
-	sprintf(fn2,"gva.%s.vdx",gp.testName);
+	sprintf(fn,"iva.%s.db",gp.testName);
+	sprintf(fn2,"iva.%s.vdx",gp.testName);
 	unlink(fn);
 	unlink(fn2);
 	vf.openFiles(fn,fn2);
@@ -94,7 +94,7 @@ int main(int argc,char *argv[])
 	extractedOK = 1;
 	for (i = 0; i < gp.nCc[0]; ++i)
 	{
-		sprintf(fn, "iva.cont.%d.vcf", i + 1);
+		sprintf(fn, "%s.cont.%d.vcf", gp.testName, i + 1);
 		if (gp.dontExtractVariants)
 			printf("Will not attempt to produce %s because --dont-extract-variants was set\n", fn);
 		else
@@ -121,7 +121,7 @@ int main(int argc,char *argv[])
 	}
 	for (i = 0; i < gp.nCc[1]; ++i)
 	{
-		sprintf(fn, "iva.case.%d.vcf", i + 1);
+		sprintf(fn, "%s.case.%d.vcf", gp.testName, i + 1);
 		if (gp.dontExtractVariants)
 			printf("Will not attempt to produce %s because --dont-extract-variants was set\n", fn);
 		else // if (!gcase.extractVariants(r,fn,0,spec.addChrInVCF[ff++], spec.removeVcfSpaces,spec.omitIntrons,spec.spliceRegionSize))
@@ -146,6 +146,7 @@ int main(int argc,char *argv[])
 		vf.getEnsemblConsequences(spec);
 	}
 
+	sprintf(fn, "%s", gp.testName);
 	printf("Writing scoreassoc files...\n");
 	vf.writeScoreAssocFiles(fn,spec.wf,gp.useFreqs,gp.nSubs,1,gp.writeComments,gp.writeScoreFile,spec);
 #ifndef MSDOS
@@ -178,8 +179,8 @@ int main(int argc,char *argv[])
 				unlink(fn);
 			}
 		}
-		sprintf(fn,"%s.db",gp.testName);
-		sprintf(fn2,"%s.vdx",gp.testName);
+		sprintf(fn,"iva.%s.db",gp.testName);
+		sprintf(fn2,"iva.%s.vdx",gp.testName);
 		unlink(fn);
 		unlink(fn2);
 	}
