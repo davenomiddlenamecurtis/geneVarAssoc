@@ -461,8 +461,9 @@ dcexpr_val* extract_custom_func(dcvnode* b1)
 	// so does not need to be specific
 	dcexpr_val* r1;
 	EVAL_R1;
-	char* annotation,*ptr,*nptr;
-	annotation = (char*)(dcexpr_string*)(r1);
+	dcexpr_string* annptr = (dcexpr_string*)(r1);
+	char *annotation,*ptr,*nptr;
+	annotation = (char*)(*annptr);
 	for (nptr = annotation; *nptr; ++nptr)
 		if (*nptr == '|')
 			ptr = nptr;
