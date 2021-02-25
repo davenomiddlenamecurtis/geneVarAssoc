@@ -454,6 +454,24 @@ dcexpr_val *extract_polyphen_func(dcvnode *b1)
 	return rv;
 }
 
+dcexpr_val* extract_custom_func(dcvnode* b1)
+{
+	// custom, e.g. GERP, is a float or list of floats, same for every transcript, at the end of the annotation
+	// e.g. .....RefSeq|ACAG|ACAG||||||||0.584999978542328&-1.37999999523163&0.689000010490417&-1.11000001430511
+	// so does not need to be specific
+	dcexpr_val* r1;
+	EVAL_R1;
+	char* annotation,*ptr,*nptr;
+	annotation = (char*)(dcexpr_string*)(r1);
+	for (nptr = annotation; *nptr; ++nptr)
+		if (*nptr == '|')
+			ptr = nptr;
+	dcexpr_double* rv;
+	rv = new dcexpr_double(atof(ptr+1));
+	delete r1;
+	return rv;
+}
+
 dcexpr_val* extract_vep_func(dcvnode* b1)
 {
 	dcexpr_val* r1;
@@ -668,7 +686,8 @@ int initGeneVarParser()
 	add_un_op("ATTRIB",attrib_func);
 	add_un_op("GETPOLYPHEN",extract_polyphen_func);
 	add_un_op("GETSIFT",extract_sift_func);
-	add_un_op("GETVEP",extract_vep_func);
+	add_un_op("GETCUSTOM",extract_custom_func);
+	add_un_op("GETVEP", extract_vep_func);
 	return 1;
 }
 

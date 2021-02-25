@@ -80,7 +80,7 @@ int main(int argc,char *argv[])
 	vf.openFiles(fn,fn2);
 	extractedOK = 1;
 	int ff = 0;
-	while (fgets(line, 999, fi) && sscanf(line, "%[^:]:%[^-]-%s", chrStr, startStr,endStr) == 3)
+	while (fgets(line, 999, fi) && sscanf(line, " %[^:]:%[^-]-%s", chrStr, startStr,endStr) == 3)
 			iList.append(chrStr, atoi(startStr), atoi(endStr));
 	if (gp.bedFileFn[0])
 		{
