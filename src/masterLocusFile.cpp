@@ -898,8 +898,7 @@ int masterLocusFile::writeScoreAssocFiles(masterLocusFile &subFile,char *root, f
 	sprintf(fn,"%s.lf.par",root);
 	fp=fopen(fn,"w");
 	for (l=0;l< numIncludedLoci;++l)
-			fprintf(fp,"1 ");  // idea is now we only output valid loci
-	fprintf(fp,"\n");
+			fprintf(fp,"1\n");  // idea is now we only output valid loci
 	fclose(fp);
 	sprintf(strchr(commandString,'\0')," --locusfilterfile %s",fn);
 	checkSystem();
@@ -920,8 +919,7 @@ int masterLocusFile::writeScoreAssocFiles(masterLocusFile &subFile,char *root, f
 		fp=fopen(fn,"w");
 		for (l=0;l<numSplitLoci;++l)
 			if (useLocus[l])
-				fprintf(fp,"%8.5f ",locusWeight[l]);
-		fprintf(fp,"\n");
+				fprintf(fp,"%8.5f\n",locusWeight[l]);
 		fclose(fp);
 	sprintf(strchr(commandString,'\0')," --locusweightfile %s",fn);
 	}
@@ -1017,13 +1015,12 @@ int masterLocusFile::writeScoreAssocFiles(masterLocusFile &subFile,char *root, f
 				strncpy(alleles, buff, MAXSTR);
 				alleles[MAXSTR] = '\0';
 				strcat(comment, alleles);
-				fprintf(fp, "%s ", comment);
+				fprintf(fp, "%s\n", comment);
 			}
 			recPos=index.get_next();
 			if (recPos==0L)
 				break;
 		}
-	fprintf(fp,"\n");
 	fclose(fp);
 	sprintf(strchr(commandString,'\0')," --locusnamefile %s",fn);
 	}
