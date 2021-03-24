@@ -20,10 +20,7 @@ along with geneVarAssoc.If not, see <http://www.gnu.org/licenses/>.
 #ifndef masterLocusFileHPP
 #define masterLocusFileHPP
 
-#ifndef MAXALL
 #define MAXALL 10 // maximum number of alleles occurring at any locus
-#endif
-
 #define MAXALLLENGTH 200
 // #define MAXALLLENGTH 300 // maximum length of the character string describing each REF allele 
 // or all ALT alleles with commas separating them
@@ -38,11 +35,10 @@ along with geneVarAssoc.If not, see <http://www.gnu.org/licenses/>.
 #define MAXVCFFILES 10
 #endif
 #define MAXFILENAMELENGTH 100
-#define BUFFSIZE 1000000 // maximum length of e.g. line read in from VCF file was 900000
+#define BUFFSIZE 900000 // maximum length of e.g. line read in from VCF file
 #define VCFFIELDLENGTH 2000 // maximum length for e.g. quality, format fields
 // even 3000 was too short for a UK10K gene with many PolyPhen entries
 #define MAXSCOREASSOCARGS 50
-#define MAXEXPRESSIONLENGTH 2000
 
 #include "dcindex.hpp"
 #include "dcerror.hpp"
@@ -52,10 +48,8 @@ along with geneVarAssoc.If not, see <http://www.gnu.org/licenses/>.
 #include <string>
 #include <map>
 #include <list>
-typedef std::pair<std::string, int> TStrIntPair;
-typedef std::map<std::string, int> TStrIntMap;
-typedef std::pair<std::string, float> TStrFloatPair;
-typedef std::map<std::string, float> TStrFloatMap;
+typedef std::pair<std::string,int> TStrIntPair;
+typedef std::map<std::string,int> TStrIntMap;
 
 
 #ifndef FILEPOSITION
@@ -96,10 +90,6 @@ class analysisSpecs {
 public:
 	analysisSpecs() 
 	{ 
-		useFlatFile = 1;
-		useTransposedFile = 0;
-		multilineVEP = 1; // separate VEP lines for different alt alleles, as in UKBB
-		outputRef=0;
 		unknownIfUntyped=1; // if there are no calls for a variant in the VCF file assume it has not been covered rather than all wildtype
 		unknownIfNoPass=0; altIsCommon=0; 
 		wildIfUnknown=0;
@@ -116,43 +106,37 @@ public:
 		ABThreshold = -1;
 		onlyUseSNPs=0;
 		doRecessiveTest=0;
-		recWeightThreshold=0;
+		weightThreshold=0;
 		LDThreshold=1;
 		phenotypes=NULL;
-		showHapLocusNames=useHaplotypes=0;
+		useHaplotypes=0;
 		useProbs=0;
 		count_hom_as_het=0;
-		isQuantitative=useTrios=0;
-		dontMergeAlleles=ignoreAlleles=0;
+		useTrios=0;
+		ignoreAlleles=0;
 		mergeAltAlleles = 1;
-		omitIntrons = 0;
-		spliceRegionSize = 100;
 		debug=0;
 		*alleleFreqStr=*alleleNumberStr=*alleleCountStr='\0';
-		*commentExpression=*weightExpression='\0';
+		*commentExpression='\0';
 		wf=10;
-		numVcfFieldsToSkip = DEFAULTNUMVCFFIELDSTOSKIP;
-		removeVcfSpaces = 0;
 	} 
-int onlycc01,unknownIfUntyped,unknownIfNoPass,altIsCommon,sc,ec,skipIfNoPass,useConsequenceWeights,onlyUseSNPs,nExc,doRecessiveTest,addChrInVCF[MAXVCFFILES],useHaplotypes, showHapLocusNames,count_hom_as_het,useTrios,
-ignoreAlleles,dontMergeAlleles,useProbs,wildIfUnknown,debug,omitIntrons,spliceRegionSize,isQuantitative,outputRef;
-int useEnsembl,willNeedEnsemblConsequence,willNeedInbuiltConsequence,mergeAltAlleles,numVcfFieldsToSkip,removeVcfSpaces;
-int useFlatFile,useTransposedFile,multilineVEP;
-float *phenotypes;
-TStrFloatMap subPhenos;
+int onlycc01,unknownIfUntyped,unknownIfNoPass,altIsCommon,sc,ec,skipIfNoPass,useConsequenceWeights,onlyUseSNPs,nExc,doRecessiveTest,addChrInVCF[MAXVCFFILES],useHaplotypes,count_hom_as_het,useTrios,ignoreAlleles,useProbs,wildIfUnknown,debug;
+int useEnsembl,willNeedEnsemblConsequence,willNeedInbuiltConsequence,mergeAltAlleles;
+int *phenotypes;
+TStrIntMap subPhenos;
 long sp,ep;
 float GQThreshold,proportionCalledToPass,hetDevThreshold,hetDevThresholdSq,depthThreshold,ABThreshold;
-float recWeightThreshold,LDThreshold,wf;
+float weightThreshold,LDThreshold,wf;
 float consequenceThreshold;
 char exclusionStr[20][200];
 char triosFn[200];
 char alleleFreqStr[100],alleleNumberStr[100],alleleCountStr[100],
 scoreassocArgs[MAXSCOREASSOCARGS][2][100];
 int nScoreassocArgs;
-char weightExpression[MAXEXPRESSIONLENGTH];
-char commentExpression[MAXEXPRESSIONLENGTH];
-char vepCommand[MAXEXPRESSIONLENGTH];
+char commentExpression[1000];
+char vepCommand[1000];
 std::list<std::string> excludeExpressions;
+std::list<std::string> weightExpressions;
 };
 
 #if 0
@@ -274,9 +258,7 @@ public:
 
 
 typedef locusFile *LOCUSFILEPTR;
-#ifndef MAXLOCIINSCOREASSOCFILE 
 #define MAXLOCIINSCOREASSOCFILE 25000
-#endif
 
 class masterLocusFile  {
 	dcIndex index;
@@ -321,22 +303,20 @@ public:
 	int outputProbs(probTriple **all,analysisSpecs &spec);
 	int outputCalls(strEntry **call,analysisSpecs &spec);
 	int outputSubNames(strEntry *subName,analysisSpecs &spec);
-	int outputAffectionStatus(float *cc,analysisSpecs &spec);
+	int outputAffectionStatus(int *cc,analysisSpecs &spec);
 	int outputMergedVCFHeader(FILE *fo);
 	int outputMergedVcfGenotypes(FILE *fo,analysisSpecs const &spec);
 	int outputAltFrequencies(float *freqs,int cc,analysisSpecs const &spec);
 	int outputEurAltFrequencies(float *freqs,int cc,analysisSpecs const &spec);
-	int outputSAInfo(int *useLocus,double *locusWeight,analysisSpecs const &spec);
+	int outputSAInfo(int *useLocus,float **locusWeight,analysisSpecs const &spec);
 	int getEnsemblConsequences(analysisSpecs const &spec);
 	int getQuickConsequences(refseqGeneInfo &r,analysisSpecs const &spec,int redo=0);
 	int writeScoreAssocFiles(char *root,float wf,int *useFreqs,int *suppliedNSubs,int writeNames,int writeComments,int writeScorefile,analysisSpecs &spec);
-	int writeScoreAssocFiles(masterLocusFile& subFile, char* root, float wf, int* useFreqs, int* suppliedNSubs, int writeNames, int writeComments, int writeScorefile, analysisSpecs& spec);
-	int writeFlatFile(masterLocusFile& subFile, char* fn, int nSubs, strEntry* subName, analysisSpecs& spec, int* useLocus);
-	int writeTransposedFile(masterLocusFile& subFile, char* fn, int nSubs, strEntry* subName, analysisSpecs& spec, int* useLocus);
-	//	int writeVars(char *fn,int *useFreqs,analysisSpecs &spec);
+	int writeScoreAssocFiles(masterLocusFile &subFile,char *root,float wf,int *useFreqs,int *suppliedNSubs,int writeNames,int writeComments,int writeScorefile,analysisSpecs &spec);
+//	int writeVars(char *fn,int *useFreqs,analysisSpecs &spec);
 	int writeGenos(char *fn,int *useFreqs,analysisSpecs &spec);
 	int writeGenoCounts(FILE *fo[2],char *geneName,long *varNum,analysisSpecs &spec,allelePair **a);
-	int writeAltSubs(char *fn,analysisSpecs &spec, char* posName, char* refAll, char* altAll);
+	int writeAltSubs(char *fn,analysisSpecs &spec);
 	int gotoFirstInRange(analysisSpecs &spec);
 	int gotoNextInRange(analysisSpecs &spec);
 	int countNumberInRange(analysisSpecs &spec);

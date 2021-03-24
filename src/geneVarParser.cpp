@@ -43,7 +43,7 @@ consequenceReport polyphen_consequence[]={
 int weightTable::readFromFile(char *fn,char *n)
 {
 	char line[1001],buff[1001];
-	double w;
+	float w;
 	int l;
 	FILE *fp;
 	fp=fopen(fn,"r");
@@ -53,7 +53,7 @@ int weightTable::readFromFile(char *fn,char *n)
 		return 0;
 	}
 	tableName=n;
-	for (l=0;fgets(line,1000,fp)&&sscanf(line,"%s %lf",buff,&w)==2;++l)
+	for (l=0;fgets(line,1000,fp)&&sscanf(line,"%s %f",buff,&w)==2;++l)
 	{
 		weightMap[buff]=w;
 	}
@@ -73,20 +73,119 @@ void weightTable::init(char *n,consequenceReport consequence[],int nConsequence)
 }
 
 #define MAXINFOLENGTH 20000
-#define MAXINFOLENGTHSTR "20000"
 char lineBuff[MAXINFOLENGTH+1],tempBuff[MAXINFOLENGTH+1]; // need these to be big for e.g. VEP on TTN
 
-dcexpr_val *performTabixQuery(const char *fn,int addChr,int lower,char *lookupStr,int convert23toX)
+dcexpr_val* dbNSFPLookup_func(dcvnode* b1, dcvnode* b2)
 {
-	char fnBuff[1000],*ptr,*tptr,queryBuff[1000],chrStr[10],altAll[1000],refAll[1000],currentRefAll[1000],currentAltAll[1000],queryFn[1000];
-	long pos;
+	char fnBuff[1000], * ptr, * tptr, queryBuff[1000], chrStr[10],fieldStr[100],refAll[100],altAll[100],fieldName[100],fn[1000];
+	int noEntry, c, f, l;
+	dcexpr_val* r1, * r2;
+	EVAL_BOTH;
+	dcexpr_val* rv;
+	FILE* fq;
+	strcpy(fn, (char*)(*r2));
+	strcpy(fieldName, (char*)(*r1));
+	delete r1;
+	delete r2;
+	strcpy(fnBuff, fn);
+	int chr = geneVarParser::thisLocus->getChr();
+	if (chr == 23)
+		sprintf(chrStr, "X");
+	else
+		sprintf(chrStr, "%d", chr);
+	if (ptr = strchr(fnBuff, '*'))
+	{
+		strcpy(ptr, chrStr);
+		strcpy(lineBuff, fn);
+		ptr = strchr(lineBuff, '*');
+		strcat(fnBuff, lineBuff);
+	}
+	strcpy(refAll, geneVarParser::thisLocus->getAll(0));
+	strcpy(altAll, geneVarParser::thisLocus->getAll(geneVarParser::thisAltAllele));
+	sprintf(queryBuff, "%s:%ld-%s/%s", chrStr,geneVarParser::thisLocus->getPos(), refAll,altAll);
+	std::map<std::string, std::string>::const_iterator queryIter = geneVarParser::dbNSFPCache.find(queryBuff);
+	std::map<std::string, int>::const_iterator fieldIter = geneVarParser::dbNSFPFields.find(fieldName);
+	if (queryIter == geneVarParser::dbNSFPCache.end() || fieldIter == geneVarParser::dbNSFPFields.end())
+	{
+		int stest;
+		remove("dbNSFPQueryOutput.txt");
+		sprintf(lineBuff, "tabix -h %s %s:%ld-%ld > dbNSFPQueryOutput.txt", 
+			fnBuff, chrStr, geneVarParser::thisLocus->getPos(), geneVarParser::thisLocus->getPos());
+		checkSystem();
+		if ((stest = system(lineBuff)) != 0)
+			dcerror(1, "Could not execute %s, failed with error %d\n", lineBuff, stest);
+		fq = fopen("dbNSFPQueryOutput.txt", "r");
+		*lineBuff = '\0';
+		fgets(lineBuff, MAXINFOLENGTH, fq); // header line
+		if (*lineBuff == '\0')
+			{ dcerror(1,"No output from tabix command using %s\n", fnBuff); exit(1); }
+		if (fieldIter == geneVarParser::dbNSFPFields.end())
+		{
+			int ff = 0,matched = 0;
+			while (*tempBuff = '\0', sscanf(lineBuff, "%s %[^\n]", fieldStr, tempBuff) > 1)
+			{
+				if (!strcmp(fieldName, fieldStr))
+				{
+					matched = 1;
+					geneVarParser::dbNSFPFields[fieldName] = ff;
+					fieldIter = geneVarParser::dbNSFPFields.find(fieldName);
+					break;
+				}
+				strcpy(lineBuff, tempBuff);
+				*tempBuff = '\0';
+			}
+			if (!matched)
+			{
+				dcerror(1, "No field entry %s in %s", fieldName, fnBuff); // should be a fatal error, will always be a mistake
+				exit(1);
+			}
+		}
+		if (queryIter == geneVarParser::dbNSFPCache.end())
+		{
+			noEntry=1;
+			while (fgets(lineBuff, MAXINFOLENGTH, fq)) // may be no lines at all or no matching lines
+			{
+				char all0[100], all1[100];
+				sscanf(lineBuff, "%*s %*d %s %s", all0, all1);
+				if ((!strcmp(refAll, all0) && !strcmp(altAll, all1)) || (!strcmp(refAll, all1) && !strcmp(altAll, all0)))
+				{
+					noEntry = 0;
+					break;
+				}
+			}
+			if (noEntry)
+				sprintf(lineBuff, "NODBNSFPFENTRY_%s", queryBuff);
+			geneVarParser::dbNSFPCache[queryBuff] = lineBuff;
+			queryIter=geneVarParser::dbNSFPCache.find(queryBuff);
+		}
+		fclose(fq);
+	}
+	strcpy(lineBuff, queryIter->second.c_str());
+	if (strncmp(lineBuff, "NODBNSFPFENTRY", strlen("NODBNSFPFENTRY")))
+	{
+
+		for (int ff = 0; ff <= geneVarParser::dbNSFPFields[fieldName]; ++ff)
+		{
+			*tempBuff = '\0';
+			sscanf(lineBuff, "%s %[^\n]", fieldStr, tempBuff);
+			strcpy(lineBuff, tempBuff);
+		}
+		strcpy(lineBuff, fieldStr);
+	}
+	rv = new dcexpr_string(lineBuff);
+	return rv;
+}
+
+dcexpr_val *performTabixQuery(const char *fn,int addChr,int lower,char *lookupStr)
+{
+	char fnBuff[1000],*ptr,*tptr,queryBuff[1000],chrStr[10];
 	int noEntry,c,f,l;
 	dcexpr_val *rv;
 	FILE *fq;
 	strcpy(fnBuff,fn);
 	int chr=geneVarParser::thisLocus->getChr();
-	if (chr==23 && convert23toX)
-		sprintf(chrStr,"X"); // this is going to be optional
+	if (chr==23)
+		sprintf(chrStr,"X");
 	else
 		sprintf(chrStr,"%d",chr);
 	if(ptr=strchr(fnBuff,'*'))
@@ -96,90 +195,50 @@ dcexpr_val *performTabixQuery(const char *fn,int addChr,int lower,char *lookupSt
 		ptr=strchr(lineBuff,'*');
 		strcat(fnBuff,lineBuff);
 	}
-	strcpy(currentRefAll, geneVarParser::thisLocus->getAll(0));
-	strcpy(currentAltAll,geneVarParser::thisLocus->getAll(geneVarParser::multilineVEP ? geneVarParser::thisAltAllele : 1 ));
-	sprintf(queryBuff,"%s:%ld-%s/%s",chrStr,geneVarParser::thisLocus->getPos(),currentRefAll,currentAltAll);
+	sprintf(queryBuff,"tabix %s %s%s:%ld-%ld",fnBuff,addChr?lower?"chr":"CHR":"",chrStr,geneVarParser::thisLocus->getPos(),geneVarParser::thisLocus->getPos());
 	std::map<std::string,std::string>::const_iterator queryIter=geneVarParser::queryCache.find(queryBuff);
-	if (queryIter == geneVarParser::queryCache.end())
+	if (queryIter==geneVarParser::queryCache.end())
 	{
-#if 0
 		int stest;
-		sprintf(queryFn, "tabixQueryOutput.%s.txt", geneVarParser::thisGene ? geneVarParser::thisGene->getGene() : "NOGENE");
-		remove(queryFn); // I wonder if file was deleted after being written
-		sprintf(lineBuff, "tabix %s %s%s:%ld-%ld > %s",
-			fnBuff,
-			addChr ? lower ? "chr" : "CHR" : "",
-			chrStr,
-			geneVarParser::thisLocus->getPos(),
-			geneVarParser::thisLocus->getPos(),
-			queryFn);
+		remove("tabixQueryOutput.txt");
+		sprintf(lineBuff,"%s > tabixQueryOutput.txt",queryBuff);
 		checkSystem();
-		if ((stest = system(lineBuff)) != 0)
+		if ((stest=system(lineBuff))!=0)
 		{
-			dcerror(1, "Could not execute %s, failed with error %d\n", lineBuff, stest);
+			dcerror(1,"Could not execute %s, failed with error %d\n",lineBuff,stest);
 		}
-		fq = fopen(queryFn, "r");
-		noEntry = 1;
+		fq=fopen("tabixQueryOutput.txt","r");
+		noEntry=1;
 		if (fq)
 		{
-			while (fgets(tempBuff, MAXINFOLENGTH, fq))
+			c=fgetc(fq);
+			while (c!=EOF && isspace(c))
+				c=fgetc(fq);
+			for (f=0;f<7;++f)
 			{
-				if (sscanf(tempBuff, "%*s %ld %*s %s %[^ \t,]", &pos, refAll, altAll) == 3
-					&& pos == geneVarParser::thisLocus->getPos()) // this test is here because the tabix command pulls out all overlapping indels
+					while (c!=EOF && !isspace(c))
+						c=fgetc(fq);
+					while (c!=EOF && isspace(c))
+						c=fgetc(fq);
+			}
+			if (c!=EOF)
+			{
+				noEntry=0;
+				ptr=lineBuff;
+				l=0;
+				while (c!=EOF && !isspace(c))
 				{
-					if ((!strcmp(altAll, currentAltAll) && !strcmp(refAll, currentRefAll))
-						|| (!strcmp(refAll, currentAltAll) && !strcmp(altAll, currentRefAll))) // occasionally may be the wrong way round
-					{
-						noEntry = 0;
-						sscanf(tempBuff, "%*s %*s %*s %*s %*s %*s %*s %" MAXINFOLENGTHSTR "s", lineBuff);
+					*ptr++=c;
+					if (++l>=MAXINFOLENGTH)
 						break;
-					}
+					c=fgetc(fq);
 				}
+				*ptr='\0';
 			}
 			fclose(fq);
 		}
-#else
-		FILE* pipe;
-		sprintf(lineBuff, "tabix %s %s%s:%ld-%ld ", 
-			fnBuff, 
-			addChr ? lower ? "chr" : "CHR" : "", 
-			chrStr, 
-			geneVarParser::thisLocus->getPos(), 
-			geneVarParser::thisLocus->getPos(),
-			queryFn);
-		checkSystem();
-#ifdef MSDOS
-		pipe = _popen(lineBuff,"r");
-#else
-		pipe = popen(lineBuff, "r");
-#endif
-		if (pipe==0)
-		{
-			dcerror(1,"Could not execute %s\n",lineBuff);
-		}
-		noEntry=1;
-		while (fgets(tempBuff, MAXINFOLENGTH, pipe))
-		{
-				if (sscanf(tempBuff, "%*s %ld %*s %s %[^ \t,]", &pos, refAll, altAll) == 3
-					&& pos==geneVarParser::thisLocus->getPos()) // this test is here because the tabix command pulls out all overlapping indels
-				{
-					if ((!strcmp(altAll, currentAltAll) && !strcmp(refAll, currentRefAll))
-						|| (!strcmp(refAll, currentAltAll) && !strcmp(altAll, currentRefAll))) // occasionally may be the wrong way round
-					{
-						noEntry = 0;
-						sscanf(tempBuff, "%*s %*s %*s %*s %*s %*s %*s %" MAXINFOLENGTHSTR "s", lineBuff);
-						break;
-					}
-				}
-		}
-#ifdef MSDOS
-			_pclose(pipe);
-#else
-			pclose(pipe);
-#endif
-#endif
 		if (noEntry)
-			sprintf(lineBuff,"NOVCFLINE_%s_%ld_%s",chrStr, geneVarParser::thisLocus->getPos(), currentAltAll);
+			sprintf(lineBuff,"NOVCFLINE_%s_%ld",chrStr,geneVarParser::thisLocus->getPos());
 		geneVarParser::queryCache[queryBuff]=lineBuff;
 	}
 	else
@@ -211,62 +270,32 @@ dcexpr_val *performTabixQuery(const char *fn,int addChr,int lower,char *lookupSt
 	return rv;
 }
 
-dcexpr_val* vcfAddChrLookup_func(dcvnode* b1, dcvnode* b2)
+dcexpr_val *vcfAddChrLookup_func(dcvnode* b1, dcvnode *b2)
 {
-	dcexpr_val* r1, * r2;
+	dcexpr_val *r1, *r2;
 	EVAL_BOTH;
-	dcexpr_val* rv;
-	rv = performTabixQuery((char*)(*r2), 1, 0, (char*)(*r1), 0);
+	dcexpr_val *rv;
+	rv = performTabixQuery((char*)(*r2), 1, 0, (char*)(*r1));
 	delete r1; delete r2;
 	return rv;
 }
 
-dcexpr_val* vcfAddChrLookup23toX_func(dcvnode* b1, dcvnode* b2)
+dcexpr_val *vcfAddLowerChrLookup_func(dcvnode* b1, dcvnode *b2)
 {
-	dcexpr_val* r1, * r2;
+	dcexpr_val *r1, *r2;
 	EVAL_BOTH;
-	dcexpr_val* rv;
-	rv = performTabixQuery((char*)(*r2), 1, 0, (char*)(*r1), 1);
+	dcexpr_val *rv;
+	rv = performTabixQuery((char*)(*r2), 1, 1, (char*)(*r1));
 	delete r1; delete r2;
 	return rv;
 }
 
-dcexpr_val* vcfAddLowerChrLookup_func(dcvnode* b1, dcvnode* b2)
+dcexpr_val *vcfLookup_func(dcvnode* b1,dcvnode *b2)
 {
-	dcexpr_val* r1, * r2;
+	dcexpr_val *r1,*r2;
 	EVAL_BOTH;
-	dcexpr_val* rv;
-	rv = performTabixQuery((char*)(*r2), 1, 1, (char*)(*r1), 0);
-	delete r1; delete r2;
-	return rv;
-}
-
-dcexpr_val* vcfAddLowerChrLookup23toX_func(dcvnode* b1, dcvnode* b2)
-{
-	dcexpr_val* r1, * r2;
-	EVAL_BOTH;
-	dcexpr_val* rv;
-	rv = performTabixQuery((char*)(*r2), 1, 1, (char*)(*r1), 1);
-	delete r1; delete r2;
-	return rv;
-}
-
-dcexpr_val* vcfLookup_func(dcvnode* b1, dcvnode* b2)
-{
-	dcexpr_val* r1, * r2;
-	EVAL_BOTH;
-	dcexpr_val* rv;
-	rv = performTabixQuery((char*)(*r2), 0, 0, (char*)(*r1), 0);
-	delete r1; delete r2;
-	return rv;
-}
-
-dcexpr_val* vcfLookup23toX_func(dcvnode* b1, dcvnode* b2)
-{
-	dcexpr_val* r1, * r2;
-	EVAL_BOTH;
-	dcexpr_val* rv;
-	rv = performTabixQuery((char*)(*r2), 0, 0, (char*)(*r1), 1);
+	dcexpr_val *rv;
+	rv=performTabixQuery((char*)(*r2),0,0,(char*)(*r1));
 	delete r1; delete r2;
 	return rv;
 }
@@ -284,67 +313,6 @@ consequenceReport findWorstConsequence(char *s,consequenceReport *r,int n) // th
 	return r[0];
 }
 
-#if 0
-CSQ = G | intron_variant | MODIFIER | C4orf50 | ENSG00000181215 | Transcript | ENST00000531445 | protein_coding || 21 / 33||||||||||-1 || HGNC |
-HGNC:33766 | YES || Ensembl | T | T|||||||, G | downstream_gene_variant | MODIFIER | JAKMIP1 | 152789 | Transcript | NM_001099433.1 | protein_coding|
-||||||||||60 | -1 || EntrezGene | HGNC : 26460 | YES || RefSeq | T | T|||||||, G | downstream_gene_variant | MODIFIER | JAKMIP1 | ENSG00000152969 |
-Transcript | ENST00000409021 | protein_coding|||||||||||64 | -1 || HGNC | HGNC : 26460 | YES || Ensembl | T | T|||||||, C | downstream_gene_variant
-| MODIFIER | JAKMIP1 | 152789 | Transcript | NM_001099433.1 | protein_coding|||||||||||60 | -1 || EntrezGene | HGNC : 26460 | YES || RefSeq | T |
-T|||||||, C | downstream_gene_variant | MODIFIER | JAKMIP1 | ENSG00000152969 | Transcript | ENST00000409021 | protein_coding|||||||||||64 | -1 ||
-HGNC | HGNC : 26460 | YES || Ensembl | T | T|||||||, C | intron_variant | MODIFIER | C4orf50 | ENSG00000181215 | Transcript | ENST00000531445 |
-protein_coding || 21 / 33||||||||||-1 || HGNC | HGNC : 33766 | YES || Ensembl | T | T|||||||
-looks like this but no spaces
-#endif
-
-dcexpr_string* getGeneAnnotation(dcexpr_val* r1)
-{
-	char geneName[100], testName[100], * ptr, * sptr,allName[100];
-	char* CSQEntry = (char*)(*r1);
-	dcexpr_string* rv;
-	if (geneVarParser::thisGene == 0)
-	{
-		dcerror.warn();
-		dcerror(1, "getGeneAnnotation() was called but no gene is set");
-		return (dcexpr_string*)r1;
-	}
-	strcpy(geneName, geneVarParser::thisGene->getGene());
-	lineBuff[0] = '\0';
-	sptr = lineBuff;
-	ptr = CSQEntry;
-	while (testName[0]='\0',sscanf(ptr, "%[^|]|%*[^|]|%*[^|]|%[^|]", allName,testName) >= 1) // find an annotation for this gene, sometimes there is no gene name
-	{
-		if (!strcmp(testName, geneName))
-		{
-			while (*ptr && !isspace(*ptr) && *ptr != ',')
-				*sptr++ = *ptr++;
-			*sptr++ = ','; // always append comma, probably won't hurt
-			*sptr = '\0';
-			if (*ptr == ',')
-				++ptr;
-			else
-				break;
-		}
-		else
-		{
-			if ((ptr = strchr(ptr, ',')) != 0)
-				++ptr;
-			else
-				break;
-		}
-	}
-	if (lineBuff[0] == '\0')
-	{
-		dcerror.warn();
-		dcerror(1,
-			"Failed to find annotation at %d:%ld for gene %s in this string:\n%s\n\nFor gene-specific output should run VEP with e.g. --per_gene or --pick_allele_gene",
-			geneVarParser::thisLocus->getChr(), geneVarParser::thisLocus->getPos(), geneName, CSQEntry);
-		strcpy(lineBuff, "NOGENEENTRY");
-	}
-	rv = new dcexpr_string(lineBuff);
-	delete r1;
-	return rv; // collection of annotations for this gene, separated by commas
-}
-
 dcexpr_string *getAlleleAnnotation(dcexpr_val *r1)
 {
 	const char *altAllStr;
@@ -353,11 +321,9 @@ dcexpr_string *getAlleleAnnotation(dcexpr_val *r1)
 	dcexpr_string *rv;
 	altAllStr = geneVarParser::thisLocus->getAll(geneVarParser::thisAltAllele);
 	// allele identifier looks like this CSQ=T| or this ,T| and there can be multiple entries for each allele
-	// this does not work for some indels where the VCF alleles are e.g. CT C but allele is given as -
-	// but we do not need this test if we already have an allele-specific entry, as with multilineVEP
 	lineBuff[0] = '\0';
 	sprintf(tempBuff, "%s|", altAllStr);
-	if (!strncmp(CSQEntry, tempBuff,strlen(tempBuff)))
+	if (!strncmp(CSQEntry, altAllStr,strlen(altAllStr)))
 	{
 		ptr = CSQEntry;
 		sptr = lineBuff;
@@ -379,51 +345,10 @@ dcexpr_string *getAlleleAnnotation(dcexpr_val *r1)
 	if (lineBuff[0] == '\0')
 	{
 		dcerror.warn();
-		dcerror(1, 
-			"Failed to find annotation at %d:%ld for allele %s in this string:\n%s\n\nIf you use --merge-alt-alleles 0 then there must be an allele-specific annotation in the VEP output. However it is normal for VEP to rename alleles of indels so will use whole string to select most severe variant.\n",
-			geneVarParser::thisLocus->getChr(),geneVarParser::thisLocus->getPos(),altAllStr,CSQEntry);
+		dcerror(1, "Failed to find annotation for allele %s in this string:\n%s\n\nIf you use --merge-alt-alleles 0 then there must be an allele-specific annotation in the VEP output and you should not use --pick when running VEP. However there may be no matching allele for e.g. indels so will use whole string to select most severe variant. ",altAllStr,CSQEntry);
 		strcpy(lineBuff, CSQEntry);
 	}
 	rv = new dcexpr_string(lineBuff);
-	delete r1;
-	return rv; // collection of annotations for this allele, separated by commas
-}
-
-dcexpr_string* getSpecificAnnotation(dcexpr_val* r1)
-{
-	char* annotation;
-	dcexpr_string* alleleSpecificAnnotation = 0, * geneSpecificAnnotation = 0;
-	if (geneVarParser::mergeAltAlleles == 1 || geneVarParser::multilineVEP == 1)
-		annotation = (char*)(*r1);
-	else
-	{
-		alleleSpecificAnnotation = getAlleleAnnotation(r1);
-		r1 = 0; // because has been deleted
-		annotation = (char*)(*alleleSpecificAnnotation);
-	}
-	if (geneVarParser::thisGene)
-	{
-		if (r1)
-		{
-			geneSpecificAnnotation = getGeneAnnotation(r1);
-			r1 = 0;
-		}
-		else
-		{
-			geneSpecificAnnotation = getGeneAnnotation(alleleSpecificAnnotation);
-			alleleSpecificAnnotation = 0;
-
-		}
-		annotation = (char*)(*geneSpecificAnnotation);
-	}
-	dcexpr_string* rv;
-	rv = new dcexpr_string(annotation);
-	if (r1)
-		delete r1;
-	if (alleleSpecificAnnotation)
-		delete alleleSpecificAnnotation;
-	if (geneSpecificAnnotation)
-		delete geneSpecificAnnotation;
 	return rv;
 }
 
@@ -433,11 +358,19 @@ dcexpr_val *extract_sift_func(dcvnode *b1)
 	EVAL_R1;
 	char *ptr;
 	char *annotation;
-	dcexpr_string* specificAnnotation = getSpecificAnnotation(r1);
-	annotation = (char*)(*specificAnnotation);
+	dcexpr_string *alleleSpecificAnnotation = 0;
+	if (geneVarParser::mergeAltAlleles == 1)
+		annotation = (char*)(*r1);
+	else
+	{
+		alleleSpecificAnnotation = getAlleleAnnotation(r1);
+		annotation = (char*)(*alleleSpecificAnnotation);
+	}
 	dcexpr_string *rv;
 	rv = new dcexpr_string(findWorstConsequence(annotation, sift_consequence, NSIFTCONSEQUENCES).str);
-	delete specificAnnotation;
+	delete r1;
+	if (alleleSpecificAnnotation)
+		delete alleleSpecificAnnotation;
 	return rv;
 }
 
@@ -446,43 +379,40 @@ dcexpr_val *extract_polyphen_func(dcvnode *b1)
 	dcexpr_val *r1;
 	EVAL_R1;
 	char *annotation;
-	dcexpr_string* specificAnnotation = getSpecificAnnotation(r1);
-	annotation = (char*)(*specificAnnotation);
-	dcexpr_string* rv;
+	dcexpr_string *alleleSpecificAnnotation = 0;
+	if (geneVarParser::mergeAltAlleles == 1)
+		annotation = (char*)(*r1);
+	else
+	{
+		alleleSpecificAnnotation = getAlleleAnnotation(r1);
+		annotation = (char*)(*alleleSpecificAnnotation);
+	}
+	dcexpr_string *rv;
 	rv = new dcexpr_string(findWorstConsequence(annotation, polyphen_consequence, NPOLYPHENCONSEQUENCES).str);
-	delete specificAnnotation;
-	return rv;
-}
-
-dcexpr_val* extract_custom_func(dcvnode* b1)
-{
-	// custom, e.g. GERP, is a float or list of floats, same for every transcript, at the end of the annotation
-	// e.g. .....RefSeq|ACAG|ACAG||||||||0.584999978542328&-1.37999999523163&0.689000010490417&-1.11000001430511
-	// so does not need to be specific
-	dcexpr_val* r1;
-	EVAL_R1;
-	dcexpr_string* annptr = (dcexpr_string*)(r1);
-	char *annotation,*ptr,*nptr;
-	annotation = (char*)(*annptr);
-	for (nptr = annotation; *nptr; ++nptr)
-		if (*nptr == '|')
-			ptr = nptr;
-	dcexpr_double* rv;
-	rv = new dcexpr_double(atof(ptr+1));
 	delete r1;
+	if (alleleSpecificAnnotation)
+		delete alleleSpecificAnnotation;
 	return rv;
 }
 
-dcexpr_val* extract_vep_func(dcvnode* b1)
+dcexpr_val *extract_vep_func(dcvnode *b1)
 {
-	dcexpr_val* r1;
+	dcexpr_val *r1;
 	EVAL_R1;
-	char* annotation;
-	dcexpr_string* specificAnnotation = getSpecificAnnotation(r1);
-	annotation = (char*)(*specificAnnotation);
-	dcexpr_string* rv;
-	rv = new dcexpr_string(findWorstConsequence(annotation, e_consequence, E_NCONSEQUENCETYPES).str);
-	delete specificAnnotation;
+	char *annotation;
+	dcexpr_string *alleleSpecificAnnotation=0;
+	if (geneVarParser::mergeAltAlleles == 1)
+		annotation = (char*)(*r1);
+	else
+	{
+		alleleSpecificAnnotation = getAlleleAnnotation(r1);
+		annotation = (char*)(*alleleSpecificAnnotation);
+	}
+	dcexpr_string *rv;
+	rv=new dcexpr_string(findWorstConsequence(annotation,e_consequence,E_NCONSEQUENCETYPES).str);
+	delete r1;
+	if (alleleSpecificAnnotation)
+		delete alleleSpecificAnnotation;
 	return rv;
 }
 
@@ -504,14 +434,9 @@ dcexpr_val *getWeight_func(dcvnode* b1,dcvnode *b2)
 		else
 			tab=0;
 	}
-	char* annotation = (char*)(*r1);
-	if (*annotation=='\0')
-	{
-		dcerror(1, "Error in getWeight_func(), empty annotation provided to look up in weight table named %s\n",  (char*)(*r2));
-	}
 	if (tab!=0)
 	{
-		std::map<std::string,double>::const_iterator weightIter=tab->weightMap.find(annotation);
+		std::map<std::string,float>::const_iterator weightIter=tab->weightMap.find((char*)(*r1));
 		if(weightIter==tab->weightMap.end())
 		{
 			dcerror(1,"Could not find annotation %s in weight table named %s\n",(char*)(*r1),(char*)(*r2));
@@ -629,10 +554,10 @@ bool geneVarParser::parserIsInited=0;
 masterLocus *geneVarParser::thisLocus;
 int geneVarParser::thisAltAllele;
 int geneVarParser::mergeAltAlleles;
-int geneVarParser::multilineVEP;
-refseqGeneInfo *geneVarParser::thisGene=0; // because not used by intVarAssoc
+refseqGeneInfo *geneVarParser::thisGene;
 double geneVarParser::thisWeight;
-std::map<std::string,std::string> geneVarParser::queryCache;
+std::map<std::string,std::string> geneVarParser::queryCache, geneVarParser::dbNSFPCache;
+std::map<std::string, int> geneVarParser::dbNSFPFields;
 extern int initGeneVarParser();
 
 geneVarParser::geneVarParser()
@@ -648,17 +573,10 @@ dcexpr_val *geneVarParser::eval()
 {
 	dcexpr_val *rv;
 	if (express::debugFile)
-	{
-		if (geneVarParser::thisGene)
-			fprintf(express::debugFile, "Evaluating expression using gene %s and variant at %d:%ld:\n",
-				geneVarParser::thisGene->getGene(),
-				geneVarParser::thisLocus->getChr(), geneVarParser::thisLocus->getPos());
-		else
-			fprintf(express::debugFile, "Evaluating expression using variant at %d:%ld:\n",
-				geneVarParser::thisLocus->getChr(), geneVarParser::thisLocus->getPos());
-	}
-
-	rv = express::eval();
+		fprintf(express::debugFile,"Evaluating expression using gene %s and variant at %d:%ld:\n",
+			geneVarParser::thisGene->getGene(),
+			geneVarParser::thisLocus->getChr(),geneVarParser::thisLocus->getPos());
+	rv=express::eval();
 	if (express::debugFile)
 		fprintf(express::debugFile,"Final result of expression evaluation: %s\n",(char*)(*rv));
 	return rv;
@@ -680,15 +598,12 @@ int initGeneVarParser()
 	add_bin_op_same("VCFLOOKUP", vcfLookup_func);
 	add_bin_op_same("VCFADDCHRLOOKUP", vcfAddChrLookup_func);
 	add_bin_op_same("VCFADDLOWERCHRLOOKUP", vcfAddLowerChrLookup_func);
-	add_bin_op_same("VCFLOOKUP23TOX", vcfLookup23toX_func);
-	add_bin_op_same("VCFADDCHRLOOKUP23TOX", vcfAddChrLookup23toX_func);
-	add_bin_op_same("VCFADDLOWERCHRLOOKUP23TOX", vcfAddLowerChrLookup23toX_func);
+	add_bin_op_same("DBNSFPLOOKUP", dbNSFPLookup_func);
 	add_un_op("ANNOT",annot_func);
 	add_un_op("ATTRIB",attrib_func);
 	add_un_op("GETPOLYPHEN",extract_polyphen_func);
 	add_un_op("GETSIFT",extract_sift_func);
-	add_un_op("GETCUSTOM",extract_custom_func);
-	add_un_op("GETVEP", extract_vep_func);
+	add_un_op("GETVEP",extract_vep_func);
 	return 1;
 }
 

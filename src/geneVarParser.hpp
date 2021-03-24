@@ -31,8 +31,9 @@ public:
 	static refseqGeneInfo *thisGene;
 	static int thisAltAllele;
 	static double thisWeight;
-	static std::map<std::string,std::string> queryCache;
-	static int mergeAltAlleles,multilineVEP;
+	static std::map<std::string,std::string> queryCache,dbNSFPCache;
+	static std::map<std::string, int> dbNSFPFields;
+	static int mergeAltAlleles;
 	geneVarParser();
 	~geneVarParser() { ; }
 	int init(masterLocus &m, refseqGeneInfo &r) { thisLocus = &m; thisGene = &r; thisAltAllele = 0; }
@@ -42,7 +43,7 @@ public:
 class weightTable {
 public:
 	std::string tableName;
-	std::map<std::string,double> weightMap;
+	std::map<std::string,float> weightMap;
 	weightTable() { ; }
 	~weightTable() { ; }
 	int readFromFile(char *fn,char *n);
