@@ -171,7 +171,7 @@ const char *masterLocus::getID() //access function
 #endif
 }
 
-int masterLocusFile::getTotalSubs()
+int masterLocusFile::getTotalSubs   ()
 {
 	int s,i;
 	for (s=0,i=0;i<nLocusFiles;++i)
@@ -331,7 +331,7 @@ int masterLocus::writePredictorQuery(FILE *fp, analysisSpecs const &spec )
 int masterLocus::getQuickFeature(refseqGeneInfo &r,int a)
 {
 	char thisGeneEffect[100];
-	float oldEffectWeight;
+	double oldEffectWeight;
 	int e;
 	if (nAlls<2)
 		return 1;
@@ -449,7 +449,7 @@ if (recPos!=0L)
 	}
 	fclose(fp);
 	unlink("predictorOutput.txt");
-	sprintf(line," %s -i predictorQuery.txt -o predictorOutput.txt --most_severe --force_overwrite",spec.vepCommand);
+	sprintf(line," %s -i predictorQuery.txt -o predictorOutput.txt --pick_allele_gene --force_overwrite",spec.vepCommand);
 	checkSystem();
 	system(line);
 	fp=fopen("predictorOutput.txt","rb"); // binary mode can use fseek/ftell
@@ -489,6 +489,7 @@ if (recPos!=0L)
 return locusCount;
 }
 
+// #define MAXLOCIINSCOREASSOCFILE 50000
 int useLocus[MAXLOCIINSCOREASSOCFILE];
 
 int masterLocusFile::writeScoreAssocFiles(char *root, float wf, int *useFreqs, int *suppliedNSubs, int writeNames, int writeComments, int writeScoreFile, analysisSpecs &spec)
@@ -503,6 +504,231 @@ int masterLocusFile::loadFirst(analysisSpecs &spec)
 		return 0;
 	else 
 		return load(tempRecord,currentRecPos);
+}
+
+int masterLocusFile::writeFlatFile(masterLocusFile& subFile, char* fn, int totalSub, strEntry* subName,analysisSpecs& spec,int *useLocus)
+{
+	int lc,s,ss,i,all,l,ll,lll;
+	FILE* fp;
+	long* subPos;
+	allelePair* a;
+	probTriple* p;
+	assert(subPos = (long *)calloc(totalSub, sizeof(long)));
+	lc= 0;
+	if (gotoFirstInRange(spec))
+		do
+		{
+			nAlls[lc++] = tempRecord.nAlls;
+		} while (gotoNextInRange(spec));
+
+	if (spec.useProbs)
+		assert(p= (probTriple*)calloc(totalSub, sizeof(probTriple)));
+	else
+		assert(a= (allelePair*)calloc(totalSub, sizeof(allelePair)));
+	fp = fopen(fn, "wb"); // binary because I had problems with fseek() and text files
+	for (s = 0, i = 0; i < subFile.nLocusFiles; ++i)
+		for (ss = 0; ss < subFile.nSubs[i]; ++s, ++ss)
+		{
+			if (spec.phenotypes)
+			{
+				if (spec.phenotypes[s] == MISSINGPHENOTYPE)
+					continue;
+			}
+			if (spec.isQuantitative)
+				fprintf(fp, "%s\t%9.5f\t", subName[s], spec.phenotypes[s]);
+			else
+			{
+				int cc_pheno = spec.phenotypes ? spec.phenotypes[s] : subFile.cc[i];
+				if (cc_pheno != 0 && cc_pheno != 1)
+					continue; // no longer output subjects with unknown phenotype
+				fprintf(fp, "%s\t%d\t", subName[s], cc_pheno);
+			}
+			subPos[s] = ftell(fp);
+			for (l = 0,ll=0; l < lc; ++l)
+			{
+				if (spec.useProbs)
+				{
+					if (useLocus[ll++])
+						fprintf(fp, "0.000 0.000 0.000\t");
+//						fprintf(fp, "%5.3f %5.3f %5.3f\t", 0, 0, 0);
+				}
+				else
+				{
+					if (spec.mergeAltAlleles)
+					{
+						if (useLocus[ll++])
+							fprintf(fp, "0 0\t");
+//							fprintf(fp, "%d %d\t", 0, 0);
+					}
+					else
+						for (all = 1; all < nAlls[l]; ++all)
+						{
+							if (useLocus[ll++])
+								fprintf(fp, "0 0\t");
+//								fprintf(fp, "%d %d\t", 0, 0);
+						}
+				}
+			}
+			fprintf(fp, "\n");
+		}
+// subPos[s] is the position to write the next genotype / probs
+	l = 0;
+	ll = 0;
+	if (gotoFirstInRange(spec))
+		do
+		{
+			if (spec.useProbs)
+				outputCurrentProbs(p, spec);
+			else
+				outputCurrentAlleles(a, spec);
+			for (s = 0, i = 0; i < subFile.nLocusFiles; ++i)
+				for (ss = 0; ss < subFile.nSubs[i]; ++s, ++ss)
+				{
+					if (spec.phenotypes)
+					{
+						if (spec.phenotypes[s] == MISSINGPHENOTYPE)
+							continue;
+					}
+					if (!spec.isQuantitative)
+					{
+						int cc_pheno = spec.phenotypes ? spec.phenotypes[s] : subFile.cc[i];
+						if (cc_pheno != 0 && cc_pheno != 1)
+							continue;
+					}
+					fseek(fp, subPos[s], SEEK_SET);
+					if (spec.useProbs)
+					{
+						if (useLocus[ll])
+							fprintf(fp, "%5.3f %5.3f %5.3f\t", p[s][0], p[s][1], p[s][2]);
+					}
+					else
+					{
+							if (spec.mergeAltAlleles)
+							{
+								if (useLocus[ll])
+									fprintf(fp, "%d %d\t",
+										(a[s][0] > 1) ? 2 : a[s][0],
+										(a[s][1] > 1) ? 2 : a[s][1]); // force to be biallelic
+							}
+							else
+								for (all = 1,lll=ll; all < nAlls[l]; ++all)
+								{
+									if (useLocus[lll++])
+										fprintf(fp, "%d %d\t",
+										(a[s][0] == all + 1) ? 2 : a[s][0] == 0 ? 0 : 1,
+										(a[s][1] == all + 1) ? 2 : a[s][1] == 0 ? 0 : 1);
+								}
+						}
+						subPos[s] = ftell(fp);
+				}
+			ll += (spec.useProbs||spec.mergeAltAlleles) ? 1 : (nAlls[l] - 1);
+			++l;
+		} while (gotoNextInRange(spec));
+	fclose(fp);
+	if (spec.useProbs)
+		free(p);
+	else
+		free(a);
+	free(subPos);
+	return lc;
+}
+
+int masterLocusFile::writeTransposedFile(masterLocusFile& subFile, char* fn, int totalSub, strEntry* subName, analysisSpecs& spec, int* useLocus)
+{
+	int lc, s, ss, i, all, l, ll, lll;
+	FILE* fp;
+	allelePair* a;
+	probTriple* p;
+	int *useSub;
+	assert((useSub = (int*)calloc(totalSub, sizeof(int)))!=0);
+	lc = 0;
+	if (gotoFirstInRange(spec))
+		do
+		{
+			nAlls[lc++] = tempRecord.nAlls;
+		} while (gotoNextInRange(spec));
+
+		if (spec.useProbs)
+			assert(p = (probTriple*)calloc(totalSub, sizeof(probTriple)));
+		else
+			assert(a = (allelePair*)calloc(totalSub, sizeof(allelePair)));
+		fp = fopen(fn, "w");
+		for (s = 0, i = 0; i < subFile.nLocusFiles; ++i)
+			for (ss = 0; ss < subFile.nSubs[i]; ++s, ++ss)
+			{
+				if (spec.phenotypes && spec.isQuantitative)
+				{
+					if (spec.phenotypes[s] == MISSINGPHENOTYPE)
+						continue;
+				}
+				else
+				{
+					int cc_pheno = spec.phenotypes ? spec.phenotypes[s] : subFile.cc[i];
+					if (cc_pheno != 0 && cc_pheno != 1)
+						continue; // no longer output subjects with unknown phenotype
+				}
+				fprintf(fp, "%s\t", subName[s]);
+				useSub[s] = 1;
+			}
+		fprintf(fp, "\n");
+		for (s = 0, i = 0; i < subFile.nLocusFiles; ++i)
+			for (ss = 0; ss < subFile.nSubs[i]; ++s, ++ss)
+			{
+				if (!useSub[s])
+					continue;
+				if (spec.isQuantitative)
+					fprintf(fp, "%9.5f\t", spec.phenotypes[s]);
+				else
+				{
+					int cc_pheno = spec.phenotypes ? spec.phenotypes[s] : subFile.cc[i];
+					fprintf(fp, "%d\t", cc_pheno);
+				}
+			}
+		fprintf(fp, "\n");
+
+
+		l = 0;
+		ll = 0;
+		if (gotoFirstInRange(spec))
+			do
+			{
+				if (spec.useProbs)
+					outputCurrentProbs(p, spec);
+				else
+					outputCurrentAlleles(a, spec);
+				for (all = 1; all < ((spec.useProbs || spec.mergeAltAlleles) ? 1 : nAlls[l]); ++all)
+				{
+					if (useLocus[ll + all - 1])
+					{
+						for (s = 0, i = 0; i < subFile.nLocusFiles; ++i)
+							for (ss = 0; ss < subFile.nSubs[i]; ++s, ++ss)
+							{
+								if (!useSub[s])
+									continue;
+								if (spec.useProbs)
+									fprintf(fp, "%5.3f %5.3f %5.3f\t", p[s][0], p[s][1], p[s][2]);
+								else if (spec.mergeAltAlleles)
+									fprintf(fp, "%d %d\t",
+										(a[s][0] > 1) ? 2 : a[s][0],
+										(a[s][1] > 1) ? 2 : a[s][1]); // force to be biallelic
+								else
+									fprintf(fp, "%d %d\t",
+										(a[s][0] == all + 1) ? 2 : a[s][0] == 0 ? 0 : 1,
+										(a[s][1] == all + 1) ? 2 : a[s][1] == 0 ? 0 : 1);
+							}
+						fprintf(fp, "\n");
+					}
+				}
+				ll += (spec.useProbs || spec.mergeAltAlleles) ? 1 : (nAlls[l] - 1);
+				++l;
+			} while (gotoNextInRange(spec));
+			fclose(fp);
+			if (spec.useProbs)
+				free(p);
+			else
+				free(a);
+			free(useSub);
+			return lc;
 }
 
 int masterLocusFile::loadNext(analysisSpecs &spec)
@@ -520,21 +746,24 @@ int masterLocusFile::loadNext(analysisSpecs &spec)
 	return 
 		load(tempRecord, currentRecPos);
 }
-
+#define MAXCOMMENTLENGTH 250000 // can be 200K if multiple transcripts
+char comment[MAXCOMMENTLENGTH];
+// may be long VEP output
 int masterLocusFile::writeScoreAssocFiles(masterLocusFile &subFile,char *root, float wf, int *useFreqs, int *suppliedNSubs, int writeNames, int writeComments, int writeScorefile,analysisSpecs &spec)
 // allow information about subjects to be provided by a different masterLocusFile 
 // however we are assuming both files refer to identical set of subjects
 {
-	char fn[100],buff[MAXALL*MAXALLLENGTH],buff2[1000],comment[MAXALL*MAXALLLENGTH],*ptr,alleles[MAXSTR+1],commandString[1000],posStr[100];
+	char fn[100],buff[MAXALL*MAXALLLENGTH],buff2[1000],*ptr,alleles[MAXSTR+1],commandString[1000],posStr[100];
 	allelePair **a;
 	probTriple **p;
-	int totalSub,lc,s,l,ss,i,c,nValid,all,numSplitLoci,numWeights,w;
+	int totalSub,lc,s,l,ss,i,c,nValid,all,numSplitLoci,numIncludedLoci,ll,numWeights,w;
 	float** locusWeights;
 	FILE *fp;
 	FILEPOSITION recPos;
 	const char *testKey;
 	geneVarParser commentParser;
 	geneVarParser::mergeAltAlleles = spec.mergeAltAlleles; // need to make sure this gets set
+	geneVarParser::multilineVEP = spec.multilineVEP; // need to make sure this gets set
 	strEntry *subName;
 	if (spec.commentExpression[0])
 		commentParser.parse(spec.commentExpression); // only have to parse once
@@ -545,140 +774,161 @@ int masterLocusFile::writeScoreAssocFiles(masterLocusFile &subFile,char *root, f
 			nSubs[i]=subFile.nSubs[i];
 	else
 	{
-		dcerror(99,"Incompatible numbers of subjects in subFile in masterLocusFile::writeOldScoreAssocFiles()");
+		dcerror(99,"Incompatible numbers of subjects in subFile in masterLocusFile::writeScoreAssocFiles()");
 		return 0;
 	}
 	openLocusFiles();
 	for (i=0,totalSub=0;i<subFile.nLocusFiles;++i)
 		totalSub+=subFile.nSubs[i];
-	subName=(strEntry *)calloc(totalSub,sizeof(strEntry));
+	if (totalSub == 0)
+	{
+		dcerror(99, "The total number of valid subjects is zero in masterLocusFile::writeScoreAssocFiles()");
+		return 0;
+	}
+	assert(subName=(strEntry *)calloc(totalSub,sizeof(strEntry)));
 // hereOK();
 	subFile.outputSubNames(subName,spec);
 // hereOK();
 	nValid=countNumberInRange(spec);
-	if (spec.useProbs)
+	if (!spec.useFlatFile && !spec.useTransposedFile)
 	{
-		assert((p = (probTriple **)calloc(nValid, sizeof(probTriple*))) != 0);
-		for (l = 0; l < nValid; ++l)
-			p[l] = (probTriple *)calloc(totalSub, sizeof(probTriple));
-		lc = outputProbs(p, spec);
-	}
-	else
-	{
-		assert((a = (allelePair **)calloc(nValid, sizeof(allelePair*))) != 0);
-		for (l = 0; l < nValid; ++l)
-			a[l] = (allelePair *)calloc(totalSub, sizeof(allelePair));
-		lc = outputAlleles(a, spec);
+		if (spec.useProbs)
+		{
+			assert((p = (probTriple**)calloc(nValid, sizeof(probTriple*))) != 0);
+			for (l = 0; l < nValid; ++l)
+				assert(p[l] = (probTriple*)calloc(totalSub, sizeof(probTriple)));
+			lc = outputProbs(p, spec);
+		}
+		else
+		{
+			assert((a = (allelePair**)calloc(nValid, sizeof(allelePair*))) != 0);
+			for (l = 0; l < nValid; ++l)
+				assert(a[l] = (allelePair*)calloc(totalSub, sizeof(allelePair)));
+			lc = outputAlleles(a, spec);
+		}
 	}
 // hereOK();
-	sprintf(fn,"%s.dat",root);
-	fp=fopen(fn,"w");
 	if(spec.subPhenos.size()>0)
 	{
 		if(spec.phenotypes==NULL) // should have been allocated when IDsAndPhenotypesFileName read
 		{
-			spec.phenotypes=(int*)malloc(sizeof(int)*totalSub);
+			spec.phenotypes=(float*)malloc(sizeof(float)*totalSub);
 			assert(spec.phenotypes!=0);
 		}
-		TStrIntMap::iterator it;
+		TStrFloatMap::iterator it;
 		for(s=0;s<totalSub;++s)
 		{
 			it=spec.subPhenos.find(subName[s]);
 			if (it==spec.subPhenos.end())
-				spec.phenotypes[s]=-1;
+				spec.phenotypes[s]=MISSINGPHENOTYPE;
 			else
 				spec.phenotypes[s]=it->second;
 		}
 	}
+	numWeights = spec.weightExpressions.size() ? spec.weightExpressions.size() : 1;
+	assert((locusWeights = (float**)calloc(numWeights, sizeof(float*))) != 0);
+	for (w = 0; w < numWeights; ++w)
+		assert((locusWeights[w] = (float*)calloc(MAXLOCIINSCOREASSOCFILE, sizeof(float))) != 0);
+	numSplitLoci = outputSAInfo(useLocus, locusWeights, spec);
+	// useLocus has numSplitLoci entries
 	checkSystem();
-	for (s=0,i=0;i<subFile.nLocusFiles;++i)
-	for (ss=0;ss<subFile.nSubs[i];++s,++ss)
+	sprintf(fn, "%s.dat", root);
+	if (spec.useTransposedFile)
+		lc = writeTransposedFile(subFile, fn, totalSub, subName, spec, useLocus);
+	else if (spec.useFlatFile)
+		lc=writeFlatFile(subFile, fn, totalSub, subName, spec,useLocus);
+	else
 	{
-		if (spec.phenotypes)
-		{
-			int ccc=spec.phenotypes[s];
-			if (ccc!=0 && ccc!=1)
-				continue;
-		}
-		fprintf(fp,"%s\t%d\t",subName[s],spec.phenotypes?spec.phenotypes[s]:subFile.cc[i]);
-		for (l=0;l<lc;++l)
-			if (spec.useProbs)
+		fp = fopen(fn, "w");
+		for (s = 0, i = 0; i < subFile.nLocusFiles; ++i)
+			for (ss = 0; ss < subFile.nSubs[i]; ++s, ++ss)
 			{
-				fprintf(fp, "%5.3f %5.3f %5.3f\t",p[l][s][0],p[l][s][1],p[l][s][2]);
-			}
-			else
-			{
-				if (spec.mergeAltAlleles)
+				if (spec.phenotypes)
 				{
-					fprintf(fp, "%d %d\t",
-						(a[l][s][0] > 1) ? 2 : a[l][s][0],
-						(a[l][s][1] > 1) ? 2 : a[l][s][1]); // force to be biallelic
+					if (spec.phenotypes[s] == MISSINGPHENOTYPE)
+						continue;
 				}
+				if (spec.isQuantitative)
+					fprintf(fp, "%s\t%9.5f\t", subName[s], spec.phenotypes[s]);
 				else
-					for (all = 1; all < nAlls[l];++all)
+				{
+					int cc_pheno = spec.phenotypes ? spec.phenotypes[s] : subFile.cc[i];
+					if (cc_pheno != 0 && cc_pheno != 1)
+						continue; // no longer output subjects with unknown phenotype
+					fprintf(fp, "%s\t%d\t", subName[s], cc_pheno);
+				}
+				for (l =0,ll=0; l< lc; ++l)
+					if (spec.useProbs)
 					{
-						fprintf(fp, "%d %d\t",
-							(a[l][s][0] == all+1) ? 2 : a[l][s][0] == 0 ? 0 : 1,
-							(a[l][s][1] == all+1) ? 2 : a[l][s][1] == 0 ? 0 : 1);
+						if (useLocus[ll++])
+							fprintf(fp, "%5.3f %5.3f %5.3f\t", p[l][s][0], p[l][s][1], p[l][s][2]);
 					}
+					else
+					{
+						if (spec.mergeAltAlleles)
+						{
+							if (useLocus[ll++])
+								fprintf(fp, "%d %d\t",
+									(a[l][s][0] > 1) ? 2 : a[l][s][0],
+									(a[l][s][1] > 1) ? 2 : a[l][s][1]); // force to be biallelic
+						}
+						else
+							for (all = 1; all < nAlls[l]; ++all)
+							{
+								if (useLocus[ll++])
+									fprintf(fp, "%d %d\t",
+										(a[l][s][0] == all + 1) ? 2 : a[l][s][0] == 0 ? 0 : 1,
+										(a[l][s][1] == all + 1) ? 2 : a[l][s][1] == 0 ? 0 : 1);
+							}
+					}
+				fprintf(fp, "\n");
 			}
-		fprintf(fp,"\n");
+		fclose(fp);
 	}
-	fclose(fp);
 	checkSystem();
+#if 0
 	if (!spec.mergeAltAlleles)
 	{
 		for (numSplitLoci = 0, l = 0; l < lc; ++l)
 			numSplitLoci += nAlls[l] - 1;
 	}
-	sprintf(commandString,"scoreassoc %s %s --numloci %d",spec.useProbs?"--gendatafile":"--gcdatafile",fn,spec.mergeAltAlleles?lc:numSplitLoci);
-	numWeights = spec.weightExpressions.size() ? spec.weightExpressions.size() : 1;
-	assert((locusWeights = (float**)calloc(numWeights, sizeof(float*)))!=0);
-	for (w = 0; w < numWeights; ++w)
-		assert((locusWeights[w] = (float*)calloc(MAXLOCIINSCOREASSOCFILE, sizeof(float)))!=0);
-	outputSAInfo(useLocus,locusWeights,spec);
+#endif
+	numIncludedLoci = 0;
+	for (ll = 0; ll < numSplitLoci; ++ll)
+		if (useLocus[ll])
+			++numIncludedLoci;
+	sprintf(commandString,"scoreassoc %s %s --numloci %d",spec.useProbs?"--gendatafile":"--gcdatafile",
+		fn, numIncludedLoci);
 	sprintf(fn,"%s.lf.par",root);
 	fp=fopen(fn,"w");
-	for (l=0;l<(spec.mergeAltAlleles ? lc : numSplitLoci);++l)
-			fprintf(fp,"%d ",useLocus[l]);
-	fprintf(fp,"\n");
+	for (l=0;l< numIncludedLoci;++l)
+			fprintf(fp,"1\n");  // idea is now we only output valid loci
 	fclose(fp);
 	sprintf(strchr(commandString,'\0')," --locusfilterfile %s",fn);
 	checkSystem();
+#if 0
 	if (spec.doRecessiveTest)
 	{
-		sprintf(strchr(commandString, '\0'), " --dorecessive --minweight %f --ldthreshold %f ", spec.weightThreshold, spec.LDThreshold);
+		sprintf(strchr(commandString, '\0'), " --dorecessive 1 --minweight %f --ldthreshold %f ", spec.recWeightThreshold, spec.LDThreshold);
 		if (spec.useHaplotypes)
-			sprintf(strchr(commandString, '\0'), " --usehaps");
+			sprintf(strchr(commandString, '\0'), " --usehaps 1");
+		if (spec.showHapLocusNames)
+			sprintf(strchr(commandString, '\0'), " --showhaplocusnames 1");
 	}
-#if 0
-	fprintf(fp,"\n%f %d\n%d %d %d %d %d %d %f %f %d %d\n",
-		wf,
-		wFunc,
-		spec.useConsequenceWeights,
-		useFreqs[0],
-		useFreqs[1],
-		writeNames,
-		writeComments,
-		spec.doRecessiveTest,
-		spec.weightThreshold,
-		spec.LDThreshold,
-		spec.useHaplotypes,
-		spec.useTrios);
 #endif
 	checkSystem();
 	if (spec.useConsequenceWeights)
 	{
 		for (w = 0; w < numWeights; ++w)
 		{
-			if (numWeights==1)
+			if (numWeights == 1)
 				sprintf(fn, "%s.lw.par", root);
 			else
-				sprintf(fn, "%s.%d.lw.par", root,w);
+				sprintf(fn, "%s.%d.lw.par", root, w);
 			fp = fopen(fn, "w");
-			for (l = 0; l < (spec.mergeAltAlleles ? lc : numSplitLoci); ++l)
-				fprintf(fp, "%8.5f ", locusWeights[w][l]);
-			fprintf(fp, "\n");
+			for (l = 0; l < numSplitLoci; ++l)
+				if (useLocus[l])
+						fprintf(fp, "%8.5f\n", locusWeights[w][l]);
 			fclose(fp);
 			sprintf(strchr(commandString, '\0'), " --locusweightfile %s", fn);
 		}
@@ -699,10 +949,12 @@ int masterLocusFile::writeScoreAssocFiles(masterLocusFile &subFile,char *root, f
 			sprintf(fn,"%s.%s.freq.par",root,i?"case":"cont");
 			fp=fopen(fn,"w");
 			for (l=0;l<lc;++l)
-				fprintf(fp,"%8.6f ",freqs[l]);
+				if (useLocus[l])
+					fprintf(fp,"%8.6f ",freqs[l]);
 			fprintf(fp,"\n");
 			for (l=0;l<lc;++l)
-				fprintf(fp,"%8d ",suppliedNSubs[i]);  
+				if (useLocus[l])
+					fprintf(fp,"%8d ",suppliedNSubs[i]);
 			// assume that if AF available nSubs is unknown
 			// change this later to use nSubs if available
 			fprintf(fp,"\n");
@@ -712,11 +964,20 @@ int masterLocusFile::writeScoreAssocFiles(masterLocusFile &subFile,char *root, f
 		}
 // no longer dealing with names seperately
 	checkSystem();
+	if (spec.weightNames.size())
+	{
+		sprintf(fn, "%s.wn.par", root);
+		fp = fopen(fn, "w");
+		for (std::list<std::string>::const_iterator it = spec.weightNames.begin(); it != spec.weightNames.end(); ++it)
+			fprintf(fp,"%s\n",it->c_str());
+		sprintf(strchr(commandString, '\0'), " --locusweightnamesfile %s",fn);
+	}
 	if (writeComments)
 	{
 		sprintf(fn,"%s.comm.par",root);
 		fp=fopen(fn,"w");
 		recPos=findFirstInRange(spec);
+		ll = 0;
 	if (recPos!=0L)
 		while (1)
 		{
@@ -728,27 +989,34 @@ int masterLocusFile::writeScoreAssocFiles(masterLocusFile &subFile,char *root, f
 			load(tempRecord,recPos);
 			for (all = 0; all < (spec.mergeAltAlleles ? 1 : tempRecord.nAlls - 1); ++all)
 			{
+				int aa;
+				if (useLocus[ll++] == 0)
+					continue;
 				if (spec.mergeAltAlleles || tempRecord.nAlls == 2)
-					sprintf(posStr, "%d:%ld", tempRecord.chr, tempRecord.pos);
+				{
+					sprintf(posStr, "%d:%ld-%s", tempRecord.chr, tempRecord.pos,tempRecord.alls[0]);
+					for (aa = 1; aa < tempRecord.nAlls; ++aa)
+						sprintf(strchr(posStr, '\0'), ",%s", tempRecord.alls[aa]);
+				}
 				else
-					sprintf(posStr, "%d:%ld.%d", tempRecord.chr, tempRecord.pos,all+1);
+					sprintf(posStr, "%d:%ld.%d-%s,%s", tempRecord.chr, tempRecord.pos,all+1, tempRecord.alls[0], tempRecord.alls[all+1]);
 				if (spec.commentExpression[0])
 				{
 					geneVarParser::thisLocus = &tempRecord;
 					geneVarParser::thisAltAllele = all + 1;
 					dcexpr_val*rv = commentParser.eval();
 					if (spec.mergeAltAlleles||tempRecord.nAlls==2)
-						sprintf(comment, "%s:%s:%s", posStr, tempRecord.getID(), (char*)(*rv));
+						sprintf(comment, "%s:%s", posStr, (char*)(*rv));
 					else
-						sprintf(comment, "%s:%s:%s", posStr, tempRecord.getID(), (char*)(*rv));
+						sprintf(comment, "%s:%s", posStr, (char*)(*rv));
 					delete rv;
 				}
 				else if (tempRecord.ensemblConsequence[all+1][0] != '\0')
-					sprintf(comment, "%s:%s:%s", posStr, tempRecord.getID(), tempRecord.ensemblConsequence[all+1]);
+					sprintf(comment, "%s:%s", posStr, tempRecord.ensemblConsequence[all+1]);
 				else if (tempRecord.quickConsequence[all+1][0] != '\0')
-					sprintf(comment, "%s:%s:%s", posStr, tempRecord.getID(), tempRecord.quickConsequence[all+1]);
+					sprintf(comment, "%s:%s", posStr, tempRecord.quickConsequence[all+1]);
 				else
-					sprintf(comment, "%s:%s:", posStr, tempRecord.getID());
+					sprintf(comment, "%s:", posStr);
 				for (ptr = comment; *ptr; ++ptr)
 					if (isspace(*ptr))
 						*ptr = '_';
@@ -765,13 +1033,12 @@ int masterLocusFile::writeScoreAssocFiles(masterLocusFile &subFile,char *root, f
 				strncpy(alleles, buff, MAXSTR);
 				alleles[MAXSTR] = '\0';
 				strcat(comment, alleles);
-				fprintf(fp, "%s ", comment);
+				fprintf(fp, "%s\n", comment);
 			}
 			recPos=index.get_next();
 			if (recPos==0L)
 				break;
 		}
-	fprintf(fp,"\n");
 	fclose(fp);
 	sprintf(strchr(commandString,'\0')," --locusnamefile %s",fn);
 	}
@@ -791,7 +1058,11 @@ int masterLocusFile::writeScoreAssocFiles(masterLocusFile &subFile,char *root, f
 	sprintf(strchr(commandString,'\0')," --outfile %s.sao",root);
 	if (writeScorefile)
 		sprintf(strchr(commandString,'\0')," --scorefile %s.sco",root);
-	sprintf(strchr(commandString,'\0')," --weightfactor %f",spec.wf);
+	sprintf(strchr(commandString, '\0'), " --weightfactor %f", spec.wf);
+	if (spec.isQuantitative)
+		sprintf(strchr(commandString, '\0'), " --isquantitative 1");
+	if (spec.useTransposedFile)
+		sprintf(strchr(commandString, '\0'), " --transposedata 1");
 	for (l = 0; l < spec.nScoreassocArgs; ++l)
 		sprintf(strchr(commandString, '\0'), " %s %s", spec.scoreassocArgs[l][0], spec.scoreassocArgs[l][1]);
 	checkSystem();
@@ -803,17 +1074,20 @@ int masterLocusFile::writeScoreAssocFiles(masterLocusFile &subFile,char *root, f
 	fp=fopen(fn,"w");
 	fprintf(fp,"%s\n",commandString);
 	fclose(fp);
-	if (spec.useProbs)
+	if (!spec.useFlatFile)
 	{
-		for (l = 0; l < nValid; ++l)
-			free(p[l]);
-		free(p);
-	}
-	else
-	{
-		for (l = 0; l < nValid; ++l)
-			free(a[l]);
-		free(a);
+		if (spec.useProbs)
+		{
+			for (l = 0; l < nValid; ++l)
+				free(p[l]);
+			free(p);
+		}
+		else
+		{
+			for (l = 0; l < nValid; ++l)
+				free(a[l]);
+			free(a);
+		}
 	}
 	for (w = 0; w < numWeights; ++w)
 		free(locusWeights[w]);
@@ -891,14 +1165,14 @@ if (recPos!=0L)
 return locusCount;
 }
 
-int masterLocusFile::outputSAInfo(int *useLocus,float **locusWeight,analysisSpecs const &spec)
+int masterLocusFile::outputSAInfo(int *useLocus,float **locusWeights,analysisSpecs const &spec)
 {
 	int locusCount,splitLocusCount;
 	FILEPOSITION recPos;
 	const char *testKey;
-	int c,i,doNotUseUntypedFreqfile,all,numWeights,w;
+	int c,i,doNotUseUntypedFreqfile,all,w,numWeights;
 	int cons;
-	std::list<geneVarParser *> excludeParser,weightParser;
+	std::list<geneVarParser*> excludeParser, weightParser;
 	geneVarParser d;
 	if (spec.debug)
 		d.debug(stdout); // will set debug for all parsers
@@ -906,8 +1180,8 @@ int masterLocusFile::outputSAInfo(int *useLocus,float **locusWeight,analysisSpec
 	recPos=findFirstInRange(spec);
 if (recPos!=0L)
 {
-												// only have to parse once
-												// it is essential that geneVarParser::thisGene has been set!!
+	// only have to parse once
+	// it is essential that geneVarParser::thisGene has been set!!
 	if (spec.weightExpressions.size())
 	{
 		numWeights = spec.weightExpressions.size();
@@ -923,10 +1197,10 @@ if (recPos!=0L)
 		numWeights = 1;
 	if (spec.excludeExpressions.size())
 	{
-		for (std::list<std::string>::const_iterator it = spec.excludeExpressions.begin(); it != spec.excludeExpressions.end(); ++it)
+		for (std::list<std::string>::const_iterator it=spec.excludeExpressions.begin();it!=spec.excludeExpressions.end();++it)
 		{
-			geneVarParser* eP = new geneVarParser;
-			const char* s = it->c_str();
+			geneVarParser *eP=new geneVarParser;
+			const char *s = it->c_str();
 			eP->parse(s);
 			excludeParser.push_back(eP);
 		}
@@ -940,8 +1214,14 @@ if (recPos!=0L)
 			break;
 		for (all = 1; all < (spec.mergeAltAlleles?2:tempRecord.nAlls); ++all)
 		{
-			for (w=0;w<numWeights;++w)
-				locusWeight[w][splitLocusCount] = 1.0; // default if nothing else changes it
+			if (splitLocusCount >= MAXLOCIINSCOREASSOCFILE)
+			{
+				dcerror.kill();
+				dcerror(1, "Number of variants exceeds MAXLOCIINSCOREASSOCFILE (%d) in masterLocusFile::outputSAInfo()\nNeed to increase MAXLOCIINSCOREASSOCFILE and recompile\n", MAXLOCIINSCOREASSOCFILE);
+				return 0;
+			}
+			for (w = 0; w < numWeights; ++w)
+				locusWeights[w][splitLocusCount] = 1.0; // default if nothing else changes it
 			useLocus[splitLocusCount] = 1;
 			load(tempRecord, recPos);
 			doNotUseUntypedFreqfile = 0;
@@ -954,14 +1234,14 @@ if (recPos!=0L)
 			if (doNotUseUntypedFreqfile || (tempRecord.isSNP() != SNP_YES && spec.onlyUseSNPs == 1))
 			{
 				for (w = 0; w < numWeights; ++w)
-					locusWeight[w][splitLocusCount] = 0.0;
+					locusWeights[w][splitLocusCount] = 0.0;
 				useLocus[splitLocusCount] = 0;
 			}
 			else
 			{
 				// we are going to use one of the inbuilt annotations to see if we exceed consequenceThreshold
-				// then if weight function specified use that weight instead
-				if (spec.consequenceThreshold || (spec.useConsequenceWeights && spec.weightExpressions.size() == 0))
+				// then if weight funcion specified use that weight instead
+				if (spec.consequenceThreshold || (spec.useConsequenceWeights&& spec.weightExpressions.size() == 0))
 				{
 					if (spec.useEnsembl)
 					{
@@ -977,7 +1257,7 @@ if (recPos!=0L)
 								return 0;
 							}
 						}
-						locusWeight[0][splitLocusCount] = e_consequence[cons].weight;
+						locusWeights[0][splitLocusCount] = e_consequence[cons].weight;
 						if (cons < spec.consequenceThreshold)
 							useLocus[splitLocusCount] = 0;
 					}
@@ -995,7 +1275,7 @@ if (recPos!=0L)
 								return 0;
 							}
 						}
-						locusWeight[0][splitLocusCount] = consequence[cons].weight;
+						locusWeights[0][splitLocusCount] = consequence[cons].weight;
 						if (cons < spec.consequenceThreshold)
 							useLocus[splitLocusCount] = 0;
 					}
@@ -1004,20 +1284,17 @@ if (recPos!=0L)
 				{
 					geneVarParser::thisLocus = &tempRecord;
 					geneVarParser::thisAltAllele = all;
-					w = 0;
-					for (std::list<geneVarParser*>::iterator it = weightParser.begin(); it != weightParser.end(); ++it)
-					{
-						dcexpr_val* rv = (*it)->eval();
-						locusWeight[w++][splitLocusCount] = double(*rv);
-						delete rv;
-					}
+					std::list<geneVarParser*>::iterator it = weightParser.begin();
+					dcexpr_val *rv = (*it)->eval();
+					locusWeights[0][splitLocusCount] = double(*rv);
+					delete rv;
 				}
 				if (excludeParser.size() && useLocus[splitLocusCount])
 				{
 					double val;
 					dcexpr_val *rv;
 					geneVarParser::thisLocus = &tempRecord;
-					geneVarParser::thisWeight = locusWeight[0][splitLocusCount]; // only allow exclusions considering first weight
+					geneVarParser::thisWeight = locusWeights[0][splitLocusCount];
 					geneVarParser::thisAltAllele = all;
 					for (std::list<geneVarParser *>::iterator it = excludeParser.begin(); it != excludeParser.end(); ++it)
 					{
@@ -1025,8 +1302,10 @@ if (recPos!=0L)
 						val = (double)(*rv);
 						delete rv;
 						if (val != 0)
+						{
 							useLocus[splitLocusCount] = 0;
-						break;
+							break;
+						}
 					}
 				}
 			}
@@ -1037,24 +1316,16 @@ if (recPos!=0L)
 		if (recPos==0L)
 			break;
 	}
-	if (weightParser.size())
+	if(excludeParser.size())
 	{
-		for (std::list<geneVarParser*>::iterator it = weightParser.begin(); it != weightParser.end(); ++it)
+		for(std::list<geneVarParser *>::iterator it=excludeParser.begin();it!=excludeParser.end();++it)
 		{
-			geneVarParser* gP = *it;
-			delete gP;
-		}
-	}
-	if (excludeParser.size())
-	{
-		for (std::list<geneVarParser*>::iterator it = excludeParser.begin(); it != excludeParser.end(); ++it)
-		{
-			geneVarParser* gP = *it;
+			geneVarParser *gP=*it;
 			delete gP;
 		}
 	}
 }
-return locusCount;
+return splitLocusCount;
 }
 
 int masterLocusFile::gotoFirstInRange(analysisSpecs &spec)
@@ -1123,14 +1394,13 @@ int masterLocusFile::outputProbs(probTriple **prob, analysisSpecs &spec)
 	int locusCount, subCount;
 	FILEPOSITION recPos;
 	const char *testKey;
-	int c, i, altIsCommon;
+	int c, i, altIsCommon,ll;
 	locusCount = 0;
 // hereOK();
 	if (gotoFirstInRange(spec))
 	do
 	{
-// hereOK();
-		outputCurrentProbs(prob[locusCount++], spec);
+		outputCurrentProbs(prob[locusCount++], spec); 
 	} while (gotoNextInRange(spec));
 // hereOK();
 	return locusCount;
@@ -1430,7 +1700,7 @@ int masterLocusFile::addLocusFile(char *fn, locusFileType t)
 	}
 	if (i==nLocusFiles)
 	{
-		dcerror(99,"Cannot add %s to master locus file because it already contains nLocusFiles=%d",fn,nLocusFiles);
+		dcerror(99,"Cannot add %s to master locus file because it already contains %d locusFiles, which is equal to nLocusFiles",fn,nLocusFiles);
 		return 0;
 	}
 }
@@ -2026,6 +2296,11 @@ if (recPos!=0L)
 			break;
 		if (gotSNP!=SNP_NO)
 		{
+			if (spec.dontMergeAlleles && strcmp(tempRecord.alt, tempLocus->alt)) // treat allele variants as two separate loci
+			{
+				recPos = 0L;
+				break;
+			}
 			if (tempRecord.isSNP()!=SNP_NO)
 				break;
 			// both look like they could be SNP at this position
@@ -2053,7 +2328,7 @@ else
 	fill(tempRecord,tempLocus,locusPosInFile);
 	FSEEK(recordFile,0L,SEEK_END);
 	recPos=FTELL(recordFile);
-	sprintf(key,"%3d %10ld",tempLocus->chr,tempLocus->pos);
+	sprintf(key,"%3d %10ld %10.10s",tempLocus->chr,tempLocus->pos,tempLocus->alt);
 	index.add(key,recPos);
 }
 save(tempRecord,recPos);

@@ -38,8 +38,10 @@ int gvaParams::readParms(int argc,char *argv[],analysisSpecs &spec)
 	FILE *phenotypeFile;
 	nPhenotypeFile=nIDsAndPhenotypeFile=nSamplesFile=0;
 	spec.nScoreassocArgs = 0;
-	geneListFn[0]=baitFn[0]=ccFn[2][MAXVCFPERCC][0]=referencePath[0]=geneName[0]=sequencePath[0]=posName[0]=intervalListFn[0]='\0';
+	geneListFn[0]=baitFn[0]=referencePath[0]=geneName[0]=sequencePath[0]=posName[0]= refAll[0] = altAll[0] = intervalListFn[0]='\0';
+	bedFileFn[0] = bimFileFn[0] = famFileFn[0] = '\0';
 	// testName can be set by calling function, e.g. default "gva" for geneVarAssoc
+	spec.outputRef =  0;
 	strcpy(spec.vepCommand,"perl variant_effect_predictor.pl");
 //	strcpy(spec.weightExpression,"ANNOT(\"DEFAULT\")GETWEIGHT(\"DEFAULTWEIGHTS\")");
 	spec.excludeExpressions.clear();
@@ -58,6 +60,7 @@ int gvaParams::readParms(int argc,char *argv[],analysisSpecs &spec)
 	spec.wf=10.0;
 	writeScoreFile=0;
 	*addChrStr='\0';
+	spec.isQuantitative = 0;
 	spec.useTrios=0;
 	spec.useProbs=0;
 	spec.useEnsembl=spec.willNeedEnsemblConsequence=spec.willNeedInbuiltConsequence=0;
@@ -67,22 +70,25 @@ int gvaParams::readParms(int argc,char *argv[],analysisSpecs &spec)
 	writeComments=1;
 	writeScoreFile=0;
 	spec.doRecessiveTest=0;
-	spec.weightThreshold=0;
+	spec.recWeightThreshold=0;
 	spec.LDThreshold=1.0;
 	spec.unknownIfUntyped=0;
 	spec.skipIfNoPass=0;
 	spec.unknownIfNoPass=0;
-	spec.useHaplotypes=0;
+	spec.showHapLocusNames=spec.useHaplotypes=0;
 	spec.GQThreshold=0;
 	spec.depthThreshold=spec.hetDevThreshold=spec.hetDevThresholdSq=spec.ABThreshold=-1;
 	spec.ignoreAlleles=0;
-	*referencePath=*sequencePath=*posName='\0';
+	spec.dontMergeAlleles = 0;
+	*referencePath=*sequencePath=*posName=*altAll='\0';
 	*spec.alleleFreqStr=*spec.alleleNumberStr=*spec.alleleCountStr='\0';
 	spec.nExc=0;
-	dontExtractVariants=0;
+	dontExtractVariants= onlyExtractVariants=0;
 	keepTempFiles=0;
 	doNotRun=0;
 	spec.debug=0;
+	spec.numVcfFieldsToSkip = DEFAULTNUMVCFFIELDSTOSKIP;
+	spec.removeVcfSpaces = 0;
 	for (i = 0; i < 2; ++i)
 	{
 		useFreqs[i] = 0; // default
@@ -96,7 +102,11 @@ int gvaParams::readParms(int argc,char *argv[],analysisSpecs &spec)
 			dcerror(1,"Expected argument beginning -- but got this: %s\n",arg);
 			return 0;
 		}
-		else if (!strcmp(arg, "--dottest") || !strcmp(arg, "--dolrtest") || !strcmp(arg, "--varfile") || !strcmp(arg, "--testfile") || !strcmp(arg, "--start-from-fitted"))
+		else if (!strcmp(arg, "--dottest") || !strcmp(arg, "--dolrtest")
+			|| !strcmp(arg, "--dolinrtest") || !strcmp(arg, "--varfile")
+			|| !strcmp(arg, "--testfile") || !strcmp(arg, "--lintestfile")
+			|| !strcmp(arg, "--start-from-fitted") || !strcmp(arg, "--maxmaf")
+			|| !strcmp(arg, "--lamda") || !strcmp(arg, "--missingzero"))
 		{
 			strcpy(spec.scoreassocArgs[spec.nScoreassocArgs][0], arg);
 			getNextArg(arg, argc, argv, fp, &depth, &argNum);
@@ -181,14 +191,26 @@ int gvaParams::readParms(int argc,char *argv[],analysisSpecs &spec)
 			useFreqs[1]=1;
 			nCc[1]=1;
 		}
-		else if (FILLARG("--position"))
-			strcpy(posName,arg);
 		else if (FILLARG("--num-case"))
-			nSubs[1]=atoi(arg);
+			nSubs[1] = atoi(arg);
+		else if (FILLARG("--position"))
+			strcpy(posName, arg);
+		else if (FILLARG("--alt-all"))
+			strcpy(altAll, arg);
+		else if (FILLARG("--ref-all"))
+			strcpy(refAll, arg);
+		else if (FILLARG("--output-ref"))
+			spec.outputRef = atoi(arg);
 		else if (FILLARG("--cont-file"))
 			strcpy(ccFn[0][nCc[0]++], arg);
 		else if (FILLARG("--case-file"))
 			strcpy(ccFn[1][nCc[1]++], arg);
+		else if (FILLARG("--bed-file"))
+			strcpy(bedFileFn, arg);
+		else if (FILLARG("--fam-file"))
+			strcpy(famFileFn, arg);
+		else if (FILLARG("--bim-file"))
+		strcpy(bimFileFn, arg);
 		else if (FILLARG("--ref-gene-file"))
 			strcpy(geneListFn, arg);
 		else if (FILLARG("--allele-freq-str"))
@@ -207,10 +229,18 @@ int gvaParams::readParms(int argc,char *argv[],analysisSpecs &spec)
 			margin=atoi(arg);
 		else if (FILLARG("--weight-factor"))
 			spec.wf=atof(arg);
+		else if (FILLARG("--isquantitative"))
+			spec.isQuantitative = atoi(arg);
+		else if (FILLARG("--use-flat-file"))
+			spec.useFlatFile = atoi(arg);
+		else if (FILLARG("--use-transposed-file"))
+			spec.useTransposedFile = atoi(arg);
+		else if (FILLARG("--multiline-vep"))
+			spec.multilineVEP = atoi(arg);
 		else if (FILLARG("--use-ensembl"))
-			spec.useEnsembl=atoi(arg);
+			spec.useEnsembl = atoi(arg);
 		else if (FILLARG("--consequence-threshold"))
-			spec.consequenceThreshold=atof(arg);
+			spec.consequenceThreshold = atof(arg);
 		else if (FILLARG("--use-consequence-weights"))
 			spec.useConsequenceWeights=atoi(arg);
 		else if (FILLARG("--only-use-SNPs"))
@@ -219,12 +249,18 @@ int gvaParams::readParms(int argc,char *argv[],analysisSpecs &spec)
 			writeComments=atoi(arg);
 		else if (FILLARG("--write-score-file"))
 			writeScoreFile=atoi(arg);
+#if 0
 		else if (FILLARG("--do-recessive-test"))
 			spec.doRecessiveTest=atoi(arg);
-		else if (FILLARG("--weight-threshold"))
-			spec.weightThreshold=atof(arg);
+		else if (FILLARG("--rec-weight-threshold"))
+			spec.recWeightThreshold=atof(arg);
 		else if (FILLARG("--LD-threshold"))
 			spec.LDThreshold=atof(arg);
+		else if (FILLARG("--use-haplotypes"))
+			spec.useHaplotypes = atoi(arg);
+		else if (FILLARG("--show-hap-locus-names"))
+			spec.showHapLocusNames = atoi(arg);
+#endif
 		else if (FILLARG("--add-chr"))
 			strcpy(addChrStr, arg);
 		else if (FILLARG("--unknown-if-untyped"))
@@ -236,21 +272,31 @@ int gvaParams::readParms(int argc,char *argv[],analysisSpecs &spec)
 		else if (FILLARG("--skip-if-no-pass"))
 			spec.skipIfNoPass=atoi(arg);
 		else if (FILLARG("--ignore-alleles")) // treat loci with different allele sets as the same locus
-			spec.ignoreAlleles=atoi(arg);
-		else if (FILLARG("--use-haplotypes"))
-			spec.useHaplotypes=atoi(arg);
+			spec.ignoreAlleles = atoi(arg);
+		else if (FILLARG("--dont-merge-alleles")) // do not merge allelic systems from different vcf lines
+			spec.dontMergeAlleles = atoi(arg);
 		else if (FILLARG("--use-probs"))
 			spec.useProbs=atoi(arg);
 		else if (FILLARG("--dont-extract-variants"))
-			dontExtractVariants=atoi(arg);
+			dontExtractVariants = atoi(arg);
+		else if (FILLARG("--only-extract-variants"))
+			onlyExtractVariants = atoi(arg);
 		else if (FILLARG("--keep-temp-files"))
 			keepTempFiles=atoi(arg);
 		else if(FILLARG("--do-not-run"))
 			doNotRun=atoi(arg);
 		else if (FILLARG("--debug"))
 			spec.debug = atoi(arg);
+		else if (FILLARG("--num-fields-to-skip"))
+			spec.numVcfFieldsToSkip = atoi(arg);
+		else if (FILLARG("--remove-vcf-spaces"))
+			spec.removeVcfSpaces = atoi(arg);
 		else if (FILLARG("--merge-alt-alleles"))
 			spec.mergeAltAlleles = atoi(arg);
+		else if (FILLARG("--omit-introns"))
+			spec.omitIntrons = atoi(arg);
+		else if (FILLARG("--splice-region-size"))
+			spec.spliceRegionSize = atoi(arg);
 		else if(FILLARG("--reference-path"))
 			strcpy(referencePath,arg);
 		else if(FILLARG("--vep"))
@@ -317,9 +363,19 @@ int gvaParams::readParms(int argc,char *argv[],analysisSpecs &spec)
 		}
 		;
 	}
+	if (bedFileFn[0] && (!famFileFn[0] || !bimFileFn[0]))
+	{
+		dcerror(5, "If use --bed-file must also use --fam-file and --bim-file\n");
+		return 0;
+	}
+	if (spec.isQuantitative && !nIDsAndPhenotypeFile)
+	{
+		dcerror(4, "Can only use --is-quantitative 1 if also use --ID-and-phenotype-file\n");
+		return 0;
+	}
 	if (nPhenotypeFile || nIDsAndPhenotypeFile || nSamplesFile)
 	{
-		spec.phenotypes = (int*)malloc(sizeof(int)*MAXSUB);
+		spec.phenotypes = (float*)malloc(sizeof(float)*MAXSUB);
 		s=0;
 		if (nPhenotypeFile)
 			for (i=0;i<nPhenotypeFile;++i)
@@ -328,7 +384,7 @@ int gvaParams::readParms(int argc,char *argv[],analysisSpecs &spec)
 		if (phenotypeFile == NULL)
 				dcerror(1, "Could not open phenotype file: %s\n",phenotypeFileName[i]);
 			nCc[0] = 0;
-			for (; fgets(line, 1999, phenotypeFile) && sscanf(line, "%d", &spec.phenotypes[s]) == 1; ++s)
+			for (; fgets(line, 1999, phenotypeFile) && sscanf(line, "%f", &spec.phenotypes[s]) == 1; ++s)
 				;
 		fclose(phenotypeFile);
 		}
@@ -336,13 +392,13 @@ int gvaParams::readParms(int argc,char *argv[],analysisSpecs &spec)
 			for (i=0;i<nIDsAndPhenotypeFile;++i)
 		{
 			char ID[100];
-			int phen;
+			float phen;
 			phenotypeFile = fopen(phenotypeFileName[i], "r");
 			if (phenotypeFile == NULL)
 				dcerror(1,"Could not open ID and phenotype file: %s\n",phenotypeFileName[i]);
 			nCc[0] = 0;
-			for (; fgets(line,1999,phenotypeFile) && sscanf(line,"%s %d",ID,&phen) == 2; ++s)
-				spec.subPhenos.insert(TStrIntPair(ID,phen));
+			for (; phen=MISSINGPHENOTYPE,fgets(line,1999,phenotypeFile) && sscanf(line,"%s %f",ID,&phen) >=1; ++s) // allow that phen may be NA
+				spec.subPhenos.insert(TStrFloatPair(ID,phen));
 			fclose(phenotypeFile);
 			}
 		else
@@ -368,7 +424,7 @@ int gvaParams::readParms(int argc,char *argv[],analysisSpecs &spec)
 				spec.phenotypes[s]=*ptr-'0';
 			}
 			fclose(phenotypeFile);
-			}
+			} // I have made phenotypes a float rather than int but hopefully will all still work
 	}
 	int len;
 	if (*addChrStr != '\0')
@@ -391,7 +447,7 @@ int gvaParams::readParms(int argc,char *argv[],analysisSpecs &spec)
 #endif
 				strcpy(ccFn[i][f],line);
 			}
-	if (spec.consequenceThreshold || (spec.useConsequenceWeights && spec.weightExpressions.size()==0))
+	if ((spec.consequenceThreshold || spec.useConsequenceWeights) && spec.weightExpressions.size() == 0)
 	{
 		if (spec.useEnsembl)
 			spec.willNeedEnsemblConsequence=1;
@@ -451,3 +507,104 @@ int gvaParams::getNextArg(char *nextArg, int argc,char *argv[], FILE *fp[MAXDEPT
 	else
 		return 0;
 }
+
+int plinkExtractIntervals(char* bedFilename, char* famFilename, char* bimFilename, char* outFn,intervalList& iList, char *geneName)
+{
+	int i, startPos, endPos, foundOne, systemStatus;
+	char buff[1000], * bedFn, * ptr, bedFnBuff[1000], * bimFn, bimFnBuff[1000],rfFnBuff[1000];
+	long lineStart;
+	FILE* rf;
+	if (geneName == 0)
+		geneName = "NOGENE";
+	if ((ptr = strchr(bedFilename, '*')) == 0)
+		bedFn = bedFilename;
+	else
+	{
+		strcpy(bedFnBuff, bedFilename);
+		ptr = strchr(bedFnBuff, '*');
+		*ptr = '\0';
+		strcat(bedFnBuff, iList.ints[0].chr);
+		ptr = strchr(bedFilename, '*');
+		strcat(bedFnBuff, ptr + 1);
+		bedFn = bedFnBuff;
+	}
+	if ((ptr = strchr(bimFilename, '*')) == 0)
+		bimFn = bimFilename;
+	else
+	{
+		strcpy(bimFnBuff, bimFilename);
+		ptr = strchr(bimFnBuff, '*');
+		*ptr = '\0';
+		strcat(bimFnBuff, iList.ints[0].chr);
+		ptr = strchr(bimFilename, '*');
+		strcat(bimFnBuff, ptr + 1);
+		bimFn = bimFnBuff;
+	}
+	sprintf(rfFnBuff, "range.temp.%s.txt", geneName); // allow analyses to run simultaneously
+	rf = fopen(rfFnBuff, "w");
+	if (rf == 0)
+	{
+		dcerror(5, "Could not open file: %s for writing\n", rfFnBuff);
+		return 0;
+	}
+	for (i=0;i<iList.nInts;++i)
+		fprintf(rf, "%s %d %d %s\n", iList.ints[i].chr, iList.ints[i].st, iList.ints[i].en,geneName);
+	fclose(rf);
+	strcpy(buff, outFn);
+	if ((ptr = strstr(buff, ".vcf")) != 0)
+		*ptr = '\0'; // because plink appends .vcf to outfile name
+	sprintf(refseqGeneInfo::geneLine, "plink --bed %s --fam %s --bim %s --extract range %s --set-hh-missing --recode vcf-iid --out %s",
+		bedFn, famFilename, bimFn, rfFnBuff,buff);
+	// added --set-hh-missing because was getting Warning: 40548 het. haploid genotypes present
+	printf("Running command: %s\n", refseqGeneInfo::geneLine);
+	systemStatus = system(refseqGeneInfo::geneLine);
+	return 1;
+}
+
+int tbiExtractIntervals(char* tbiFilename, char* outFn, int appendToOld, int addChrInVCF, int removeSpaces, intervalList& iList)
+{
+	int i, systemStatus;
+	char buff[1000], * tbiFn, * ptr, tbiFnBuff[1000];
+	long lineStart;
+	if ((ptr = strchr(tbiFilename, '*')) == 0)
+		tbiFn = tbiFilename;
+	else
+	{
+		strcpy(tbiFnBuff, tbiFilename);
+		ptr = strchr(tbiFnBuff, '*');
+		*ptr = '\0';
+		strcat(tbiFnBuff, iList.ints[0].chr);
+		ptr = strchr(tbiFilename, '*');
+		strcat(tbiFnBuff, ptr + 1);
+		tbiFn = tbiFnBuff;
+	}
+
+	sprintf(refseqGeneInfo::geneLine, "tabix %s%s ", tbiFn, appendToOld ? "" : " -h");
+	for (i = 0; i < iList.nInts; ++i)
+	{
+		sprintf(strchr(refseqGeneInfo::geneLine, '\0'), "%s%s:%d-%d ",
+			addChrInVCF ? "chr" : "", iList.ints[i].chr, iList.ints[i].st, iList.ints[i].en);
+		if (strlen(refseqGeneInfo::geneLine) > 3900) // line getting long, extract baits so far then go back for more - maximum is 4000?
+			{
+				sprintf(strchr(refseqGeneInfo::geneLine, '\0'), "%s %s %s", removeSpaces ? "| sed s/' '/'_'/g " : "", appendToOld ? ">>" : ">", outFn);
+				printf("Running command: %s\n", refseqGeneInfo::geneLine);
+				checkSystem();
+				systemStatus = system(refseqGeneInfo::geneLine);
+				// printf("system returned %d\n",systemStatus);
+				appendToOld = 1;
+				sprintf(refseqGeneInfo::geneLine, "tabix %s ", tbiFn);
+			}
+		}
+	sprintf(buff, "tabix %s ", tbiFn);
+	if (strlen(refseqGeneInfo::geneLine) > strlen(buff))
+	{
+		sprintf(strchr(refseqGeneInfo::geneLine, '\0'), "%s %s %s", removeSpaces ? "| sed s/' '/'_'/g " : "", appendToOld ? ">>" : ">", outFn);
+		printf("Running command: %s\n", refseqGeneInfo::geneLine);
+		checkSystem();
+		systemStatus = system(refseqGeneInfo::geneLine);
+	}
+		// printf("system returned %d\n",systemStatus);
+	return 1;
+}
+
+
