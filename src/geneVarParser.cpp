@@ -79,7 +79,7 @@ char lineBuff[MAXINFOLENGTH+1],tempBuff[MAXINFOLENGTH+1]; // need these to be bi
 
 dcexpr_val* dbNSFPLookup_func(dcvnode* b1, dcvnode* b2)
 {
-	char fnBuff[1000], * ptr, * tptr, queryBuff[1000], chrStr[10], fieldStr[1000], refAll[100], altAll[100], fieldName[100], fn[1000];
+	char fnBuff[1000], * ptr, * tptr, queryBuff[1000], chrStr[10], fieldStr[1000], refAll[100], altAll[100], fieldName[100], fn[1000],queryFn[100];
 	int noEntry, c, f, l,ff;
 	dcexpr_val* r1, * r2;
 	EVAL_BOTH;
@@ -110,13 +110,14 @@ dcexpr_val* dbNSFPLookup_func(dcvnode* b1, dcvnode* b2)
 	if (queryIter == geneVarParser::dbNSFPCache.end() || fieldIter == geneVarParser::dbNSFPFields.end())
 	{
 		int stest;
-		remove("dbNSFPQueryOutput.txt");
-		sprintf(lineBuff, "tabix -h %s %s:%ld-%ld > dbNSFPQueryOutput.txt",
-			fnBuff, chrStr, geneVarParser::thisLocus->getPos(), geneVarParser::thisLocus->getPos());
+		sprintf(queryFn, "dbNSFPQueryOutput.%s.txt", geneVarParser::thisGene ? geneVarParser::thisGene->getGene() : "NOGENE");
+		remove(queryFn); // I wonder if file was deleted after being written
+		sprintf(lineBuff, "tabix -h %s %s:%ld-%ld > %s",
+			fnBuff, chrStr, geneVarParser::thisLocus->getPos(), geneVarParser::thisLocus->getPos(),queryFn);
 		checkSystem();
 		if ((stest = system(lineBuff)) != 0)
 			dcerror(1, "Could not execute %s, failed with error %d\n", lineBuff, stest);
-		fq = fopen("dbNSFPQueryOutput.txt", "r");
+		fq = fopen(queryFn, "r");
 		*lineBuff = '\0';
 		fgets(lineBuff, MAXINFOLENGTH, fq); // header line
 		if (*lineBuff == '\0')
