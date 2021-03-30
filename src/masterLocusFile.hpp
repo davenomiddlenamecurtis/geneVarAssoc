@@ -152,7 +152,8 @@ int nScoreassocArgs;
 char commentExpression[MAXEXPRESSIONLENGTH];
 char vepCommand[MAXEXPRESSIONLENGTH];
 std::list<std::string> excludeExpressions;
-std::list<std::string> weightExpressions;
+std::list<std::string> weightExpressions; 
+std::list<std::string> weightNames;
 };
 
 #if 0

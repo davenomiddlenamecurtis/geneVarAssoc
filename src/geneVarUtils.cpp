@@ -35,7 +35,7 @@ int gvaParams::readParms(int argc,char *argv[],analysisSpecs &spec)
 	char arg[2000],line[2000],addChrStr[MAXVCFFILES+1],phenotypeFileName[MAXVCFFILES][100];
 	depth=-1;
 	argNum=1;
-	FILE *phenotypeFile;
+	FILE *phenotypeFile,*multiWeightFile;
 	nPhenotypeFile=nIDsAndPhenotypeFile=nSamplesFile=0;
 	spec.nScoreassocArgs = 0;
 	geneListFn[0]=baitFn[0]=referencePath[0]=geneName[0]=sequencePath[0]=posName[0]= refAll[0] = altAll[0] = intervalListFn[0]='\0';
@@ -45,6 +45,8 @@ int gvaParams::readParms(int argc,char *argv[],analysisSpecs &spec)
 	strcpy(spec.vepCommand,"perl variant_effect_predictor.pl");
 //	strcpy(spec.weightExpression,"ANNOT(\"DEFAULT\")GETWEIGHT(\"DEFAULTWEIGHTS\")");
 	spec.excludeExpressions.clear();
+	spec.weightExpressions.clear();
+	spec.weightNames.clear();
 	for (i=0;i<MAXVCFFILES;++i)
 		spec.addChrInVCF[i]=0;
 	if (spec.phenotypes!=NULL)
@@ -68,122 +70,143 @@ int gvaParams::readParms(int argc,char *argv[],analysisSpecs &spec)
 	spec.useConsequenceWeights=0;
 	spec.onlyUseSNPs=0;
 	writeComments=1;
-	writeScoreFile=0;
-	spec.doRecessiveTest=0;
-	spec.recWeightThreshold=0;
-	spec.LDThreshold=1.0;
-	spec.unknownIfUntyped=0;
-	spec.skipIfNoPass=0;
-	spec.unknownIfNoPass=0;
-	spec.showHapLocusNames=spec.useHaplotypes=0;
-	spec.GQThreshold=0;
-	spec.depthThreshold=spec.hetDevThreshold=spec.hetDevThresholdSq=spec.ABThreshold=-1;
-	spec.ignoreAlleles=0;
-	spec.dontMergeAlleles = 0;
-	*referencePath=*sequencePath=*posName=*altAll='\0';
-	*spec.alleleFreqStr=*spec.alleleNumberStr=*spec.alleleCountStr='\0';
-	spec.nExc=0;
-	dontExtractVariants= onlyExtractVariants=0;
-	keepTempFiles=0;
-	doNotRun=0;
-	spec.debug=0;
-	spec.numVcfFieldsToSkip = DEFAULTNUMVCFFIELDSTOSKIP;
-	spec.removeVcfSpaces = 0;
-	for (i = 0; i < 2; ++i)
+writeScoreFile = 0;
+spec.doRecessiveTest = 0;
+spec.recWeightThreshold = 0;
+spec.LDThreshold = 1.0;
+spec.unknownIfUntyped = 0;
+spec.skipIfNoPass = 0;
+spec.unknownIfNoPass = 0;
+spec.showHapLocusNames = spec.useHaplotypes = 0;
+spec.GQThreshold = 0;
+spec.depthThreshold = spec.hetDevThreshold = spec.hetDevThresholdSq = spec.ABThreshold = -1;
+spec.ignoreAlleles = 0;
+spec.dontMergeAlleles = 0;
+*referencePath = *sequencePath = *posName = *altAll = '\0';
+*spec.alleleFreqStr = *spec.alleleNumberStr = *spec.alleleCountStr = '\0';
+spec.nExc = 0;
+dontExtractVariants = onlyExtractVariants = 0;
+keepTempFiles = 0;
+doNotRun = 0;
+spec.debug = 0;
+spec.numVcfFieldsToSkip = DEFAULTNUMVCFFIELDSTOSKIP;
+spec.removeVcfSpaces = 0;
+for (i = 0; i < 2; ++i)
+{
+	useFreqs[i] = 0; // default
+	nCc[i] = 0;
+	nSubs[i] = 0;
+}
+while (getNextArg(arg, argc, argv, fp, &depth, &argNum))
+{
+	if (!isArgType(arg))
 	{
-		useFreqs[i] = 0; // default
-		nCc[i]=0;
-		nSubs[i]=0;
+		dcerror(1, "Expected argument beginning -- but got this: %s\n", arg);
+		return 0;
 	}
-	while (getNextArg(arg, argc, argv, fp,&depth, &argNum))
+	else if (!strcmp(arg, "--dottest") || !strcmp(arg, "--dolrtest")
+		|| !strcmp(arg, "--dolinrtest") || !strcmp(arg, "--varfile")
+		|| !strcmp(arg, "--testfile") || !strcmp(arg, "--lintestfile")
+		|| !strcmp(arg, "--start-from-fitted") || !strcmp(arg, "--maxmaf")
+		|| !strcmp(arg, "--lamda") || !strcmp(arg, "--missingzero"))
 	{
-		if (!isArgType(arg))
+		strcpy(spec.scoreassocArgs[spec.nScoreassocArgs][0], arg);
+		getNextArg(arg, argc, argv, fp, &depth, &argNum);
+		strcpy(spec.scoreassocArgs[spec.nScoreassocArgs][1], arg);
+		++spec.nScoreassocArgs;
+	}
+	else if (FILLARG("--arg-file"))
+	{
+		if (++depth >= MAXDEPTH)
 		{
-			dcerror(1,"Expected argument beginning -- but got this: %s\n",arg);
+			dcerror(1, "Attempting to recurse too deeply into arg-files with this one: %s\n", arg);
 			return 0;
 		}
-		else if (!strcmp(arg, "--dottest") || !strcmp(arg, "--dolrtest")
-			|| !strcmp(arg, "--dolinrtest") || !strcmp(arg, "--varfile")
-			|| !strcmp(arg, "--testfile") || !strcmp(arg, "--lintestfile")
-			|| !strcmp(arg, "--start-from-fitted") || !strcmp(arg, "--maxmaf")
-			|| !strcmp(arg, "--lamda") || !strcmp(arg, "--missingzero"))
+		else
 		{
-			strcpy(spec.scoreassocArgs[spec.nScoreassocArgs][0], arg);
-			getNextArg(arg, argc, argv, fp, &depth, &argNum);
-			strcpy(spec.scoreassocArgs[spec.nScoreassocArgs][1], arg);
-			++spec.nScoreassocArgs;
-		}
-		else if (FILLARG("--arg-file"))
-		{
-			if (++depth >= MAXDEPTH)
+			fp[depth] = fopen(arg, "r");
+			if (fp[depth] == NULL)
 			{
-				dcerror(1, "Attempting to recurse too deeply into arg-files with this one: %s\n", arg);
+				dcerror(1, "Could not open arg file: %s\n", arg);
 				return 0;
 			}
-			else
-			{
-				fp[depth] = fopen(arg, "r");
-				if (fp[depth] == NULL)
-				{
-					dcerror(1, "Could not open arg file: %s\n", arg);
-					return 0;
-				}
-			}
 		}
-		else if (FILLARG("--comment-expression"))
-		{
-			strcpy(spec.commentExpression, arg);
-		}
-		else if (FILLARG("--weight-expression"))
-		{
-			std::string* argStr = new std::string(arg);
-			spec.weightExpressions.push_back(*argStr);
-			// this was just a guess and not needed if e.g. GETVEP is used to read from *.annot.vcf.gz
+	}
+	else if (FILLARG("--comment-expression"))
+	{
+		strcpy(spec.commentExpression, arg);
+	}
+	else if (FILLARG("--weight-name"))
+	{
+		std::string* argStr = new std::string(arg);
+		spec.weightNames.push_back(*argStr);
+	}
+	else if (FILLARG("--weight-expression"))
+	{
+		std::string* argStr = new std::string(arg);
+		spec.weightExpressions.push_back(*argStr);
+		// this was just a guess and not needed if e.g. GETVEP is used to read from *.annot.vcf.gz
 //			if (strstr(arg,"VEP"))
 //				spec.willNeedEnsemblConsequence=1;
-			if (strstr(arg,"INBUILT"))
-				spec.willNeedInbuiltConsequence=1;
-		}
-		else if (FILLARG("--exclude-expression"))
-		{
-			std::string *argStr = new std::string(arg);
-			spec.excludeExpressions.push_back(*argStr);
-//			if(strstr(arg,"VEP"))
-//				spec.willNeedEnsemblConsequence=1;
-			if(strstr(arg,"INBUILT"))
-				spec.willNeedInbuiltConsequence=1;
-		}
-		else if (FILLARG("--phenotype-file"))
-		{
-			if (nIDsAndPhenotypeFile||nSamplesFile)
-				dcerror(1,"Can only have one of --phenotype-file, --ID-and-phenotype-file and --samples-file");
-			strcpy(phenotypeFileName[nPhenotypeFile++],arg);
-		}
-		else if (FILLARG("--ID-and-phenotype-file"))
+		if (strstr(arg, "INBUILT"))
+			spec.willNeedInbuiltConsequence = 1;
+	}
+	else if (FILLARG("--exclude-expression"))
+	{
+		std::string* argStr = new std::string(arg);
+		spec.excludeExpressions.push_back(*argStr);
+		//			if(strstr(arg,"VEP"))
+		//				spec.willNeedEnsemblConsequence=1;
+		if (strstr(arg, "INBUILT"))
+			spec.willNeedInbuiltConsequence = 1;
+	}
+	else if (FILLARG("--multi-weight-file"))
+	{
+		char multiWeightVariantFile[MAXFILENAMELENGTH], varWeightName[MAXFILENAMELENGTH];
+		multiWeightFile = fopen(arg, "r");
+		if (multiWeightFile == NULL)
+			dcerror(1, "Could not open multi-weight-file: %s\n", arg);
+		if (!fgets(line, MAXFILENAMELENGTH - 1, multiWeightFile) || sscanf(line, "%s", multiWeightVariantFile) != 1)
+			dcerror(1, "Could not read name of variant file for multiple weights from multi-weight-file: %s\n", arg);
+		while (fgets(line, MAXFILENAMELENGTH - 1, multiWeightFile) && sscanf(line, "%s", varWeightName) == 1)
+			{
+			sprintf(line, "%c%s%cDBNSFPLOOKUP%c%s%c", '"',varWeightName, '"', '"', multiWeightVariantFile, '"');
+			spec.weightExpressions.push_back(*(new std::string(line)));
+			spec.weightNames.push_back(*(new std::string(varWeightName)));
+			}
+			fclose(multiWeightFile);
+	}
+	else if (FILLARG("--phenotype-file"))
+	{
+			if (nIDsAndPhenotypeFile || nSamplesFile)
+				dcerror(1, "Can only have one of --phenotype-file, --ID-and-phenotype-file and --samples-file");
+			strcpy(phenotypeFileName[nPhenotypeFile++], arg);
+	}
+	else if (FILLARG("--ID-and-phenotype-file"))
 		{
 			if (nPhenotypeFile||nSamplesFile)
 				dcerror(1,"Can only have one of --phenotype-file, --ID-and-phenotype-file and --samples-file");
 			strcpy(phenotypeFileName[nIDsAndPhenotypeFile++],arg);
 		}
-		else if (FILLARG("--samples-file"))
+	else if (FILLARG("--samples-file"))
 		{
 			if (nIDsAndPhenotypeFile||nPhenotypeFile)
 				dcerror(1,"Can only have one of --phenotype-file, --ID-and-phenotype-file and --samples-file");
 			strcpy(phenotypeFileName[nSamplesFile++],arg);
 		}
-		else if (FILLARG("--trio-file"))
+	else if (FILLARG("--trio-file"))
 		{
 			spec.useTrios=1;
 			strcpy(spec.triosFn,arg);
 			nCc[0]=0;
 		}
-		else if (FILLARG("--cont-freq-file"))
+	else if (FILLARG("--cont-freq-file"))
 		{
 			strcpy(ccFn[0][0],arg);
 			useFreqs[0]=1;
 			nCc[0]=1;
 		}
-		else if (FILLARG("--num-cont"))
+	else if (FILLARG("--num-cont"))
 			nSubs[0]=atoi(arg);
 		else if (FILLARG("--case-freq-file"))
 		{

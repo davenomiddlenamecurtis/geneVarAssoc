@@ -79,8 +79,8 @@ char lineBuff[MAXINFOLENGTH+1],tempBuff[MAXINFOLENGTH+1]; // need these to be bi
 
 dcexpr_val* dbNSFPLookup_func(dcvnode* b1, dcvnode* b2)
 {
-	char fnBuff[1000], * ptr, * tptr, queryBuff[1000], chrStr[10], fieldStr[100], refAll[100], altAll[100], fieldName[100], fn[1000];
-	int noEntry, c, f, l;
+	char fnBuff[1000], * ptr, * tptr, queryBuff[1000], chrStr[10], fieldStr[1000], refAll[100], altAll[100], fieldName[100], fn[1000];
+	int noEntry, c, f, l,ff;
 	dcexpr_val* r1, * r2;
 	EVAL_BOTH;
 	dcexpr_val* rv;
@@ -125,7 +125,8 @@ dcexpr_val* dbNSFPLookup_func(dcvnode* b1, dcvnode* b2)
 		}
 		if (fieldIter == geneVarParser::dbNSFPFields.end())
 		{
-			int ff = 0, matched = 0;
+			int matched = 0;
+			ff = 0;
 			while (*tempBuff = '\0', sscanf(lineBuff, "%s %[^\n]", fieldStr, tempBuff) > 1)
 			{
 				if (!strcmp(fieldName, fieldStr))
@@ -137,6 +138,7 @@ dcexpr_val* dbNSFPLookup_func(dcvnode* b1, dcvnode* b2)
 				}
 				strcpy(lineBuff, tempBuff);
 				*tempBuff = '\0';
+				++ff;
 			}
 			if (!matched)
 			{
@@ -168,7 +170,7 @@ dcexpr_val* dbNSFPLookup_func(dcvnode* b1, dcvnode* b2)
 	if (strncmp(lineBuff, "NODBNSFPFENTRY", strlen("NODBNSFPFENTRY")))
 	{
 
-		for (int ff = 0; ff <= geneVarParser::dbNSFPFields[fieldName]; ++ff)
+		for (ff = 0; ff <= geneVarParser::dbNSFPFields[fieldName]; ++ff)
 		{
 			*tempBuff = '\0';
 			sscanf(lineBuff, "%s %[^\n]", fieldStr, tempBuff);

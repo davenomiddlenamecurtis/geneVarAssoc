@@ -970,7 +970,8 @@ int masterLocusFile::writeScoreAssocFiles(masterLocusFile &subFile,char *root, f
 		fp = fopen(fn, "w");
 		for (std::list<std::string>::const_iterator it = spec.weightNames.begin(); it != spec.weightNames.end(); ++it)
 			fprintf(fp,"%s\n",it->c_str());
-		sprintf(strchr(commandString, '\0'), " --locusweightnamesfile %s",fn);
+		fclose(fp);
+		sprintf(strchr(commandString, '\0'), " --locusweightnamefile %s",fn);
 	}
 	if (writeComments)
 	{
@@ -1284,10 +1285,13 @@ if (recPos!=0L)
 				{
 					geneVarParser::thisLocus = &tempRecord;
 					geneVarParser::thisAltAllele = all;
-					std::list<geneVarParser*>::iterator it = weightParser.begin();
-					dcexpr_val *rv = (*it)->eval();
-					locusWeights[0][splitLocusCount] = double(*rv);
-					delete rv;
+					w = 0;
+					for (std::list<geneVarParser*>::iterator it = weightParser.begin(); it != weightParser.end(); ++it)
+					{
+						dcexpr_val* rv = (*it)->eval();
+						locusWeights[w++][splitLocusCount] = double(*rv);
+						delete rv;
+					}
 				}
 				if (excludeParser.size() && useLocus[splitLocusCount])
 				{
