@@ -619,10 +619,10 @@ dcexpr_val *getWeight_func(dcvnode* b1,dcvnode *b2)
 	if (tab!=0)
 	{
 		std::map<std::string,double>::const_iterator weightIter=tab->weightMap.find(annotation);
-		if(weightIter==tab->weightMap.end())
-		{
-			dcerror(1,"Could not find annotation %s in weight table named %s\n",(char*)(*r1),(char*)(*r2));
-		}
+		if (weightIter==tab->weightMap.end())
+			weightIter = tab->weightMap.find("DEFAULT");  // allow the weight table to have a default for any value not explicitly stated
+		if (weightIter == tab->weightMap.end())
+			dcerror(1,"Could not find annotation %s or DEFAULT in weight table named %s\n",(char*)(*r1),(char*)(*r2));
 		else
 			*rv=weightIter->second;
 	}
