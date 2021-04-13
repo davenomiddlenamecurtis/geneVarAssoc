@@ -753,7 +753,7 @@ int masterLocusFile::writeScoreAssocFiles(masterLocusFile &subFile,char *root, f
 // allow information about subjects to be provided by a different masterLocusFile 
 // however we are assuming both files refer to identical set of subjects
 {
-	char fn[100],buff[MAXALL*MAXALLLENGTH],buff2[1000],*ptr,alleles[MAXSTR+1],commandString[1000],posStr[100];
+	char fn[100],buff[MAXALL*MAXALLLENGTH],buff2[1000],*ptr,alleles[MAXSTR+1],commandString[5000],posStr[100];
 	allelePair **a;
 	probTriple **p;
 	int totalSub,lc,s,l,ss,i,c,nValid,all,numSplitLoci,numIncludedLoci,ll,numWeights,w;
