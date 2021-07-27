@@ -611,7 +611,7 @@ void refseqGeneInfo::getAllExons()
 	while (!allFound)
 	{
 		allFound = 1;
-		nextStart = 1e10;
+		nextStart = 1e9;
 		for (t = 0; t < nTranscript; ++t)
 		{
 			for (s = 0; s < transcript[t].exonCount; ++s)
