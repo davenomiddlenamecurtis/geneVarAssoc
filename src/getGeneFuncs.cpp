@@ -526,7 +526,7 @@ int refseqGeneInfo::getNextGene(int transcriptionStartCanVary)
 	}
 	firstExonStart=transcript[0].exonStarts[0];
 	lastExonEnd=transcript[0].exonEnds[transcript[0].exonCount-1];
-	for (t=1;t<nTranscript;++t)
+	for (t=0;t<nTranscript;++t) // this was t==1, which assumed first transcript did not have a large exonEnds value
 	{
 	if (firstExonStart>transcript[t].exonStarts[0])
 		firstExonStart=transcript[t].exonStarts[0];
@@ -625,6 +625,7 @@ void refseqGeneInfo::getAllExons()
 				}
 			}
 		}
+		// loop above finds first exon of all those remaining
 		if (allFound == 0)
 		{
 			exonStarts[allExonCount] = nextStart;
