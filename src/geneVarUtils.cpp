@@ -138,8 +138,17 @@ while (getNextArg(arg, argc, argv, fp, &depth, &argNum))
 	}
 	else if (FILLARG("--weight-name"))
 	{
-		std::string* argStr = new std::string(arg);
-		spec.weightNames.push_back(*argStr);
+		FILE* wnf;
+		char weightName[200];
+		wnf = fopen(arg, "r");
+		if (wnf == NULL)
+			dcerror(1, "Could not open weight name file %s\n", arg);
+		while (fscanf(wnf, "%s", weightName) == 1)
+		{
+			std::string* wnStr = new std::string(weightName);
+			spec.weightNames.push_back(*wnStr);
+		}
+		fclose(wnf);
 	}
 	else if (FILLARG("--weight-expression"))
 	{
