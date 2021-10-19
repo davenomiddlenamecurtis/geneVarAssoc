@@ -138,6 +138,11 @@ while (getNextArg(arg, argc, argv, fp, &depth, &argNum))
 	}
 	else if (FILLARG("--weight-name"))
 	{
+		std::string* wnStr = new std::string(arg);
+		spec.weightNames.push_back(*wnStr);
+	}
+	else if (FILLARG("--weight-name-file"))
+	{
 		FILE* wnf;
 		char weightName[200];
 		wnf = fopen(arg, "r");
