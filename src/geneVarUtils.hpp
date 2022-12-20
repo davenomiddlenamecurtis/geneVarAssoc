@@ -32,7 +32,7 @@ public:
 		geneName[100],sequencePath[100],posName[100], refAll[100], altAll[100];
 	char bedFileFn[MAXFILENAMELENGTH], famFileFn[MAXFILENAMELENGTH], bimFileFn[MAXFILENAMELENGTH];
 	char intervalListFn[MAXFILENAMELENGTH], testName[100]; // for intVarAssoc
-	int useFreqs[2],nSubs[2],nCc[2],writeComments,writeScoreFile;
+	int useFreqs[2],nSubs[2],nCc[2],writeComments,writeScoreFile,writeRecScoreFile;
 	int dontExtractVariants,keepTempFiles,doNotRun,onlyExtractVariants;
 	int input(FILE *fp,analysisSpecs &spec);
 	int readParms(int argc,char *argv[],analysisSpecs &spec);

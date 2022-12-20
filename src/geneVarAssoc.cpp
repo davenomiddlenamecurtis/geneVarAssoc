@@ -160,7 +160,7 @@ int main(int argc,char *argv[])
 				dcerror(2, "Was going to annotate using inbuilt routines but cannot do this because --reference-folder has not been set\n");
 				return 1;
 			}
-			if (spec.weightExpressions.size() == 0 && !spec.willNeedEnsemblConsequence)
+			if (spec.weightExpressions.size() == 0 && spec.recWeightExpressions.size() == 0 && !spec.willNeedEnsemblConsequence)
 			{
 				std::string * defaultStr = new std::string("ANNOT(\"INBUILT\")GETWEIGHT(\"DEFAULTWEIGHTS\")");
 				// default behaviour is to use these weights unless told not to
@@ -171,7 +171,7 @@ int main(int argc,char *argv[])
 		}
 		if (spec.willNeedEnsemblConsequence)
 		{
-			if (spec.weightExpressions.size() == 0)
+			if (spec.weightExpressions.size() == 0 && spec.recWeightExpressions.size() == 0)
 			{
 				std::string* defaultStr = new std::string("ANNOT(\"VEP\")GETWEIGHT(\"DEFAULTVEPWEIGHTS\")");
 				spec.weightExpressions.push_back(*defaultStr);

@@ -46,7 +46,9 @@ int gvaParams::readParms(int argc,char *argv[],analysisSpecs &spec)
 //	strcpy(spec.weightExpression,"ANNOT(\"DEFAULT\")GETWEIGHT(\"DEFAULTWEIGHTS\")");
 	spec.excludeExpressions.clear();
 	spec.weightExpressions.clear();
+	spec.recWeightExpressions.clear();
 	spec.weightNames.clear();
+	spec.recWeightNames.clear();
 	for (i=0;i<MAXVCFFILES;++i)
 		spec.addChrInVCF[i]=0;
 	if (spec.phenotypes!=NULL)
@@ -108,6 +110,7 @@ while (getNextArg(arg, argc, argv, fp, &depth, &argNum))
 		|| !strcmp(arg, "--dolinrtest") || !strcmp(arg, "--varfile")
 		|| !strcmp(arg, "--testfile") || !strcmp(arg, "--lintestfile")
 		|| !strcmp(arg, "--start-from-fitted") || !strcmp(arg, "--maxmaf")
+		|| !strcmp(arg, "--maxrecloci") || !strcmp(arg, "--ldthreshold")
 		|| !strcmp(arg, "--lamda") || !strcmp(arg, "--missingzero"))
 	{
 		strcpy(spec.scoreassocArgs[spec.nScoreassocArgs][0], arg);
@@ -141,6 +144,11 @@ while (getNextArg(arg, argc, argv, fp, &depth, &argNum))
 		std::string* wnStr = new std::string(arg);
 		spec.weightNames.push_back(*wnStr);
 	}
+	else if (FILLARG("--rec-weight-name"))
+	{
+		std::string* wnStr = new std::string(arg);
+		spec.recWeightNames.push_back(*wnStr);
+	}
 	else if (FILLARG("--weight-name-file"))
 	{
 		FILE* wnf;
@@ -155,13 +163,31 @@ while (getNextArg(arg, argc, argv, fp, &depth, &argNum))
 		}
 		fclose(wnf);
 	}
+	else if (FILLARG("--rec-weight-name-file"))
+	{
+		FILE* wnf;
+		char weightName[200];
+		wnf = fopen(arg, "r");
+		if (wnf == NULL)
+			dcerror(1, "Could not open weight name file %s\n", arg);
+		while (fscanf(wnf, "%s", weightName) == 1)
+		{
+			std::string* wnStr = new std::string(weightName);
+			spec.recWeightNames.push_back(*wnStr);
+		}
+		fclose(wnf);
+	}
 	else if (FILLARG("--weight-expression"))
 	{
 		std::string* argStr = new std::string(arg);
 		spec.weightExpressions.push_back(*argStr);
-		// this was just a guess and not needed if e.g. GETVEP is used to read from *.annot.vcf.gz
-//			if (strstr(arg,"VEP"))
-//				spec.willNeedEnsemblConsequence=1;
+		if (strstr(arg, "INBUILT"))
+			spec.willNeedInbuiltConsequence = 1;
+	}
+	else if (FILLARG("--rec-weight-expression"))
+	{
+		std::string* argStr = new std::string(arg);
+		spec.recWeightExpressions.push_back(*argStr);
 		if (strstr(arg, "INBUILT"))
 			spec.willNeedInbuiltConsequence = 1;
 	}
@@ -484,7 +510,7 @@ while (getNextArg(arg, argc, argv, fp, &depth, &argNum))
 #endif
 				strcpy(ccFn[i][f],line);
 			}
-	if ((spec.consequenceThreshold || spec.useConsequenceWeights) && spec.weightExpressions.size() == 0)
+	if ((spec.consequenceThreshold || spec.useConsequenceWeights) && spec.weightExpressions.size() == 0 && spec.recWeightExpressions.size() == 0)
 	{
 		if (spec.useEnsembl)
 			spec.willNeedEnsemblConsequence=1;

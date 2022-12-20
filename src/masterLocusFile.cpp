@@ -756,7 +756,7 @@ int masterLocusFile::writeScoreAssocFiles(masterLocusFile &subFile,char *root, f
 	char fn[100],buff[MAXALL*MAXALLLENGTH],buff2[1000],*ptr,alleles[MAXSTR+1],commandString[5000],posStr[100];
 	allelePair **a;
 	probTriple **p;
-	int totalSub,lc,s,l,ss,i,c,nValid,all,numSplitLoci,numIncludedLoci,ll,numWeights,w;
+	int totalSub,lc,s,l,ss,i,c,nValid,all,numSplitLoci,numIncludedLoci,ll,numWeights,numRecWeights,w;
 	float** locusWeights;
 	FILE *fp;
 	FILEPOSITION recPos;
@@ -825,9 +825,12 @@ int masterLocusFile::writeScoreAssocFiles(masterLocusFile &subFile,char *root, f
 				spec.phenotypes[s]=it->second;
 		}
 	}
-	numWeights = spec.weightExpressions.size() ? spec.weightExpressions.size() : 1;
-	assert((locusWeights = (float**)calloc(numWeights, sizeof(float*))) != 0);
-	for (w = 0; w < numWeights; ++w)
+	numWeights = spec.weightExpressions.size();
+	numRecWeights = spec.recWeightExpressions.size();
+	if (numWeights + numRecWeights == 0)
+		numWeights = 1;
+	assert((locusWeights = (float**)calloc(numWeights+numRecWeights, sizeof(float*))) != 0);
+	for (w = 0; w < numWeights+numRecWeights; ++w)
 		assert((locusWeights[w] = (float*)calloc(MAXLOCIINSCOREASSOCFILE, sizeof(float))) != 0);
 	numSplitLoci = outputSAInfo(useLocus, locusWeights, spec);
 	// useLocus has numSplitLoci entries
@@ -928,9 +931,22 @@ int masterLocusFile::writeScoreAssocFiles(masterLocusFile &subFile,char *root, f
 			fp = fopen(fn, "w");
 			for (l = 0; l < numSplitLoci; ++l)
 				if (useLocus[l])
-						fprintf(fp, "%8.5f\n", locusWeights[w][l]);
+					fprintf(fp, "%8.5f\n", locusWeights[w][l]);
 			fclose(fp);
 			sprintf(strchr(commandString, '\0'), " --locusweightfile %s", fn);
+		}
+		for (w = 0; w < numRecWeights; ++w)
+		{
+			if (numRecWeights == 1)
+				sprintf(fn, "%s.lrw.par", root);
+			else
+				sprintf(fn, "%s.%d.lrw.par", root, w);
+			fp = fopen(fn, "w");
+			for (l = 0; l < numSplitLoci; ++l)
+				if (useLocus[l])
+					fprintf(fp, "%8.5f\n", locusWeights[numWeights+w][l]);
+			fclose(fp);
+			sprintf(strchr(commandString, '\0'), " --locusrecweightfile %s", fn);
 		}
 	}
 	checkSystem();
@@ -969,9 +985,18 @@ int masterLocusFile::writeScoreAssocFiles(masterLocusFile &subFile,char *root, f
 		sprintf(fn, "%s.wn.par", root);
 		fp = fopen(fn, "w");
 		for (std::list<std::string>::const_iterator it = spec.weightNames.begin(); it != spec.weightNames.end(); ++it)
-			fprintf(fp,"%s\n",it->c_str());
+			fprintf(fp, "%s\n", it->c_str());
 		fclose(fp);
-		sprintf(strchr(commandString, '\0'), " --locusweightnamefile %s",fn);
+		sprintf(strchr(commandString, '\0'), " --locusweightnamefile %s", fn);
+	}
+	if (spec.recWeightNames.size())
+	{
+		sprintf(fn, "%s.rwn.par", root);
+		fp = fopen(fn, "w");
+		for (std::list<std::string>::const_iterator it = spec.recWeightNames.begin(); it != spec.recWeightNames.end(); ++it)
+			fprintf(fp, "%s\n", it->c_str());
+		fclose(fp);
+		sprintf(strchr(commandString, '\0'), " --locusrecweightnamefile %s", fn);
 	}
 	if (writeComments)
 	{
@@ -1171,9 +1196,9 @@ int masterLocusFile::outputSAInfo(int *useLocus,float **locusWeights,analysisSpe
 	int locusCount,splitLocusCount;
 	FILEPOSITION recPos;
 	const char *testKey;
-	int c,i,doNotUseUntypedFreqfile,all,w,numWeights;
+	int c,i,doNotUseUntypedFreqfile,all,w,numWeights,numRecWeights;
 	int cons;
-	std::list<geneVarParser*> excludeParser, weightParser;
+	std::list<geneVarParser*> excludeParser, weightParser, recWeightParser;
 	geneVarParser d;
 	if (spec.debug)
 		d.debug(stdout); // will set debug for all parsers
@@ -1183,16 +1208,26 @@ if (recPos!=0L)
 {
 	// only have to parse once
 	// it is essential that geneVarParser::thisGene has been set!!
-	if (spec.weightExpressions.size())
+	if (spec.weightExpressions.size()|| spec.recWeightExpressions.size())
 	{
 		numWeights = spec.weightExpressions.size();
-		for (std::list<std::string>::const_iterator it = spec.weightExpressions.begin(); it != spec.weightExpressions.end(); ++it)
-		{
-			geneVarParser* wP = new geneVarParser;
-			const char* s = it->c_str();
-			wP->parse(s);
-			weightParser.push_back(wP);
-		}
+		if (numWeights)
+			for (std::list<std::string>::const_iterator it = spec.weightExpressions.begin(); it != spec.weightExpressions.end(); ++it)
+			{
+				geneVarParser* wP = new geneVarParser;
+				const char* s = it->c_str();
+				wP->parse(s);
+				weightParser.push_back(wP);
+			}
+		numRecWeights = spec.recWeightExpressions.size();
+		if (numRecWeights)
+			for (std::list<std::string>::const_iterator it = spec.recWeightExpressions.begin(); it != spec.recWeightExpressions.end(); ++it)
+			{
+				geneVarParser* wP = new geneVarParser;
+				const char* s = it->c_str();
+				wP->parse(s);
+				recWeightParser.push_back(wP);
+			}
 	}
 	else
 		numWeights = 1;
@@ -1221,7 +1256,7 @@ if (recPos!=0L)
 				dcerror(1, "Number of variants exceeds MAXLOCIINSCOREASSOCFILE (%d) in masterLocusFile::outputSAInfo()\nNeed to increase MAXLOCIINSCOREASSOCFILE and recompile\n", MAXLOCIINSCOREASSOCFILE);
 				return 0;
 			}
-			for (w = 0; w < numWeights; ++w)
+			for (w = 0; w < numWeights+numRecWeights; ++w)
 				locusWeights[w][splitLocusCount] = 1.0; // default if nothing else changes it
 			useLocus[splitLocusCount] = 1;
 			load(tempRecord, recPos);
@@ -1234,7 +1269,7 @@ if (recPos!=0L)
 			}
 			if (doNotUseUntypedFreqfile || (tempRecord.isSNP() != SNP_YES && spec.onlyUseSNPs == 1))
 			{
-				for (w = 0; w < numWeights; ++w)
+				for (w = 0; w < numWeights+numRecWeights; ++w)
 					locusWeights[w][splitLocusCount] = 0.0;
 				useLocus[splitLocusCount] = 0;
 			}
@@ -1242,7 +1277,7 @@ if (recPos!=0L)
 			{
 				// we are going to use one of the inbuilt annotations to see if we exceed consequenceThreshold
 				// then if weight funcion specified use that weight instead
-				if (spec.consequenceThreshold || (spec.useConsequenceWeights&& spec.weightExpressions.size() == 0))
+				if (spec.consequenceThreshold || (spec.useConsequenceWeights&& (spec.weightExpressions.size() + spec.recWeightExpressions.size())== 0))
 				{
 					if (spec.useEnsembl)
 					{
@@ -1281,12 +1316,18 @@ if (recPos!=0L)
 							useLocus[splitLocusCount] = 0;
 					}
 				}
-				if (spec.weightExpressions.size() && spec.useConsequenceWeights)
+				if (spec.weightExpressions.size()+ spec.recWeightExpressions.size() && spec.useConsequenceWeights)
 				{
 					geneVarParser::thisLocus = &tempRecord;
 					geneVarParser::thisAltAllele = all;
 					w = 0;
 					for (std::list<geneVarParser*>::iterator it = weightParser.begin(); it != weightParser.end(); ++it)
+					{
+						dcexpr_val* rv = (*it)->eval();
+						locusWeights[w++][splitLocusCount] = double(*rv);
+						delete rv;
+					}
+					for (std::list<geneVarParser*>::iterator it = recWeightParser.begin(); it != recWeightParser.end(); ++it)
 					{
 						dcexpr_val* rv = (*it)->eval();
 						locusWeights[w++][splitLocusCount] = double(*rv);
