@@ -311,7 +311,9 @@ while (getNextArg(arg, argc, argv, fp, &depth, &argNum))
 		else if (FILLARG("--write-comments"))
 			writeComments=atoi(arg);
 		else if (FILLARG("--write-score-file"))
-			writeScoreFile=atoi(arg);
+			writeScoreFile = atoi(arg);
+		else if (FILLARG("--write-rec-score-file"))
+			writeRecScoreFile = atoi(arg);
 #if 0
 		else if (FILLARG("--do-recessive-test"))
 			spec.doRecessiveTest=atoi(arg);
