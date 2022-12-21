@@ -185,7 +185,7 @@ int main(int argc,char *argv[])
 	{
 		geneVarParser::thisGene=&r; // essential for the annotation to work
 		printf("Writing scoreassoc files...\n");
-		vf.writeScoreAssocFiles(fn, spec.wf,  gp.useFreqs, gp.nSubs, 1, gp.writeComments, gp.writeScoreFile, spec);
+		vf.writeScoreAssocFiles(fn, spec.wf,  gp.useFreqs, gp.nSubs, 1, gp.writeComments, gp.writeScoreFile, gp.writeRecScoreFile, spec);
 #ifndef MSDOS
 		sprintf(line, "bash %s.sh\n",fn);
 #else

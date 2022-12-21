@@ -492,9 +492,9 @@ return locusCount;
 // #define MAXLOCIINSCOREASSOCFILE 50000
 int useLocus[MAXLOCIINSCOREASSOCFILE];
 
-int masterLocusFile::writeScoreAssocFiles(char *root, float wf, int *useFreqs, int *suppliedNSubs, int writeNames, int writeComments, int writeScoreFile, analysisSpecs &spec)
+int masterLocusFile::writeScoreAssocFiles(char *root, float wf, int *useFreqs, int *suppliedNSubs, int writeNames, int writeComments, int writeScoreFile, int writeRecScoreFile, analysisSpecs &spec)
 {
-	return writeScoreAssocFiles(*this,root,wf,useFreqs,suppliedNSubs,writeNames,writeComments,writeScoreFile, spec);
+	return writeScoreAssocFiles(*this,root,wf,useFreqs,suppliedNSubs,writeNames,writeComments,writeScoreFile, writeRecScoreFile, spec);
 }
 
 int masterLocusFile::loadFirst(analysisSpecs &spec)
@@ -749,7 +749,7 @@ int masterLocusFile::loadNext(analysisSpecs &spec)
 #define MAXCOMMENTLENGTH 250000 // can be 200K if multiple transcripts
 char comment[MAXCOMMENTLENGTH];
 // may be long VEP output
-int masterLocusFile::writeScoreAssocFiles(masterLocusFile &subFile,char *root, float wf, int *useFreqs, int *suppliedNSubs, int writeNames, int writeComments, int writeScorefile,analysisSpecs &spec)
+int masterLocusFile::writeScoreAssocFiles(masterLocusFile &subFile,char *root, float wf, int *useFreqs, int *suppliedNSubs, int writeNames, int writeComments, int writeScorefile, int writeRecScorefile, analysisSpecs &spec)
 // allow information about subjects to be provided by a different masterLocusFile 
 // however we are assuming both files refer to identical set of subjects
 {
@@ -1083,7 +1083,9 @@ int masterLocusFile::writeScoreAssocFiles(masterLocusFile &subFile,char *root, f
 	}
 	sprintf(strchr(commandString,'\0')," --outfile %s.sao",root);
 	if (writeScorefile)
-		sprintf(strchr(commandString,'\0')," --scorefile %s.sco",root);
+		sprintf(strchr(commandString, '\0'), " --scorefile %s.sco", root);
+	if (writeRecScorefile)
+		sprintf(strchr(commandString, '\0'), " --recscorefile %s.recsco", root);
 	sprintf(strchr(commandString, '\0'), " --weightfactor %f", spec.wf);
 	if (spec.isQuantitative)
 		sprintf(strchr(commandString, '\0'), " --isquantitative 1");

@@ -332,8 +332,8 @@ public:
 	int outputSAInfo(int *useLocus,float **locusWeights,analysisSpecs const &spec);
 	int getEnsemblConsequences(analysisSpecs const &spec);
 	int getQuickConsequences(refseqGeneInfo &r,analysisSpecs const &spec,int redo=0);
-	int writeScoreAssocFiles(char *root,float wf,int *useFreqs,int *suppliedNSubs,int writeNames,int writeComments,int writeScorefile,analysisSpecs &spec);
-	int writeScoreAssocFiles(masterLocusFile& subFile, char* root, float wf, int* useFreqs, int* suppliedNSubs, int writeNames, int writeComments, int writeScorefile, analysisSpecs& spec);
+	int writeScoreAssocFiles(char *root,float wf,int *useFreqs,int *suppliedNSubs,int writeNames,int writeComments,int writeScorefile, int writeRecScorefile, analysisSpecs &spec);
+	int writeScoreAssocFiles(masterLocusFile& subFile, char* root, float wf, int* useFreqs, int* suppliedNSubs, int writeNames, int writeComments, int writeScorefile, int writeRecScorefile, analysisSpecs& spec);
 	int writeFlatFile(masterLocusFile& subFile, char* fn, int nSubs, strEntry* subName, analysisSpecs& spec, int* useLocus);
 	int writeTransposedFile(masterLocusFile& subFile, char* fn, int nSubs, strEntry* subName, analysisSpecs& spec, int* useLocus);
 	//	int writeVars(char *fn,int *useFreqs,analysisSpecs &spec);
