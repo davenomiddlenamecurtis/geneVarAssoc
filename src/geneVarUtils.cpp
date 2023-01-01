@@ -224,7 +224,7 @@ while (getNextArg(arg, argc, argv, fp, &depth, &argNum))
 		dcerror(1, "Could not open count-these-loci file: %s\n", arg);
 	while (fgets(line, MAXFILENAMELENGTH, locusPosFile) && sscanf(line, "%s", locusPos) == 1)
 	{
-		sprintf(line, "(ATTRIB(%cPOS%c)==%c%s%c)*1", '"', '"', '"', locusPos, '"');
+		sprintf(line, "(ATTRIB(%cPOS%c)=%c%s%c)*1", '"', '"', '"', locusPos, '"');
 		spec.weightExpressions.push_back(*(new std::string(line)));
 		sprintf(line, "POS%s", locusPos);
 		spec.weightNames.push_back(*(new std::string(line)));
