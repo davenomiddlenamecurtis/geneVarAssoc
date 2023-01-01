@@ -757,7 +757,7 @@ int masterLocusFile::writeScoreAssocFiles(masterLocusFile &subFile,char *root, f
 	allelePair **a;
 	probTriple **p;
 	int totalSub,lc,s,l,ss,i,c,nValid,all,numSplitLoci,numIncludedLoci,ll,numWeights,numRecWeights,w;
-	float** locusWeights;
+	double** locusWeights;
 	FILE *fp;
 	FILEPOSITION recPos;
 	const char *testKey;
@@ -829,9 +829,9 @@ int masterLocusFile::writeScoreAssocFiles(masterLocusFile &subFile,char *root, f
 	numRecWeights = spec.recWeightExpressions.size();
 	if (numWeights + numRecWeights == 0)
 		numWeights = 1;
-	assert((locusWeights = (float**)calloc(numWeights+numRecWeights, sizeof(float*))) != 0);
+	assert((locusWeights = (double**)calloc(numWeights+numRecWeights, sizeof(double*))) != 0);
 	for (w = 0; w < numWeights+numRecWeights; ++w)
-		assert((locusWeights[w] = (float*)calloc(MAXLOCIINSCOREASSOCFILE, sizeof(float))) != 0);
+		assert((locusWeights[w] = (double*)calloc(MAXLOCIINSCOREASSOCFILE, sizeof(double))) != 0);
 	numSplitLoci = outputSAInfo(useLocus, locusWeights, spec);
 	// useLocus has numSplitLoci entries
 	checkSystem();
@@ -1193,7 +1193,7 @@ if (recPos!=0L)
 return locusCount;
 }
 
-int masterLocusFile::outputSAInfo(int *useLocus,float **locusWeights,analysisSpecs const &spec)
+int masterLocusFile::outputSAInfo(int *useLocus,double **locusWeights,analysisSpecs const &spec)
 {
 	int locusCount,splitLocusCount;
 	FILEPOSITION recPos;
