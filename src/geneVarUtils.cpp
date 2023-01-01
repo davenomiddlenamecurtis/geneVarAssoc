@@ -35,7 +35,7 @@ int gvaParams::readParms(int argc,char *argv[],analysisSpecs &spec)
 	char arg[2000],line[2000],addChrStr[MAXVCFFILES+1],phenotypeFileName[MAXVCFFILES][100];
 	depth=-1;
 	argNum=1;
-	FILE *phenotypeFile,*multiWeightFile;
+	FILE *phenotypeFile,*multiWeightFile,* locusPosFile;
 	nPhenotypeFile=nIDsAndPhenotypeFile=nSamplesFile=0;
 	spec.nScoreassocArgs = 0;
 	geneListFn[0]=baitFn[0]=referencePath[0]=geneName[0]=sequencePath[0]=posName[0]= refAll[0] = altAll[0] = intervalListFn[0]='\0';
@@ -202,19 +202,34 @@ while (getNextArg(arg, argc, argv, fp, &depth, &argNum))
 	}
 	else if (FILLARG("--multi-weight-file"))
 	{
-		char multiWeightVariantFile[MAXFILENAMELENGTH], varWeightName[MAXFILENAMELENGTH];
-		multiWeightFile = fopen(arg, "r");
-		if (multiWeightFile == NULL)
-			dcerror(1, "Could not open multi-weight-file: %s\n", arg);
-		if (!fgets(line, MAXFILENAMELENGTH - 1, multiWeightFile) || sscanf(line, "%s", multiWeightVariantFile) != 1)
-			dcerror(1, "Could not read name of variant file for multiple weights from multi-weight-file: %s\n", arg);
-		while (fgets(line, MAXFILENAMELENGTH - 1, multiWeightFile) && sscanf(line, "%s", varWeightName) == 1)
-			{
-			sprintf(line, "%c%s%cDBNSFPLOOKUP%c%s%c", '"',varWeightName, '"', '"', multiWeightVariantFile, '"');
-			spec.weightExpressions.push_back(*(new std::string(line)));
-			spec.weightNames.push_back(*(new std::string(varWeightName)));
-			}
-			fclose(multiWeightFile);
+	char multiWeightVariantFile[MAXFILENAMELENGTH], varWeightName[MAXFILENAMELENGTH];
+	multiWeightFile = fopen(arg, "r");
+	if (multiWeightFile == NULL)
+		dcerror(1, "Could not open multi-weight-file: %s\n", arg);
+	if (!fgets(line, MAXFILENAMELENGTH - 1, multiWeightFile) || sscanf(line, "%s", multiWeightVariantFile) != 1)
+		dcerror(1, "Could not read name of variant file for multiple weights from multi-weight-file: %s\n", arg);
+	while (fgets(line, MAXFILENAMELENGTH - 1, multiWeightFile) && sscanf(line, "%s", varWeightName) == 1)
+	{
+		sprintf(line, "%c%s%cDBNSFPLOOKUP%c%s%c", '"', varWeightName, '"', '"', multiWeightVariantFile, '"');
+		spec.weightExpressions.push_back(*(new std::string(line)));
+		spec.weightNames.push_back(*(new std::string(varWeightName)));
+	}
+	fclose(multiWeightFile);
+	}
+	else if (FILLARG("--count-these-loci"))
+	{
+	char locusPos[MAXFILENAMELENGTH];
+	locusPosFile = fopen(arg, "r");
+	if (locusPosFile == NULL)
+		dcerror(1, "Could not open count-these-loci file: %s\n", arg);
+	while (fgets(line, MAXFILENAMELENGTH, locusPosFile) && sscanf(line, "%s", locusPos) == 1)
+	{
+		sprintf(line, "(ATTRIB(%cPOS%c)==%c%s%c)*1", '"', '"', '"', locusPos, '"');
+		spec.weightExpressions.push_back(*(new std::string(line)));
+		sprintf(line, "POS%s", locusPos);
+		spec.weightNames.push_back(*(new std::string(line)));
+	}
+	fclose(locusPosFile);
 	}
 	else if (FILLARG("--phenotype-file"))
 	{
