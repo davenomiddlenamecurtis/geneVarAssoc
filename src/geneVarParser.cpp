@@ -706,14 +706,19 @@ dcexpr_val *attrib_func(dcvnode *b1)
 			sprintf(chrStr,"%d",chr);
 		rv=new dcexpr_string(chrStr);
 	}
-	else if (!strcmp(attrib_type,"COORD"))
+	else if (!strcmp(attrib_type, "COORD"))
 	{
-		if ((chr=geneVarParser::thisLocus->getChr())==23)
-			strcpy(chrStr,"X");
+		if ((chr = geneVarParser::thisLocus->getChr()) == 23)
+			strcpy(chrStr, "X");
 		else
-			sprintf(chrStr,"%d",chr);
-		sprintf(buff,"%s:%ld",chrStr,geneVarParser::thisLocus->getPos());
-		rv=new dcexpr_string(buff);
+			sprintf(chrStr, "%d", chr);
+		sprintf(buff, "%s:%ld", chrStr, geneVarParser::thisLocus->getPos());
+		rv = new dcexpr_string(buff);
+	}
+	else if (!strcmp(attrib_type, "COORD"))
+	{
+		sprintf(buff, "%s,%s", geneVarParser::thisLocus->getAll(0), geneVarParser::thisLocus->getAll(1));
+		rv = new dcexpr_string(buff);
 	}
 	else if (!strcmp(attrib_type,"ID"))
 	{

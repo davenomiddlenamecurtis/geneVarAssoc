@@ -218,15 +218,29 @@ while (getNextArg(arg, argc, argv, fp, &depth, &argNum))
 	}
 	else if (FILLARG("--count-these-loci"))
 	{
-	char locusPos[MAXFILENAMELENGTH];
+	char locusPos[MAXFILENAMELENGTH], alls[MAXFILENAMELENGTH];
 	locusPosFile = fopen(arg, "r");
 	if (locusPosFile == NULL)
 		dcerror(1, "Could not open count-these-loci file: %s\n", arg);
-	while (fgets(line, MAXFILENAMELENGTH, locusPosFile) && sscanf(line, "%s", locusPos) == 1)
+	while (alls[0]='\0',fgets(line, MAXFILENAMELENGTH, locusPosFile) && sscanf(line, "%s %s", locusPos,alls) >= 1)
 	{
-		sprintf(line, "(ATTRIB(%cPOS%c)=%c%s%c)*1", '"', '"', '"', locusPos, '"');
+		if (alls[0] == '\0')
+		{
+			sprintf(line, "(ATTRIB(%cPOS%c)=%c%s%c)*1", '"', '"', '"', locusPos, '"');
+		}
+		else 
+		{
+			sprintf(line, "(ATTRIB(%cPOS%c)=%c%s%c && ATTRIB(%cALLS%c)=%c%s%c)*1", '"', '"', '"', locusPos, '"', '"', '"', '"', alls, '"');
+		}
 		spec.weightExpressions.push_back(*(new std::string(line)));
-		sprintf(line, "POS%s", locusPos);
+		if (alls[0] == '\0')
+		{
+			sprintf(line, "POS%s", locusPos);
+		}
+		else
+		{
+			sprintf(line, "POS%s-%s", locusPos,alls);
+		}
 		spec.weightNames.push_back(*(new std::string(line)));
 	}
 	fclose(locusPosFile);
