@@ -239,7 +239,7 @@ while (getNextArg(arg, argc, argv, fp, &depth, &argNum))
 		}
 		else
 		{
-			sprintf(line, "POS%s-%s", locusPos,alls);
+			sprintf(line, "POS%s%s", locusPos,alls);
 		}
 		spec.weightNames.push_back(*(new std::string(line)));
 	}

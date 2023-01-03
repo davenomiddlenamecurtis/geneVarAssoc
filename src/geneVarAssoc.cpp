@@ -185,20 +185,35 @@ int main(int argc,char *argv[])
 	{
 		geneVarParser::thisGene=&r; // essential for the annotation to work
 		printf("Writing scoreassoc files...\n");
-		vf.writeScoreAssocFiles(fn, spec.wf,  gp.useFreqs, gp.nSubs, 1, gp.writeComments, gp.writeScoreFile, gp.writeRecScoreFile, spec);
-#ifndef MSDOS
-		sprintf(line, "bash %s.sh\n",fn);
-#else
-		sprintf(line, "%s.bat\n",fn);
-#endif
-		if (!gp.doNotRun)
+		if (vf.writeScoreAssocFiles(fn, spec.wf, gp.useFreqs, gp.nSubs, 1, gp.writeComments, gp.writeScoreFile, gp.writeRecScoreFile, spec))
 		{
-		printf("Running command: %s\n", line);
-		checkSystem();
-		system(line);
+#ifndef MSDOS
+			sprintf(line, "bash %s.sh\n", fn);
+#else
+			sprintf(line, "%s.bat\n", fn);
+#endif
+			if (!gp.doNotRun)
+			{
+				printf("Running command: %s\n", line);
+				checkSystem();
+				system(line);
+			}
+			else
+				printf("Files for %s analysis written OK, to run analysis enter:\n%s\n\n", fn, line);
 		}
 		else
-			printf("Files for %s analysis written OK, to run analysis enter:\n%s\n\n",fn,line);
+		{
+			if (!gp.doNotRun)
+			{
+				sprintf(fn2, "%s.sao", fn);
+				fp = fopen(fn2, "w");
+				fprintf(fp, "No valid variants for this gene\n");
+				fclose(fp);
+			}
+			else
+				printf("No valid variants for %s\n", fn);
+
+		}
 	}
 	else
 	{

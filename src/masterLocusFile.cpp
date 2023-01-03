@@ -1121,7 +1121,7 @@ int masterLocusFile::writeScoreAssocFiles(masterLocusFile &subFile,char *root, f
 		free(locusWeights[w]);
 	free(locusWeights);
 	free(subName);
-	return 1;
+	return numIncludedLoci;
 }
 
 int masterLocusFile::outputAltFrequencies(float *freqs,int cc,analysisSpecs const &spec)
