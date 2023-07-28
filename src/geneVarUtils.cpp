@@ -110,7 +110,7 @@ while (getNextArg(arg, argc, argv, fp, &depth, &argNum))
 		|| !strcmp(arg, "--dolinrtest") || !strcmp(arg, "--varfile")
 		|| !strcmp(arg, "--testfile") || !strcmp(arg, "--lintestfile")
 		|| !strcmp(arg, "--start-from-fitted") || !strcmp(arg, "--maxmaf")
-		|| !strcmp(arg, "--maxrecloci") || !strcmp(arg, "--ldthreshold")
+		|| !strcmp(arg, "--maxrecloci") || !strcmp(arg, "--propcomphet")
 		|| !strcmp(arg, "--lamda") || !strcmp(arg, "--missingzero")
 		|| !strcmp(arg, "--debugfile"))
 	{
