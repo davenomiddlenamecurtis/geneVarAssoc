@@ -16,6 +16,7 @@ MAXVCFFILES = 10
 MAXSUB = 20000
 MAXALL = 10
 MAXLOCIINSCOREASSOCFILE = 25000
+BUFFSIZE=1000000
 CFLAGS = $(DEBUGFLAG)
 
 HEADERS = consequenceType.hpp dcerror.hpp dcindex.hpp geneVarUtils.hpp getGene.hpp getSequence.hpp intervalList.h masterLocusFile.hpp vcfLocusFile.hpp hapsLocusFile.hpp geneVarParser.hpp dcexpr.hpp
@@ -27,7 +28,7 @@ all:
 	if [ ! -e ../obj ] ; then mkdir ../obj ; fi ; \
 	if [ ! -e ${DCBIN} ] ; then mkdir ${DCBIN} ; fi ; \
 	cd ../obj; \
-	make -f ../src/geneVarAssoc.mak INOBJ=INOBJ CFLAGS=$(CFLAGS) MAXSUB=${MAXSUB} MAXALL=${MAXALL} MAXVCFFILES=${MAXVCFFILES} MAXLOCIINSCOREASSOCFILE=$(MAXLOCIINSCOREASSOCFILE); \
+	make -f ../src/geneVarAssoc.mak INOBJ=INOBJ CFLAGS=$(CFLAGS) MAXSUB=${MAXSUB} MAXALL=${MAXALL} MAXVCFFILES=${MAXVCFFILES} MAXLOCIINSCOREASSOCFILE=$(MAXLOCIINSCOREASSOCFILE) BUFFSIZE=$(BUFFSIZE); \
 	echo cp ${EXE} ${DCBIN} ; \
 	cp ${EXE} ${DCBIN} ; \
 	echo copied executables to ${DCBIN} ; \
@@ -42,10 +43,10 @@ clean:
 VPATH=../src
 	
 %.o: ../src/%.cpp $(HEADERS)
-	$(CC) $(CFLAGS) -DMAXALL=${MAXALL} -DMAXSUB=${MAXSUB} -DMAXVCFFILES=${MAXVCFFILES} -DMAXLOCIINSCOREASSOCFILE=$(MAXLOCIINSCOREASSOCFILE) -c $< -o ../obj/$@
+	$(CC) $(CFLAGS) -DMAXALL=${MAXALL} -DMAXSUB=${MAXSUB} -DMAXVCFFILES=${MAXVCFFILES} -DMAXLOCIINSCOREASSOCFILE=$(MAXLOCIINSCOREASSOCFILE) -DBUFFSIZE=$(BUFFSIZE) -c $< -o ../obj/$@
 	
 %.o: ../src/%.c $(HEADERS)
-	$(C) $(CFLAGS) -DMAXALL=${MAXALL} -DMAXSUB=${MAXSUB} -DMAXVCFFILES=${MAXVCFFILES} -DMAXLOCIINSCOREASSOCFILE=$(MAXLOCIINSCOREASSOCFILE) -c $< -o ../obj/$@
+	$(C) $(CFLAGS) -DMAXALL=${MAXALL} -DMAXSUB=${MAXSUB} -DMAXVCFFILES=${MAXVCFFILES} -DMAXLOCIINSCOREASSOCFILE=$(MAXLOCIINSCOREASSOCFILE) -DBUFFSIZE=$(BUFFSIZE) -c $< -o ../obj/$@
 
 reorderVCFSubs: reorderVCFSubs.o dcerror.o
 	$(CC) -o reorderVCFSubs reorderVCFSubs.o dcerror.o

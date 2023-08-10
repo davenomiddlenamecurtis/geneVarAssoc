@@ -121,6 +121,11 @@ int vcfLocalLocus::outputVcfGenotypes(FILE *fo,FILE *f,FILEPOSITION filePos,int 
 		dcerror(99,"Failed read locus data after fseek() in localLocus::outputtVcfGenotypes()");
 		return 0;
 	}
+	if (strchr(locusFile::buff, '\n') == 0)
+	{
+		dcerror(99, "This line is too long:\n\n%s\n\nAbove line in locus file was too long. Need to change BUFFSIZE in masterLocusFile.hpp and recompile.\n", locusFile::buff);
+		return 0;
+	}
 	for (s=0,ptr=locusFile::buff;s<nFieldsToSkip;++s)
 	{
 		while (!isspace(*ptr))
@@ -381,6 +386,11 @@ int vcfLocusFile::readHeaderInfo()
 			return 0;
 		}
 	} while (strncmp(buff, "#CHROM", strlen("#CHROM")));
+	if (strchr(locusFile::buff, '\n') == 0)
+	{
+		dcerror(99, "This line is too long:\n\n%s\n\nAbove line in locus file was too long. Need to change BUFFSIZE in masterLocusFile.hpp and recompile.\n", locusFile::buff);
+		return 0;
+	}
 	fseek(fp, fPos, SEEK_SET);
 	for (ch = fgetc(fp), sk = 0; sk < nFieldsToSkip; ++sk)
 	{
