@@ -561,6 +561,43 @@ dcexpr_val *extract_polyphen_func(dcvnode *b1)
 	return rv;
 }
 
+dcexpr_val* extract_vep_field_func(dcvnode* b1, dcvnode* b2)
+{
+	// custom, e.g. GERP, is a float or list of floats, same for every transcript, at the end of the annotation
+	// e.g. .....RefSeq|ACAG|ACAG||||||||0.584999978542328&-1.37999999523163&0.689000010490417&-1.11000001430511
+	// so does not need to be specific
+	// extract a specific field separated by |
+	// field 0 is the text before the first |
+	dcexpr_val* r1, * r2;
+	dcexpr_string* rv;
+	EVAL_BOTH;
+	int f,i;
+	char* annotation, * ptr, * nptr;
+	dcexpr_string* specificAnnotation = getSpecificAnnotation(r1);
+	annotation = (char*)(*specificAnnotation);
+	f = (double)(*r2);
+	for (i = 0, nptr = annotation; i < f; ++i) 
+	{
+		for (; *nptr; ++nptr) 
+		{
+			if (*nptr == '|')
+			{
+				++nptr;
+				break;
+			}
+		}
+	}
+	ptr = nptr;
+	while (*nptr && *nptr != 0)
+		++nptr;
+	*nptr = 0;
+	rv = new dcexpr_string(ptr);
+	delete r1;
+	delete r2;
+	return rv;
+}
+
+
 dcexpr_val* extract_custom_func(dcvnode* b1)
 {
 	// custom, e.g. GERP, is a float or list of floats, same for every transcript, at the end of the annotation
@@ -797,6 +834,7 @@ int initGeneVarParser()
 	add_bin_op_same("VCFADDCHRLOOKUP23TOX", vcfAddChrLookup23toX_func);
 	add_bin_op_same("VCFADDLOWERCHRLOOKUP23TOX", vcfAddLowerChrLookup23toX_func);
 	add_bin_op_same("DBNSFPLOOKUP", dbNSFPLookup_func);
+	add_bin_op_same("GETVEPFIELD", extract_vep_field_func);
 	add_un_op("ANNOT",annot_func);
 	add_un_op("ATTRIB",attrib_func);
 	add_un_op("GETPOLYPHEN",extract_polyphen_func);
