@@ -591,6 +591,10 @@ dcexpr_val* extract_vep_field_func(dcvnode* b1, dcvnode* b2)
 	while (*nptr && *nptr != '|')
 		++nptr;
 	*nptr = 0;
+	if (*ptr == 0)
+	{
+		ptr = "NOENTRY";
+	}
 	rv = new dcexpr_string(ptr);
 	delete r1;
 	delete r2;
