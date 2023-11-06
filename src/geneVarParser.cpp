@@ -588,7 +588,7 @@ dcexpr_val* extract_vep_field_func(dcvnode* b1, dcvnode* b2)
 		}
 	}
 	ptr = nptr;
-	while (*nptr && *nptr != 0)
+	while (*nptr && *nptr != '|')
 		++nptr;
 	*nptr = 0;
 	rv = new dcexpr_string(ptr);
