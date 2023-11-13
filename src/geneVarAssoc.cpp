@@ -47,6 +47,9 @@ int main(int argc,char *argv[])
 	for (i=0;i<argc;++i)
 		printf("%s ",argv[i]);
 	printf("\n");
+	printf("MAXBUFFSIZE is %d\n", MAXBUFFSIZE);
+	printf("MAXSCOREASSOCARGS is %d\n", MAXSCOREASSOCARGS);
+	printf("MAXBUFFSIZE is %d\n", MAXBUFFSIZE);
 
 	wt=new weightTable;
 	wt->init("DEFAULTWEIGHTS",consequence,NCONSEQUENCETYPES);

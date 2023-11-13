@@ -43,8 +43,8 @@ along with geneVarAssoc.If not, see <http://www.gnu.org/licenses/>.
 #endif
 #define VCFFIELDLENGTH 2000 // maximum length for e.g. quality, format fields
 // even 3000 was too short for a UK10K gene with many PolyPhen entries
-#define MAXSCOREASSOCARGS 50
-#define MAXEXPRESSIONLENGTH 2000
+#define MAXSCOREASSOCARGS 200
+#define MAXEXPRESSIONLENGTH 3000
 
 #include "dcindex.hpp"
 #include "dcerror.hpp"
