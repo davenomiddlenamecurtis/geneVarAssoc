@@ -596,7 +596,7 @@ dcexpr_val* extract_vep_field_func(dcvnode* b1, dcvnode* b2)
 		ptr = "NOENTRY";
 	}
 	rv = new dcexpr_string(ptr);
-	delete r1;
+	// delete r1; do not delete r1 because getSpecificAnnotation(r1) has deleted it
 	delete r2;
 	return rv;
 }
