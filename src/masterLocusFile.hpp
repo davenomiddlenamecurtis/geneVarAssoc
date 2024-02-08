@@ -143,6 +143,7 @@ int useFlatFile,useTransposedFile,multilineVEP;
 float *phenotypes;
 TStrFloatMap subPhenos;
 long sp,ep;
+int depthZeroUnknown;
 float GQThreshold,proportionCalledToPass,hetDevThreshold,hetDevThresholdSq,depthThreshold,ABThreshold;
 float recWeightThreshold,LDThreshold,wf;
 float consequenceThreshold;

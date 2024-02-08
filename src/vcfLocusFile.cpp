@@ -33,7 +33,8 @@ int vcfLocalLocus::typeSpecificCopy(localLocus *s)
 	GTpos=src->GTpos;
 	GPpos=src->GPpos;
 	GQpos=src->GQpos;
-	ADpos=src->ADpos;
+	ADpos = src->ADpos;
+	DPpos = src->DPpos;
 	qual=src->qual;
 	BCOPY(info,src->info);
 	BCOPY(format,src->format);
@@ -48,7 +49,8 @@ int vcfLocalLocus::read(FILE *fp)
 	fread(&GTpos,sizeof(GTpos),1,fp);
 	fread(&GPpos,sizeof(GTpos),1,fp);
 	fread(&GQpos,sizeof(GQpos),1,fp);
-	fread(&ADpos,sizeof(ADpos),1,fp);
+	fread(&ADpos, sizeof(ADpos), 1, fp);
+	fread(&DPpos, sizeof(DPpos), 1, fp);
 	fread(&qual,sizeof(qual),1,fp);
 	BREAD(info,fp);
 	BREAD(format,fp);
@@ -63,7 +65,8 @@ int vcfLocalLocus::write(FILE *fp)
 	fwrite(&GTpos,sizeof(GTpos),1,fp);
 	fwrite(&GPpos,sizeof(GTpos),1,fp);
 	fwrite(&GQpos,sizeof(GQpos),1,fp);
-	fwrite(&ADpos,sizeof(ADpos),1,fp);
+	fwrite(&ADpos, sizeof(ADpos), 1, fp);
+	fwrite(&DPpos, sizeof(DPpos), 1, fp);
 	fwrite(&qual,sizeof(qual),1,fp);
 	BWRITE(info,fp);
 	BWRITE(format,fp);
@@ -89,10 +92,15 @@ void vcfLocalLocus::parseFormat()
 			else if (ptr[1] == 'Q')
 				GQpos = i;
 		}
-		else if(*ptr == 'A')
+		else if (*ptr == 'A')
 		{
-			if(ptr[1] == 'D')
+			if (ptr[1] == 'D')
 				ADpos = i;
+		}
+		else if (*ptr == 'D')
+		{
+			if (ptr[1] == 'P')
+				DPpos = i;
 		}
 		do {
 			++ptr;
@@ -225,7 +233,7 @@ int vcfLocalLocus::outputProbs(probTriple *prob,FILE *f,FILEPOSITION filePos,int
 		if (*ptr=='.' || gq<spec.GQThreshold)
 			prob[s][0]=prob[s][1]=prob[s][2]=0;
 		// there may be a problem in dealing with X-linked loci
-		// for now, cannot apply AD criteria to genotype probabilities
+		// for now, cannot apply AD or DP criteria to genotype probabilities
 		while (!isspace(*ptr))
 			++ptr;
 		while (isspace(*ptr))
@@ -301,8 +309,27 @@ int vcfLocalLocus::outputAlleles(allelePair *all,FILE *f,FILEPOSITION filePos,in
 		}
 		gq=atof(ptr2);
 		}
-		
-		if ((allStr[0] == '.' || allStr[1]=='.') && spec.wildIfUnknown)
+		if (spec.depthZeroUnknown)
+		{
+			for (i = 0; i < DPpos; ++i)
+			{
+				while (*ptr2 != ':')
+				{
+					if (isspace(*ptr2))
+					{
+						dcerror(99, "Could not read DP in this line: %s", locusFile::buff);
+						return 0;
+					}
+					++ptr2;
+				}
+				++ptr2;
+			}
+			dp = atoi(ptr2);
+		}
+		if (spec.depthZeroUnknown && dp==0)
+			all[s][0] = all[s][1] = 0;
+		// GATK is now coding unknowns as genotype 0/0 with DP=0
+		else if ((allStr[0] == '.' || allStr[1]=='.') && spec.wildIfUnknown)
 			all[s][0] = all[s][1] = 1;
 		else if (allStr[0] == '.' || allStr[1] == '.' || gq<spec.GQThreshold)
 			all[s][0]=all[s][1]=0;
@@ -345,7 +372,7 @@ int vcfLocalLocus::outputAlleles(allelePair *all,FILE *f,FILEPOSITION filePos,in
 			}
 			if (dp < spec.depthThreshold)
 				dFail = 1;
-			if (hdFail || abFail|| dFail) // heterozygous counts too far from expected
+			if (hdFail || abFail || dFail) // heterozygous counts too far from expected
 				all[s][0] = all[s][1] = 0;
 			else
 			{

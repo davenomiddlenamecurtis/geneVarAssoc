@@ -23,7 +23,7 @@ along with geneVarAssoc.If not, see <http://www.gnu.org/licenses/>.
 #include "masterLocusFile.hpp"
 
 class vcfLocalLocus : localLocus {
-	int GTpos,GQpos,GPpos,ADpos; //position of these variables in genotype entry
+	int GTpos,GQpos,GPpos,ADpos,DPpos; //position of these variables in genotype entry
 	float qual;
 	char info[VCFFIELDLENGTH];
 	char format[VCFFIELDLENGTH];

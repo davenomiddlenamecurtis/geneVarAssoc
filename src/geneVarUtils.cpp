@@ -81,6 +81,7 @@ spec.skipIfNoPass = 0;
 spec.unknownIfNoPass = 0;
 spec.showHapLocusNames = spec.useHaplotypes = 0;
 spec.GQThreshold = 0;
+spec.depthZeroUnknown=1;
 spec.depthThreshold = spec.hetDevThreshold = spec.hetDevThresholdSq = spec.ABThreshold = -1;
 spec.ignoreAlleles = 0;
 spec.dontMergeAlleles = 0;
@@ -404,6 +405,8 @@ while (getNextArg(arg, argc, argv, fp, &depth, &argNum))
 			strcpy(intervalListFn, arg);
 		else if (FILLARG("--GQ-threshold"))
 			spec.GQThreshold = atof(arg);
+		else if (FILLARG("--depth-zero-unknown"))
+			spec.depthZeroUnknown = atoi(arg);
 		else if (FILLARG("--depth-threshold"))
 			spec.depthThreshold = atof(arg);
 		else if (FILLARG("--AB-threshold"))

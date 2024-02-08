@@ -2101,6 +2101,7 @@ void vcfLocalLocus::clear()
 	GTpos=-1;
 	GPpos=-1;
 	ADpos=-1;
+	DPpos = -1;
 }
 
 int masterLocusFile::setCurrentFile(char *fn)
