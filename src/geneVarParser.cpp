@@ -79,7 +79,8 @@ char lineBuff[MAXINFOLENGTH+1],tempBuff[MAXINFOLENGTH+1]; // need these to be bi
 
 dcexpr_val* dbNSFPLookup_func(dcvnode* b1, dcvnode* b2)
 {
-	char fnBuff[1000], * ptr, * tptr, queryBuff[1000], chrStr[10], fieldStr[1000], refAll[100], altAll[100], fieldName[100], fn[1000],queryFn[100];
+	char fnBuff[1000], * ptr, * tptr, queryBuff[1000], chrStr[10], fieldStr[1000], refAll[1000], altAll[1000], fieldName[100], fn[1000],queryFn[100];
+// a long alt allele could overwrite other variables
 	int noEntry, c, f, l,ff;
 	dcexpr_val* r1, * r2;
 	EVAL_BOTH;
