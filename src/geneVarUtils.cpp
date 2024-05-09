@@ -81,7 +81,7 @@ spec.skipIfNoPass = 0;
 spec.unknownIfNoPass = 0;
 spec.showHapLocusNames = spec.useHaplotypes = 0;
 spec.GQThreshold = 0;
-spec.depthZeroUnknown=1;
+spec.depthZeroUnknown=0;
 spec.depthThreshold = spec.hetDevThreshold = spec.hetDevThresholdSq = spec.ABThreshold = -1;
 spec.ignoreAlleles = 0;
 spec.dontMergeAlleles = 0;
