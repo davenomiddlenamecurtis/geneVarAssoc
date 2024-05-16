@@ -911,12 +911,12 @@ int refseqGeneInfo::findGene(char *name)
 	if (!goToStart())
 		return 0;
 	long startPos;
-	int foundIt = 0;
-	do {
+	while (1)
+	{
 		startPos=ftell(geneListFile);
 		if (!fgets(geneLine,GENELINELENGTH-1,geneListFile) || sscanf(geneLine,"%s",lineName)!=1)
 		{
-			dcerror(3,"Could not find gene called %s in file %s\n",name,geneListFileName);
+			dcerror(3,"Could not find valid line for gene called %s in file %s\n",name,geneListFileName);
 			return 0;
 		}
 		if (sscanf(geneLine,"%*d %*s %s %*c %*d %*d %*d %*d %*d %*s %*s %*d %s",lineChr,lineName)!=2)
@@ -926,14 +926,10 @@ int refseqGeneInfo::findGene(char *name)
 		}
 		if (strchr(lineChr, '_'))
 			continue; // ignore lines which do not have a proper chromosome
-		foundIt = 1;
-	} while (stricmp(name,lineName));
-	if (foundIt==0)
-	{
-		dcerror(3, "Could not find a valid line for gene called %s in file %s\n", name, geneListFileName);
-		return 0;
-	}
-	fseek(geneListFile,startPos,SEEK_SET); // back to start of first line for this gene
+		if (!stricmp(name, lineName))
+			break;
+	} 
+	fseek(geneListFile,startPos,SEEK_SET); // back to start of first valid line for this gene
 	return 1;
 }
 
