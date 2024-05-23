@@ -72,8 +72,8 @@ void weightTable::init(char *n,consequenceReport consequence[],int nConsequence)
 	weightTableList[tableName]=this;
 }
 
-#define MAXINFOLENGTH 20000
-#define MAXINFOLENGTHSTR "20000"
+#define MAXINFOLENGTH 50000
+#define MAXINFOLENGTHSTR "50000"
 char lineBuff[MAXINFOLENGTH+1],tempBuff[MAXINFOLENGTH+1]; // need these to be big for e.g. VEP on TTN
 
 
