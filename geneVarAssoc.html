@@ -18,10 +18,10 @@ xmlns="http://www.w3.org/TR/REC-html40">
   <o:Author>David Curtis</o:Author>
   <o:Template>B436C3BA.dotm</o:Template>
   <o:LastAuthor>Curtis, David</o:LastAuthor>
-  <o:Revision>69</o:Revision>
-  <o:TotalTime>10297</o:TotalTime>
+  <o:Revision>70</o:Revision>
+  <o:TotalTime>10299</o:TotalTime>
   <o:Created>2018-06-13T14:53:00Z</o:Created>
-  <o:LastSaved>2024-05-09T17:40:00Z</o:LastSaved>
+  <o:LastSaved>2024-05-23T16:59:00Z</o:LastSaved>
   <o:Pages>52</o:Pages>
   <o:Words>9974</o:Words>
   <o:Characters>56858</o:Characters>
@@ -42,7 +42,7 @@ target="geneVarAssoc_files/props007.xml">
 <!--[if gte mso 9]><xml>
  <w:WordDocument>
   <w:View>Print</w:View>
-  <w:Zoom>BestFit</w:Zoom>
+  <w:Zoom>130</w:Zoom>
   <w:TrackMoves>false</w:TrackMoves>
   <w:TrackFormatting/>
   <w:ValidateAgainstSchemas/>
@@ -1265,20 +1265,20 @@ you will need the following:</p>
 
 <p class=MsoListParagraphCxSpFirst>A set of bgzipped <i style='mso-bidi-font-style:
 normal'>vcf</i> files which have been indexed with tabix and accompanied by
-their <i style='mso-bidi-font-style:normal'>vcf.gz.tbi</i> files. Case and
-control files can be separate and there can be up to ten case and ten control
-files. If separate case and control files are not used then one or more
-combined files can hold all the subjects, in which case one or more separate
-files specifying phenotypes must be provided. If the subjects consist of sets
-of trios then no phenotypes need be provided and it is assumed that the
-children are all affected. Generally the <i style='mso-bidi-font-style:normal'>vcf</i>
-files will contain genotypes but they can instead contain genotype
-probabilities as output by IMPUTE2. If individual level data is not available
-then instead a file of allele frequencies for cases or controls or both can be
-provided, e.g. from 1KG or ExAC. If this is done, the number of subjects used
-to produce these frequencies must also be given. There can be a separate <i
-style='mso-bidi-font-style:normal'>vcf</i> file for each chromosome or else all
-chromosomes can be combined.</p>
+their <i style='mso-bidi-font-style:normal'>vcf.gz.tbi</i> files. Case and control
+files can be separate and there can be up to ten case and ten control files. If
+separate case and control files are not used then one or more combined files
+can hold all the subjects, in which case one or more separate files specifying
+phenotypes must be provided. If the subjects consist of sets of trios then no
+phenotypes need be provided and it is assumed that the children are all
+affected. Generally the <i style='mso-bidi-font-style:normal'>vcf</i> files
+will contain genotypes but they can instead contain genotype probabilities as
+output by IMPUTE2. If individual level data is not available then instead a
+file of allele frequencies for cases or controls or both can be provided, e.g.
+from 1KG or ExAC. If this is done, the number of subjects used to produce these
+frequencies must also be given. There can be a separate <i style='mso-bidi-font-style:
+normal'>vcf</i> file for each chromosome or else all chromosomes can be
+combined.</p>
 
 <p class=MsoListParagraphCxSpMiddle><o:p>&nbsp;</o:p></p>
 
@@ -1460,10 +1460,10 @@ analyses by <i>scoreassoc</i>.</p>
 
 <p class=MsoNormal><a name="_Hlk37422218">Specifies the name of a file which
 provides phenotypes of the subjects in the <i style='mso-bidi-font-style:normal'>vcf</i>
-file(s). There is one row per subject, </a>consisting of a 0 or 1 (for case or
-control) or any other number (to omit this subject from the analysis). The rows
-must exactly match the order of subjects in the <i style='mso-bidi-font-style:
-normal'>vcf</i> file(s). This option can be used if one does not have separate <i
+file(s). There is one row per subject, </a>consisting of a 0 or 1 (for case or control)
+or any other number (to omit this subject from the analysis). The rows must
+exactly match the order of subjects in the <i style='mso-bidi-font-style:normal'>vcf</i>
+file(s). This option can be used if one does not have separate <i
 style='mso-bidi-font-style:normal'>vcf</i> files for cases and controls.
 Typically one would use it with just a single <i style='mso-bidi-font-style:
 normal'>vcf</i> file. However, if for some reason one does wish to use this
@@ -1760,11 +1760,11 @@ to output scores as well as standard output file.</p>
 code give the chromosome entry for chromosome 17 as chr17, other as 17. If this
 argument is 1, adds <i style='mso-bidi-font-style:normal'>chr</i> to the
 chromosome number when running <i style='mso-bidi-font-style:normal'>tabix</i>
-to extract variants from all the <i style='mso-bidi-font-style:normal'>vcf</i> files,
-making e.g. chr17. If 0, adds <i style='mso-bidi-font-style:normal'>chr</i> for
-none of them, making e.g. 17. If a sequence of 0's and 1's, equal in length to
-the number of <i style='mso-bidi-font-style:normal'>vcf</i> files, then adds <i
-style='mso-bidi-font-style:normal'>chr</i> to the <i style='mso-bidi-font-style:
+to extract variants from all the <i style='mso-bidi-font-style:normal'>vcf</i>
+files, making e.g. chr17. If 0, adds <i style='mso-bidi-font-style:normal'>chr</i>
+for none of them, making e.g. 17. If a sequence of 0's and 1's, equal in length
+to the number of <i style='mso-bidi-font-style:normal'>vcf</i> files, then adds
+<i style='mso-bidi-font-style:normal'>chr</i> to the <i style='mso-bidi-font-style:
 normal'>vcf</i> files corresponding to the 1's.</p>
 
 <h3>--num-fields-to-skip x</h3>
@@ -1805,7 +1805,8 @@ than specified by the <i style='mso-bidi-font-style:normal'>threshold</i>.</p>
 
 <p class=MsoNormal>Check the DP field to see if it is 0 and if so treat
 genotype as unknown. Default is 0. Some systems are using this as a way to code
-unknown genotypes but some VCF files do not have a DP field and this would fail.</p>
+unknown genotypes but some VCF files do not have a DP field and this would
+fail.</p>
 
 <h3>--hetdev-threshold threshold</h3>
 
@@ -1943,8 +1944,8 @@ for debugging. Default value is 0.</p>
 
 <p class=MsoNormal>If 1, set up all the files for the analysis but do not
 actually run <i style='mso-bidi-font-style:normal'>scoreassoc</i>. A bash
-script or, under MSDOS, a batch file will be created which can be run to
-perform the analysis. Can be useful for debugging. Default value is 0.</p>
+script or, under MSDOS, a batch file will be created which can be run to perform
+the analysis. Can be useful for debugging. Default value is 0.</p>
 
 <h3>--debug 0 or 1</h3>
 
@@ -1989,13 +1990,12 @@ normal'>gva</i> with the value <i style='mso-bidi-font-style:normal'>name</i>.</
 
 <h3>--weight-expression 'expression'</h3>
 
-<p class=MsoNormal>Provides an expression to use to provide weights for each
-locus instead of the default scheme based on the inbuilt or <i
-style='mso-bidi-font-style:normal'>VEP</i> annotations. For further
-information, see below in the sections on expressions and annotations. There
-can be any number of these expressions and each one will produce its own locus
-weight file, meaning that a separate score will be produced for each weight
-expression. </p>
+<p class=MsoNormal>Provides an expression to use to provide weights for each locus
+instead of the default scheme based on the inbuilt or <i style='mso-bidi-font-style:
+normal'>VEP</i> annotations. For further information, see below in the sections
+on expressions and annotations. There can be any number of these expressions
+and each one will produce its own locus weight file, meaning that a separate
+score will be produced for each weight expression. </p>
 
 <h3>--rec-weight-expression 'expression'</h3>
 
@@ -2515,7 +2515,7 @@ practical situations.</p>
   height:14.4pt'>
   <p class=MsoNormal style='margin:0cm;mso-pagination:widow-orphan'><span
   style='font-size:12.0pt;mso-bidi-font-family:Calibri;mso-bidi-theme-font:
-  minor-latin;color:black'>VCFLOOKUP23TOX<o:p></o:p></span></p>
+  minor-latin;color:black'>VCF23TOXLOOKUP<o:p></o:p></span></p>
   </td>
   <td width=416 valign=top style='width:311.95pt;padding:0cm 5.4pt 0cm 5.4pt;
   height:14.4pt'>
@@ -2531,7 +2531,7 @@ practical situations.</p>
   height:14.4pt'>
   <p class=MsoNormal style='margin:0cm;mso-pagination:widow-orphan'><span
   style='font-size:12.0pt;mso-bidi-font-family:Calibri;mso-bidi-theme-font:
-  minor-latin;color:black'>VCFADDCHRLOOKUP23TOX<o:p></o:p></span></p>
+  minor-latin;color:black'>VCF23TOXADDCHRLOOKUP<o:p></o:p></span></p>
   </td>
   <td width=416 valign=top style='width:311.95pt;padding:0cm 5.4pt 0cm 5.4pt;
   height:14.4pt'>
@@ -2547,7 +2547,7 @@ practical situations.</p>
   height:14.4pt'>
   <p class=MsoNormal style='margin:0cm;mso-pagination:widow-orphan'><span
   style='font-size:12.0pt;mso-bidi-font-family:Calibri;mso-bidi-theme-font:
-  minor-latin;color:black'>VCFADDLOWERCHRLOOKUP23TOX<o:p></o:p></span></p>
+  minor-latin;color:black'>VCF23TOXADDLOWERCHRLOOKUP<o:p></o:p></span></p>
   </td>
   <td width=416 valign=top style='width:311.95pt;padding:0cm 5.4pt 0cm 5.4pt;
   height:14.4pt'>
@@ -2572,15 +2572,15 @@ practical situations.</p>
   style='font-size:12.0pt;mso-bidi-font-family:Calibri;mso-bidi-theme-font:
   minor-latin;color:black'>For an info field produced by ensembl&#8217;s
   variant effect predictor (VEP), return the value of the numbered element,
-  with elements being separated by &#8216;|&#8217;. Thus, &quot;CSQ&quot; VCFLOOKUP
-  annotation.vcf.gz returns the field containing VEP annotations. Applied to
-  this, GETVEPFIELD 35 returns the 35th annotation from the whole field.
-  Annotation 0 is the one before the first &#8216;|&#8217;. For example, ( (
-  &quot;CSQ&quot; VCFLOOKUP &quot;ukb23158.AM.annot.vcf.gz&quot;) GETVEPFIELD
-  35 ) GETWEIGHT &quot;weights.AM.20231026.txt&quot; extracts the AlphaMissense
-  annotation from the VEP field and looks up its weight in the weight file. If
-  there is no VEP annotation or the field is empty this function returns
-  &#8220;&#8221;.<o:p></o:p></span></p>
+  with elements being separated by &#8216;|&#8217;. Thus, &quot;CSQ&quot;
+  VCFLOOKUP annotation.vcf.gz returns the field containing VEP annotations.
+  Applied to this, GETVEPFIELD 35 returns the 35th annotation from the whole
+  field. Annotation 0 is the one before the first &#8216;|&#8217;. For example,
+  ( ( &quot;CSQ&quot; VCFLOOKUP &quot;ukb23158.AM.annot.vcf.gz&quot;)
+  GETVEPFIELD 35 ) GETWEIGHT &quot;weights.AM.20231026.txt&quot; extracts the
+  AlphaMissense annotation from the VEP field and looks up its weight in the
+  weight file. If there is no VEP annotation or the field is empty this
+  function returns &#8220;&#8221;.<o:p></o:p></span></p>
   </td>
  </tr>
  <tr style='mso-yfti-irow:27;height:14.4pt'>
@@ -4042,11 +4042,11 @@ annotations and their default weights are as follows:</p>
 </table>
 
 <p class=MsoNormal>If one wishes to allocate different weights from the default
-ones then the <i style='mso-bidi-font-style:normal'>--weight-expression</i> option
-can be used. The two internal tables of default weights are referred to as <i
-style='mso-bidi-font-style:normal'>DEFAULTWEIGHTS</i> and <i style='mso-bidi-font-style:
-normal'>DEFAULTVEPWEIGHTS</i> and if desired these can be used in a weight
-expression. This means that this:</p>
+ones then the <i style='mso-bidi-font-style:normal'>--weight-expression</i>
+option can be used. The two internal tables of default weights are referred to
+as <i style='mso-bidi-font-style:normal'>DEFAULTWEIGHTS</i> and <i
+style='mso-bidi-font-style:normal'>DEFAULTVEPWEIGHTS</i> and if desired these
+can be used in a weight expression. This means that this:</p>
 
 <p class=command>--weight-expression '(ANNOT &quot;INBUILT&quot;) GETWEIGHT
 &quot;DEFAULTWEIGHTS&quot;'<span style='mso-fareast-font-family:"Times New Roman";
@@ -4150,9 +4150,9 @@ mso-fareast-font-family:"Times New Roman";mso-fareast-theme-font:minor-fareast'>
 mso-fareast-theme-font:minor-fareast'><o:p>&nbsp;</o:p></span></p>
 
 <p class=MsoNormal><span style='mso-fareast-font-family:"Times New Roman";
-mso-fareast-theme-font:minor-fareast'>If one wishes to completely ignore
-variants having a particular annotation one can assign it a weight of 0. Such
-variants will have no effect on the <i style='mso-bidi-font-style:normal'>scoreAssoc</i>
+mso-fareast-theme-font:minor-fareast'>If one wishes to completely ignore variants
+having a particular annotation one can assign it a weight of 0. Such variants
+will have no effect on the <i style='mso-bidi-font-style:normal'>scoreAssoc</i>
 analysis. Another option is to use a suitable exclusion expression, e.g.:<o:p></o:p></span></p>
 
 <p class=MsoNormal><i style='mso-bidi-font-style:normal'><span
@@ -4296,8 +4296,8 @@ VCFLOOKUP
 
 <p class=commandCxSpMiddle>--ref-gene-file \reference\refseqgenesorted.txt </p>
 
-<p class=commandCxSpMiddle>--bait-file
-\reference\SureSelect_All_Exon_50mb.hg19.w100.nr.bed </p>
+<p class=commandCxSpMiddle>--bait-file \reference\SureSelect_All_Exon_50mb.hg19.w100.nr.bed
+</p>
 
 <p class=commandCxSpMiddle>--margin 0</p>
 
@@ -4347,9 +4347,9 @@ VCFLOOKUP
 
 <p class=commandCxSpMiddle>FREQ(0)&gt;0.1 &amp; FREQ(1)&gt;0.1</p>
 
-<p class=commandCxSpMiddle>(0 GENOCOUNT 0) &gt; (0 GENOCOUNT 1) &amp; (0 GENOCOUNT
-2) &gt; (0 GENOCOUNT 1) &amp; (1 GENOCOUNT 0) &gt; (1 GENOCOUNT 1) &amp; (1
-GENOCOUNT 2) &gt; (1 GENOCOUNT 1)<span
+<p class=commandCxSpMiddle>(0 GENOCOUNT 0) &gt; (0 GENOCOUNT 1) &amp; (0
+GENOCOUNT 2) &gt; (0 GENOCOUNT 1) &amp; (1 GENOCOUNT 0) &gt; (1 GENOCOUNT 1)
+&amp; (1 GENOCOUNT 2) &gt; (1 GENOCOUNT 1)<span
 style='mso-spacerun:yes'>&nbsp;&nbsp;&nbsp;&nbsp; </span></p>
 
 <p class=commandCxSpLast>NSUB(1)&lt;97</p>
@@ -4635,9 +4635,8 @@ mso-fareast-theme-font:minor-fareast'>--GQ-threshold 30<o:p></o:p></span></p>
 
 <p class=commandCxSpMiddle><span style='mso-fareast-font-family:"Times New Roman";
 mso-fareast-theme-font:minor-fareast'>--exclude-expression ' ((&quot;AF&quot;
-VCFLOOKUP
-&quot;/home/rejudcu/sequence/ExAC/ExAC.r0.3.nonpsych.sites.vcf.gz&quot;)) &gt;
-0'<o:p></o:p></span></p>
+VCFLOOKUP &quot;/home/rejudcu/sequence/ExAC/ExAC.r0.3.nonpsych.sites.vcf.gz&quot;))
+&gt; 0'<o:p></o:p></span></p>
 
 <p class=commandCxSpMiddle><span style='mso-fareast-font-family:"Times New Roman";
 mso-fareast-theme-font:minor-fareast'>--exclusion-list -<o:p></o:p></span></p>
