@@ -832,12 +832,13 @@ int initGeneVarParser()
 	add_bin_op_next("STARTSWITH",startsWith_func);
 	add_bin_op_same("STRCAT",strcat_func);
 	add_bin_op_same("GETWEIGHT",getWeight_func);
-	add_bin_op_same("VCFLOOKUP", vcfLookup_func);
-	add_bin_op_same("VCFADDCHRLOOKUP", vcfAddChrLookup_func);
 	add_bin_op_same("VCFADDLOWERCHRLOOKUP", vcfAddLowerChrLookup_func);
 	add_bin_op_same("VCFLOOKUP23TOX", vcfLookup23toX_func);
 	add_bin_op_same("VCFADDCHRLOOKUP23TOX", vcfAddChrLookup23toX_func);
 	add_bin_op_same("VCFADDLOWERCHRLOOKUP23TOX", vcfAddLowerChrLookup23toX_func);
+// must have these after preceding or parser will get confused
+	add_bin_op_same("VCFLOOKUP", vcfLookup_func);
+	add_bin_op_same("VCFADDCHRLOOKUP", vcfAddChrLookup_func);
 	add_bin_op_same("DBNSFPLOOKUP", dbNSFPLookup_func);
 	add_bin_op_same("GETVEPFIELD", extract_vep_field_func);
 	add_un_op("ANNOT",annot_func);
