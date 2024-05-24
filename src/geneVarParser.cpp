@@ -406,7 +406,7 @@ looks like this but no spaces
 
 dcexpr_string* getGeneAnnotation(dcexpr_val* r1)
 {
-	char geneName[100], testName[100], * ptr, * sptr,allName[100];
+	char geneName[100], testName[100], * ptr, * sptr,allName[1000];
 	char* CSQEntry = (char*)(*r1);
 	dcexpr_string* rv;
 	if (geneVarParser::thisGene == 0)
