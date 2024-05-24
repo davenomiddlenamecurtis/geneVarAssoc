@@ -37,7 +37,7 @@ gvaParams gp;
 int main(int argc,char *argv[])
 {
 	geneExtractor gcase,gcont;
-	char fn[100],fn2[100],line[1000],geneName[100];
+	char fn[100], fn2[100], saoFn[100], line[1000],geneName[100];
 	int i,extractedOK;
 	FILE *fp;
 	weightTable *wt;
@@ -72,10 +72,18 @@ int main(int argc,char *argv[])
 	r.setUpstream(gp.upstream);
 	r.setDownstream(gp.downstream);
 	r.setBaitMargin(gp.margin);
-
+	sprintf(saoFn, "%s.%s.sao", gp.testName, geneName);
 	if (!r.findGene(geneName) || !r.getNextGene())
 	{
-		dcerror(1,"Could not find gene: %s\n",geneName);
+		if (!gp.doNotRun)
+		{
+			fp = fopen(saoFn, "w");
+			fprintf(fp, "No valid lines for this gene\n");
+			fclose(fp);
+		}
+		else
+			printf("No valid lines for %s\n", fn);
+		dcerror(1, "Could not find gene: %s\n", geneName);
 		return 1;
 	}
 	if (!gp.dontExtractVariants)
@@ -83,6 +91,14 @@ int main(int argc,char *argv[])
 		r.getGeneIntervals(iList, spec.omitIntrons, spec.spliceRegionSize);
 		if (iList.nInts == 0)
 		{
+			if (!gp.doNotRun)
+			{
+				fp = fopen(saoFn, "w");
+				fprintf(fp, "No valid intervals for this gene\n");
+				fclose(fp);
+			}
+			else
+				printf("No valid intervals for %s\n", fn);
 			dcerror(1, "Could not find any valid intervals for gene: %s\n", geneName);
 			return 1;
 		}
