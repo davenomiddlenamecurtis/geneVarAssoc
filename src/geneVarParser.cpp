@@ -188,7 +188,7 @@ dcexpr_val *performTabixQuery(const char *fn,int addChr,int lower,char *lookupSt
 {
 	char fnBuff[1000],*ptr,*tptr,queryBuff[1000],chrStr[10],altAll[1000],refAll[1000],currentRefAll[1000],currentAltAll[1000],queryFn[1000];
 	long pos;
-	int noEntry,c,f,l;
+	int noEntry,noLines,c,f,l;
 	dcexpr_val *rv;
 	FILE *fq;
 	strcpy(fnBuff,fn);
@@ -248,7 +248,7 @@ dcexpr_val *performTabixQuery(const char *fn,int addChr,int lower,char *lookupSt
 		}
 #else
 		FILE* pipe;
-		sprintf(lineBuff, "tabix %s %s%s:%ld-%ld ", 
+		sprintf(lineBuff, "tabix %s %s%s:%ld-%ld", 
 			fnBuff, 
 			addChr ? lower ? "chr" : "CHR" : "", 
 			chrStr, 
@@ -266,8 +266,10 @@ dcexpr_val *performTabixQuery(const char *fn,int addChr,int lower,char *lookupSt
 			dcerror(1,"Could not execute %s\n",lineBuff);
 		}
 		noEntry=1;
+		noLines = 1;
 		while (fgets(tempBuff, MAXINFOLENGTH, pipe))
 		{
+			noLines = 0;
 				if (sscanf(tempBuff, "%*s %ld %*s %s %[^ \t,]", &pos, refAll, altAll) == 3
 					&& pos==geneVarParser::thisLocus->getPos()) // this test is here because the tabix command pulls out all overlapping indels
 				{
@@ -286,8 +288,10 @@ dcexpr_val *performTabixQuery(const char *fn,int addChr,int lower,char *lookupSt
 			pclose(pipe);
 #endif
 #endif
+		if (noLines)
+			dcerror(1,"This query produced no result: %s\n", lineBuff);
 		if (noEntry)
-			sprintf(lineBuff,"NOVCFLINE_%s_%ld_%s",chrStr, geneVarParser::thisLocus->getPos(), currentAltAll);
+			sprintf(lineBuff, "NOVCFLINE_%s_%ld_%s", chrStr, geneVarParser::thisLocus->getPos(), currentAltAll);
 		geneVarParser::queryCache[queryBuff]=lineBuff;
 	}
 	else
