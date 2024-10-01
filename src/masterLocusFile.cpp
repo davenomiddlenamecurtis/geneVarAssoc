@@ -1823,6 +1823,7 @@ int masterLocusFile::readLocusFileEntries(char *fn,analysisSpecs const &spec,int
 		return 0;
 		break;
 	}
+	hereOK();
 	while (addLocus(locusFiles[currentLocusFile]->fp,spec))
 		++nread;
 	delete tempLocus;
