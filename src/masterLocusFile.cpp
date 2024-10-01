@@ -1756,6 +1756,7 @@ int masterLocusFile::readLocusFileEntries(char *fn,analysisSpecs const &spec,int
 {
 	int i,s,nread;
 	char *ptr;
+	hereOK();
 #if 0
 	for (i=0;i<nLocusFiles;++i)
 	{
@@ -1801,6 +1802,7 @@ int masterLocusFile::readLocusFileEntries(char *fn,analysisSpecs const &spec,int
 	cc[currentLocusFile]=aff;
 	locusFiles[currentLocusFile]->readHeaderInfo();
 	nSubs[currentLocusFile]=locusFiles[currentLocusFile]->getNSUbs();
+	hereOK();
 	nread=0;
 	if (tempLocus!=0)
 		delete tempLocus;
@@ -1825,6 +1827,7 @@ int masterLocusFile::readLocusFileEntries(char *fn,analysisSpecs const &spec,int
 		++nread;
 	delete tempLocus;
 	tempLocus=0;
+	hereOK();
     fclose(locusFiles[currentLocusFile]->fp);
 	locusFiles[currentLocusFile]->fp=0;
 	return nread;

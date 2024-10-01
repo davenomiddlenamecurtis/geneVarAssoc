@@ -454,8 +454,10 @@ int vcfLocalLocus::input(FILE *f,FILEPOSITION *locusPosInFile,analysisSpecs cons
 {
 	char chrStr[10],qualstr[VCFFIELDLENGTH],*ptr,*qtr,word[VCFFIELDLENGTH],*chrStrPtr,afstr[20];
 	int foundOneOK=0;
+	hereOK();
 	while (!foundOneOK) // make this a loop so I can ignore entries which do not pass
 	{
+	hereOK();
 	*locusPosInFile=ftell(f);
 	if (!fgets(locusFile::buff,BUFFSIZE-1,f))
 		return 0;
@@ -470,6 +472,7 @@ int vcfLocalLocus::input(FILE *f,FILEPOSITION *locusPosInFile,analysisSpecs cons
 		return 0;
 	}
 
+	hereOK();
 	format[0]='\0';
 	ptr=locusFile::buff;
 	if (!scanWord(&ptr,chrStr,9))
@@ -499,6 +502,7 @@ int vcfLocalLocus::input(FILE *f,FILEPOSITION *locusPosInFile,analysisSpecs cons
 			// if a locus passes in some files but not others, should use unknownIfNoPass instead.
 		}
 	}
+	hereOK();
 	if (!scanWord(&ptr,info,VCFFIELDLENGTH-1))
 		;
 //		goto problemReadingLocus;
@@ -511,9 +515,11 @@ int vcfLocalLocus::input(FILE *f,FILEPOSITION *locusPosInFile,analysisSpecs cons
 	}
 	goto noProblemReadingLocus;
 	problemReadingLocus:
-			dcerror(99,"Problem reading locus information from this line: %s",locusFile::buff);
+		hereOK();
+		dcerror(99,"Problem reading locus information from this line: %s",locusFile::buff);
 			return 0;
 	noProblemReadingLocus:
+			hereOK();
 			foundOneOK=1;
 		SNP=SNP_MAYBE;
 		if ((ptr=strstr(info,"VT="))!=0)
