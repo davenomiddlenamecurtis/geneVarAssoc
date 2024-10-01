@@ -452,7 +452,11 @@ if (recPos!=0L)
 	sprintf(line," %s -i predictorQuery.txt -o predictorOutput.txt --pick_allele_gene --force_overwrite",spec.vepCommand);
 	checkSystem();
 	system(line);
-	fp=fopen("predictorOutput.txt","rb"); // binary mode can use fseek/ftell
+#ifndef MSDOS
+	fp=fopen("predictorOutput.txt","r");
+#else
+	fp = fopen("predictorOutput.txt", "rb"); // binary mode can use fseek/ftell
+#endif
 	if (fp==NULL)
 	{
 		dcerror.kill();
@@ -1540,7 +1544,11 @@ int masterLocusFile::openLocusFiles()
 	int i;
 	for (i=0;i<nLocusFiles;++i)
 	{
-		locusFiles[i]->fp=fopen(lfFileNames[i],"rb");
+#ifndef MSDOS
+		locusFiles[i]->fp=fopen(lfFileNames[i],"r");
+#else
+		locusFiles[i]->fp = fopen(lfFileNames[i],"rb");
+#endif
 		if (locusFiles[i]->fp==0)
 		{
 			dcerror(99,"Could not open file %s",lfFileNames[i]);
@@ -1794,7 +1802,11 @@ int masterLocusFile::readLocusFileEntries(char *fn,analysisSpecs const &spec,int
 #endif
 	if (locusFiles[currentLocusFile]->fp!=0)
 		fclose(locusFiles[currentLocusFile]->fp);
-	if ((locusFiles[currentLocusFile]->fp=fopen(fn,"rb"))==0)
+#ifndef MSDOS
+	if ((locusFiles[currentLocusFile]->fp=fopen(fn,"r"))==0)
+#else
+	if ((locusFiles[currentLocusFile]->fp = fopen(fn, "rb")) == 0)
+#endif
 	{
 		dcerror(99,"Could not open locus data file %s\n",fn);
 		return 0;

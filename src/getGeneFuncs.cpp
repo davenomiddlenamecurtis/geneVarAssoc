@@ -469,7 +469,11 @@ int refseqGeneInfo::getNextGene(int transcriptionStartCanVary)
 	gotAllExons=allExonCount=0;
 	if (geneListFile==0)
 	{
-		geneListFile=fopen(geneListFileName,"rb"); // binary so MSVC fseek() will work
+#ifndef MSDOS
+		geneListFile = fopen(geneListFileName, "r"); // binary so MSVC fseek() will work
+#else
+		geneListFile = fopen(geneListFileName, "rb"); // binary so MSVC fseek() will work
+#endif
 		if (geneListFile==0)
 		{
 			dcerror(2,"Could not open file %s",geneListFileName);
@@ -671,7 +675,11 @@ int refseqGeneInfo::tbiExtractGene(char* tbiFilename, char* outFn, int appendToO
 	{
 		if (baitsFile == 0)
 		{
+#ifndef MSDOS
+			if ((baitsFile = fopen(baitsFileName, "r")) == 0)
+#else
 			if ((baitsFile = fopen(baitsFileName, "rb")) == 0)
+#endif
 			{
 				dcerror(7, "Could not open baits file: %s", baitsFileName);
 				return 0;
@@ -795,7 +803,11 @@ int refseqGeneInfo::plinkExtractGene(char* bedFilename, char* famFilename, char*
 	{
 		if (baitsFile==0)
 		{
-			if ((baitsFile=fopen(baitsFileName,"rb"))==0)
+#ifndef MSDOS
+			if ((baitsFile=fopen(baitsFileName,"r"))==0)
+#else
+			if ((baitsFile = fopen(baitsFileName, "rb")) == 0)
+#endif
 			{
 				dcerror(7,"Could not open baits file: %s",baitsFileName);
 				return 0;
@@ -855,7 +867,11 @@ int refseqGeneInfo::goToStart()
 {
 	if (geneListFile==0)
 	{
-		geneListFile=fopen(geneListFileName,"rb"); // binary so MSVC fseek() will work
+#ifndef MSDOS
+		geneListFile=fopen(geneListFileName,"r");
+#else
+		geneListFile = fopen(geneListFileName, "rb"); // binary so MSVC fseek() will work
+#endif
 		if (geneListFile==0)
 		{
 			dcerror(2,"Could not open file %s",geneListFileName);
@@ -877,8 +893,11 @@ int refseqGeneInfo::findFirstGene(char *chrToFind,int posToFind)
 	sprintf(chrToFindStr,"chr%s",chrToFind);
 	if (geneListFile==0)
 	{
-		geneListFile=fopen(geneListFileName,"rb"); // binary so MSVC fseek() will work
-		if (geneListFile==0)
+#ifndef MSDOS
+		geneListFile=fopen(geneListFileName,"r"); // binary so MSVC fseek() will work
+#else
+		geneListFile = fopen(geneListFileName, "rb"); // binary so MSVC fseek() will work
+#endif		if (geneListFile==0)
 		{
 			dcerror(2,"Could not open file %s",geneListFileName);
 			return 0;
@@ -975,8 +994,12 @@ int refseqGeneInfo::getGeneIntervals(intervalList& iList, int omitIntrons, int s
 	{
 		if (baitsFile == 0)
 		{
+#ifndef MSDOS
+			if ((baitsFile = fopen(baitsFileName, "r")) == 0)
+#else
 			if ((baitsFile = fopen(baitsFileName, "rb")) == 0)
-			{
+#endif
+				{
 				dcerror(7, "Could not open baits file: %s", baitsFileName);
 				return 0;
 			}
