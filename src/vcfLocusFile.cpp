@@ -461,6 +461,7 @@ int vcfLocalLocus::input(FILE *f,FILEPOSITION *locusPosInFile,analysisSpecs cons
 	*locusPosInFile=ftell(f);
 	if (!fgets(locusFile::buff,BUFFSIZE-1,f))
 		return 0;
+	hereOK();
 	while (!strchr(locusFile::buff,'\n')) // line was too long to fit into buff
 	{
 		do {
@@ -468,6 +469,7 @@ int vcfLocalLocus::input(FILE *f,FILEPOSITION *locusPosInFile,analysisSpecs cons
 			return 0;
 		} while (!strchr(locusFile::buff,'\n')); // eat remainder of line and discard it
 	*locusPosInFile=ftell(f); // make sure calling routine knows we updated position
+	hereOK();
 	if (!fgets(locusFile::buff,BUFFSIZE-1,f)) // hope this new line is not too long
 		return 0;
 	}
