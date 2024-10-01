@@ -2319,8 +2319,12 @@ FILEPOSITION recPos,locusPosInFile,p;
 char key[MAXALLLENGTH*2+100],refTemp[MAXALLLENGTH+1],altTemp[MAXALLLENGTH+1],*ptr;
 const char *testKey;
 // locusPosInFile=FTELL(f); get this set by input() below
-if (!tempLocus->input(f,&locusPosInFile,spec))
+if (!tempLocus->input(f, &locusPosInFile, spec))
+{
+	hereOK();
 	return 0;
+}
+hereOK();
 locusSNP gotSNP=tempLocus->isSNP();
 recPos=findFirstInRange(tempLocus->chr,tempLocus->pos);
 if (recPos!=0L)
