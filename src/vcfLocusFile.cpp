@@ -459,10 +459,14 @@ int vcfLocalLocus::input(FILE *f,FILEPOSITION *locusPosInFile,analysisSpecs cons
 	{
 	hereOK();
 	*locusPosInFile=ftell(f);
+	// position of start of this locus if previous line was read completely
 	if (!fgets(locusFile::buff,BUFFSIZE-1,f))
 		return 0;
 	hereOK();
-	while (!strchr(locusFile::buff,'\n')) // line was too long to fit into buff
+//	while (!strchr(locusFile::buff, '\n')) // line was too long to fit into buff
+		// I think this would silently fail if all lines were too long
+		// and probably would silently miss long lines
+	if (!strchr(locusFile::buff, '\n')) // line was too long to fit into buff - if not while
 	{
 		do {
 		if (!fgets(locusFile::buff,BUFFSIZE-1,f))
@@ -473,7 +477,7 @@ int vcfLocalLocus::input(FILE *f,FILEPOSITION *locusPosInFile,analysisSpecs cons
 	if (!fgets(locusFile::buff,BUFFSIZE-1,f)) // hope this new line is not too long
 		return 0;
 	}
-
+	// now we are definitely at the start of the line and have recorded its position
 	hereOK();
 	format[0]='\0';
 	ptr=locusFile::buff;
