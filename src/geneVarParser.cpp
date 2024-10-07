@@ -257,9 +257,8 @@ dcexpr_val *performTabixQuery(const char *fn,int addChr,int lower,char *lookupSt
 		}
 #else
 		FILE* pipe;
-		sprintf(lineBuff, "tabix %s %s%s:%ld-%ld", 
+		sprintf(lineBuff, "tabix %s %s:%ld-%ld", 
 			fnBuff, 
-			addChr ? lower ? "chr" : "CHR" : "", 
 			chrStr, 
 			geneVarParser::thisLocus->getPos(), 
 			geneVarParser::thisLocus->getPos(),
