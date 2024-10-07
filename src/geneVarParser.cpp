@@ -278,12 +278,16 @@ dcexpr_val *performTabixQuery(const char *fn,int addChr,int lower,char *lookupSt
 		while (fgets(tempBuff, MAXINFOLENGTH, pipe))
 		{
 			noLines = 0;
+			hereOK();
+			printf("%s\n", tempBuff);
 				if (sscanf(tempBuff, "%*s %ld %*s %s %[^ \t,]", &pos, refAll, altAll) == 3
 					&& pos==geneVarParser::thisLocus->getPos()) // this test is here because the tabix command pulls out all overlapping indels
 				{
+					hereOK();
 					if ((!strcmp(altAll, currentAltAll) && !strcmp(refAll, currentRefAll))
 						|| (!strcmp(refAll, currentAltAll) && !strcmp(altAll, currentRefAll))) // occasionally may be the wrong way round
 					{
+						hereOK();
 						noEntry = 0;
 						sscanf(tempBuff, "%*s %*s %*s %*s %*s %*s %*s %" MAXINFOLENGTHSTR "s", lineBuff);
 						break;
@@ -456,7 +460,7 @@ dcexpr_string* getGeneAnnotation(dcexpr_val* r1)
 	{
 		dcerror.warn();
 		dcerror(1,
-			"Failed to find annotation at %d:%ld for gene %s in this string:\n%s\n\nFor gene-specific output should run VEP with e.g. --per_gene or --pick_allele_gene",
+			"Failed to find annotation at %d:%ld for gene %s in this string:\n%s\nFor gene-specific output should run VEP with e.g. --per_gene or --pick_allele_gene\n",
 			geneVarParser::thisLocus->getChr(), geneVarParser::thisLocus->getPos(), geneName, CSQEntry);
 		strcpy(lineBuff, "NOGENEENTRY");
 	}
