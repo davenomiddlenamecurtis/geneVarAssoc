@@ -790,9 +790,7 @@ int masterLocusFile::writeScoreAssocFiles(masterLocusFile &subFile,char *root, f
 		return 0;
 	}
 	assert(subName=(strEntry *)calloc(totalSub,sizeof(strEntry)));
-// hereOK();
 	subFile.outputSubNames(subName,spec);
-// hereOK();
 	nValid=countNumberInRange(spec);
 	if (!spec.useFlatFile && !spec.useTransposedFile)
 	{
@@ -811,7 +809,6 @@ int masterLocusFile::writeScoreAssocFiles(masterLocusFile &subFile,char *root, f
 			lc = outputAlleles(a, spec);
 		}
 	}
-// hereOK();
 	if(spec.subPhenos.size()>0)
 	{
 		if(spec.phenotypes==NULL) // should have been allocated when IDsAndPhenotypesFileName read
@@ -1447,13 +1444,11 @@ int masterLocusFile::outputProbs(probTriple **prob, analysisSpecs &spec)
 	const char *testKey;
 	int c, i, altIsCommon,ll;
 	locusCount = 0;
-// hereOK();
 	if (gotoFirstInRange(spec))
 	do
 	{
 		outputCurrentProbs(prob[locusCount++], spec); 
 	} while (gotoNextInRange(spec));
-// hereOK();
 	return locusCount;
 }
 
@@ -1475,12 +1470,10 @@ int masterLocusFile::outputAlleles(allelePair **all, analysisSpecs &spec)
 	const char *testKey;
 	int c, i, altIsCommon;
  	locusCount = 0;
-// hereOK();
 	checkSystem();
 	if (gotoFirstInRange(spec))
 	do
 	{
-// hereOK();
 		nAlls[locusCount] = tempRecord.nAlls;
 		outputCurrentAlleles(all[locusCount++], spec);
 		if (locusCount>MAXLOCIINSCOREASSOCFILE)
@@ -1490,7 +1483,6 @@ int masterLocusFile::outputAlleles(allelePair **all, analysisSpecs &spec)
 			return 0;
 		}
 	} while (gotoNextInRange(spec));
-// hereOK();
 	return locusCount;
 }
 
@@ -1764,7 +1756,6 @@ int masterLocusFile::readLocusFileEntries(char *fn,analysisSpecs const &spec,int
 {
 	int i,s,nread;
 	char *ptr;
-	hereOK();
 #if 0
 	for (i=0;i<nLocusFiles;++i)
 	{
@@ -1814,7 +1805,6 @@ int masterLocusFile::readLocusFileEntries(char *fn,analysisSpecs const &spec,int
 	cc[currentLocusFile]=aff;
 	locusFiles[currentLocusFile]->readHeaderInfo();
 	nSubs[currentLocusFile]=locusFiles[currentLocusFile]->getNSUbs();
-	hereOK();
 	nread=0;
 	if (tempLocus!=0)
 		delete tempLocus;
@@ -1835,13 +1825,11 @@ int masterLocusFile::readLocusFileEntries(char *fn,analysisSpecs const &spec,int
 		return 0;
 		break;
 	}
-	hereOK();
 	while (addLocus(locusFiles[currentLocusFile]->fp,spec))
 		++nread;
 	delete tempLocus;
 	tempLocus=0;
-	hereOK();
-    fclose(locusFiles[currentLocusFile]->fp);
+	fclose(locusFiles[currentLocusFile]->fp);
 	locusFiles[currentLocusFile]->fp=0;
 	return nread;
 }
@@ -2337,10 +2325,8 @@ const char *testKey;
 // locusPosInFile=FTELL(f); get this set by input() below
 if (!tempLocus->input(f, &locusPosInFile, spec))
 {
-	hereOK();
 	return 0;
 }
-hereOK();
 locusSNP gotSNP=tempLocus->isSNP();
 recPos=findFirstInRange(tempLocus->chr,tempLocus->pos);
 if (recPos!=0L)

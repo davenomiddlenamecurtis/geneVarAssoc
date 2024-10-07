@@ -454,16 +454,13 @@ int vcfLocalLocus::input(FILE *f,FILEPOSITION *locusPosInFile,analysisSpecs cons
 {
 	char chrStr[10],qualstr[VCFFIELDLENGTH],*ptr,*qtr,word[VCFFIELDLENGTH],*chrStrPtr,afstr[20];
 	int foundOneOK=0;
-	hereOK();
 	while (!foundOneOK) // make this a loop so I can ignore entries which do not pass
 	{
-	hereOK();
 	*locusPosInFile=ftell(f);
 	// position of start of this locus if previous line was read completely
 	if (!fgets(locusFile::buff,BUFFSIZE-1,f))
 		return 0;
-	hereOK();
-//	while (!strchr(locusFile::buff, '\n')) // line was too long to fit into buff
+	while (!strchr(locusFile::buff, '\n')) // line was too long to fit into buff
 		// I think this would silently fail if all lines were too long
 		// and probably would silently miss long lines
 	if (!strchr(locusFile::buff, '\n')) // line was too long to fit into buff - if not while
@@ -473,12 +470,10 @@ int vcfLocalLocus::input(FILE *f,FILEPOSITION *locusPosInFile,analysisSpecs cons
 			return 0;
 		} while (!strchr(locusFile::buff,'\n')); // eat remainder of line and discard it
 	*locusPosInFile=ftell(f); // make sure calling routine knows we updated position
-	hereOK();
 	if (!fgets(locusFile::buff,BUFFSIZE-1,f)) // hope this new line is not too long
 		return 0;
 	}
 	// now we are definitely at the start of the line and have recorded its position
-	hereOK();
 	format[0]='\0';
 	ptr=locusFile::buff;
 	if (!scanWord(&ptr,chrStr,9))
@@ -508,7 +503,6 @@ int vcfLocalLocus::input(FILE *f,FILEPOSITION *locusPosInFile,analysisSpecs cons
 			// if a locus passes in some files but not others, should use unknownIfNoPass instead.
 		}
 	}
-	hereOK();
 	if (!scanWord(&ptr,info,VCFFIELDLENGTH-1))
 		;
 //		goto problemReadingLocus;
@@ -521,11 +515,9 @@ int vcfLocalLocus::input(FILE *f,FILEPOSITION *locusPosInFile,analysisSpecs cons
 	}
 	goto noProblemReadingLocus;
 	problemReadingLocus:
-		hereOK();
 		dcerror(99,"Problem reading locus information from this line: %s",locusFile::buff);
 			return 0;
 	noProblemReadingLocus:
-			hereOK();
 			foundOneOK=1;
 		SNP=SNP_MAYBE;
 		if ((ptr=strstr(info,"VT="))!=0)

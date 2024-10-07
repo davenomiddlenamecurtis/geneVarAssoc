@@ -664,7 +664,6 @@ int tbiExtractIntervals(char* tbiFilename, char* outFn, int appendToOld, int add
 	int i, systemStatus;
 	char buff[1000], * tbiFn, * ptr, tbiFnBuff[1000];
 	long lineStart;
-	hereOK();
 	if ((ptr = strchr(tbiFilename, '*')) == 0)
 		tbiFn = tbiFilename;
 	else
@@ -702,7 +701,6 @@ int tbiExtractIntervals(char* tbiFilename, char* outFn, int appendToOld, int add
 		checkSystem();
 		systemStatus = system(refseqGeneInfo::geneLine);
 	}
-	hereOK();
 	// printf("system returned %d\n",systemStatus);
 	return 1;
 }
