@@ -279,13 +279,13 @@ dcexpr_val *performTabixQuery(const char *fn,int addChr,int lower,char *lookupSt
 		{
 			noLines = 0;
 			hereOK();
-			printf("%s\n", tempBuff);
+			fprintf(stderr,"%s\n", tempBuff);
 				if (sscanf(tempBuff, "%*s %ld %*s %s %[^ \t,]", &pos, refAll, altAll) == 3
 					&& pos==geneVarParser::thisLocus->getPos()) // this test is here because the tabix command pulls out all overlapping indels
 				{
 					hereOK();
-					if ((!strcmp(altAll, currentAltAll) && !strcmp(refAll, currentRefAll))
-						|| (!strcmp(refAll, currentAltAll) && !strcmp(altAll, currentRefAll))) // occasionally may be the wrong way round
+					if ((strstr(altAll, currentAltAll) && strstr(refAll, currentRefAll))
+						|| (strstr(refAll, currentAltAll) && strstr(altAll, currentRefAll))) // occasionally may be the wrong way round
 					{
 						hereOK();
 						noEntry = 0;
