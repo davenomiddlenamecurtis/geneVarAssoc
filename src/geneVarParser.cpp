@@ -186,17 +186,26 @@ dcexpr_val* dbNSFPLookup_func(dcvnode* b1, dcvnode* b2)
 
 dcexpr_val *performTabixQuery(const char *fn,int addChr,int lower,char *lookupStr,int convert23toX)
 {
-	char fnBuff[1000],*ptr,*tptr,queryBuff[1000],chrStr[10],altAll[1000],refAll[1000],currentRefAll[1000],currentAltAll[1000],queryFn[1000];
+	char fnBuff[1000],*ptr,*tptr,queryBuff[1000],chrStr[10],*chrPtr,altAll[1000],refAll[1000],currentRefAll[1000],currentAltAll[1000],queryFn[1000];
 	long pos;
 	int noEntry,noLines,c,f,l;
 	dcexpr_val *rv;
 	FILE *fq;
 	strcpy(fnBuff,fn);
+	if (addChr)
+	{
+		strcpy(chrStr, (lower ? "chr" : "CHR"));
+		chrPtr = chrStr + 3;
+	}
+	else
+	{
+		chrPtr = chrStr;
+	}
 	int chr=geneVarParser::thisLocus->getChr();
 	if (chr==23 && convert23toX)
-		sprintf(chrStr,"X"); // this is going to be optional
+		sprintf(chrPtr,"X"); // this is going to be optional
 	else
-		sprintf(chrStr,"%d",chr);
+		sprintf(chrPtr,"%d",chr);
 	if(ptr=strchr(fnBuff,'*'))
 	{
 		strcpy(ptr,chrStr);
