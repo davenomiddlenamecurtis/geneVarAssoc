@@ -186,7 +186,7 @@ dcexpr_val* dbNSFPLookup_func(dcvnode* b1, dcvnode* b2)
 
 dcexpr_val *performTabixQuery(const char *fn,int addChr,int lower,char *lookupStr,int convert23toX)
 {
-	char fnBuff[1000],*ptr,*tptr,queryBuff[1000],chrStr[10],*chrPtr,altAll[1000],refAll[1000],currentRefAll[1000],currentAltAll[1000],queryFn[1000];
+	char fnBuff[1000],*ptr,*tptr,queryBuff[1000],chrStr[10],*chrPtr,altAlls[1000],refAll[1000],currentRefAll[1000],currentAltAll[1000],queryFn[1000];
 	long pos;
 	int noEntry,noLines,c,f,l;
 	dcexpr_val *rv;
@@ -241,8 +241,9 @@ dcexpr_val *performTabixQuery(const char *fn,int addChr,int lower,char *lookupSt
 		{
 			while (fgets(tempBuff, MAXINFOLENGTH, fq))
 			{
-				if (sscanf(tempBuff, "%*s %ld %*s %s %[^ \t,]", &pos, refAll, altAll) == 3
-					&& pos == geneVarParser::thisLocus->getPos()) // this test is here because the tabix command pulls out all overlapping indels
+				if (sscanf(tempBuff, "%*s %ld %*s %s %[^ \t,]", &pos, refAll, altAlls) == 3
+					&& pos == geneVarParser::thisLocus->getPos()) 
+					// this test is here because the tabix command pulls out all overlapping indels
 				{
 					if ((!strcmp(altAll, currentAltAll) && !strcmp(refAll, currentRefAll))
 						|| (!strcmp(refAll, currentAltAll) && !strcmp(altAll, currentRefAll))) // occasionally may be the wrong way round
@@ -280,12 +281,12 @@ dcexpr_val *performTabixQuery(const char *fn,int addChr,int lower,char *lookupSt
 			noLines = 0;
 			hereOK();
 			fprintf(stderr,"%s\n", tempBuff);
-				if (sscanf(tempBuff, "%*s %ld %*s %s %[^ \t,]", &pos, refAll, altAll) == 3
+				if (sscanf(tempBuff, "%*s %ld %*s %s %s", &pos, refAll, altAlls) == 3
 					&& pos==geneVarParser::thisLocus->getPos()) // this test is here because the tabix command pulls out all overlapping indels
 				{
 					hereOK();
-					if ((strstr(altAll, currentAltAll) && strstr(refAll, currentRefAll))
-						|| (strstr(refAll, currentAltAll) && strstr(altAll, currentRefAll))) // occasionally may be the wrong way round
+					if ((strstr(altAlls, currentAltAll) && strstr(refAll, currentRefAll))
+						|| (strstr(refAll, currentAltAll) && strstr(altAlls, currentRefAll))) // occasionally may be the wrong way round
 					{
 						hereOK();
 						noEntry = 0;
