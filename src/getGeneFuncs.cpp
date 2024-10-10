@@ -1039,6 +1039,8 @@ int refseqGeneInfo::getGeneIntervals(intervalList& iList, int omitIntrons, int s
 			firstExonStart - ((strand == '+') ? upstream : downstream),
 			lastExonEnd + ((strand == '-') ? upstream : downstream));
 	}
+	iList.sort();
+	iList.merge();
 	return 1;
 }
 
