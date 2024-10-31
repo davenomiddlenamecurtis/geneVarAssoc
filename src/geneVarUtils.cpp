@@ -33,6 +33,8 @@ int gvaParams::readParms(int argc,char *argv[],analysisSpecs &spec)
 	FILE *fp[MAXDEPTH],*ef;
 	int argNum,i,s,usePhenotypes,f,depth,nPhenotypeFile,nIDsAndPhenotypeFile,nSamplesFile;
 	char arg[2000],line[2000],addChrStr[MAXVCFFILES+1],phenotypeFileName[MAXVCFFILES][100];
+	float multiWeightThreshold; // for multiWeightFile values
+	multiWeightThreshold = -1;
 	depth=-1;
 	argNum=1;
 	FILE *phenotypeFile,*multiWeightFile,* locusPosFile;
@@ -202,6 +204,10 @@ while (getNextArg(arg, argc, argv, fp, &depth, &argNum))
 		if (strstr(arg, "INBUILT"))
 			spec.willNeedInbuiltConsequence = 1;
 	}
+	else if (FILLARG("--multi-weight-threshold"))
+	{
+		multiWeightThreshold = atof(arg);
+	}
 	else if (FILLARG("--multi-weight-file"))
 	{
 	char multiWeightVariantFile[MAXFILENAMELENGTH], varWeightName[MAXFILENAMELENGTH];
@@ -212,7 +218,10 @@ while (getNextArg(arg, argc, argv, fp, &depth, &argNum))
 		dcerror(1, "Could not read name of variant file for multiple weights from multi-weight-file: %s\n", arg);
 	while (fgets(line, MAXFILENAMELENGTH - 1, multiWeightFile) && sscanf(line, "%s", varWeightName) == 1)
 	{
-		sprintf(line, "%c%s%cDBNSFPLOOKUP%c%s%c", '"', varWeightName, '"', '"', multiWeightVariantFile, '"');
+		if (multiWeightThreshold==-1)
+			sprintf(line, "%c%s%cDBNSFPLOOKUP%c%s%c", '"', varWeightName, '"', '"', multiWeightVariantFile, '"');
+		else
+			sprintf(line, "(%c%s%cDBNSFPLOOKUP%c%s%c)>=%f", '"', varWeightName, '"', '"', multiWeightVariantFile, '"',multiWeightThreshold);
 		spec.weightExpressions.push_back(*(new std::string(line)));
 		spec.weightNames.push_back(*(new std::string(varWeightName)));
 	}
