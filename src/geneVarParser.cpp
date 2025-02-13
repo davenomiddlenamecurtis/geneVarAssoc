@@ -814,7 +814,7 @@ dcexpr_val *attrib_func(dcvnode *b1)
 				else if (buff[0] == 'C')
 					rv = new dcexpr_double(1);
 				else
-					rv = new dcexpr_double(1);
+					rv = new dcexpr_double(0);
 			}
 			else
 				rv = new dcexpr_double(0);
