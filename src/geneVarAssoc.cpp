@@ -161,8 +161,11 @@ int main(int argc,char *argv[])
 						extractedOK = 0;
 			}
 			vf.addLocusFile(fn,VCFFILE);
-			if (!vf.readLocusFileEntries(fn,spec,1))
-				extractedOK=0;
+			if (!vf.readLocusFileEntries(fn, spec, 1))
+			{
+				extractedOK = 0;
+				printf("No valid variants were read from file %s\n", fn);
+			}
 		}
 	if (gp.onlyExtractVariants)
 	{

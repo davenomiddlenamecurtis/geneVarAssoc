@@ -102,6 +102,7 @@ friend class ggParams;
 public:
 	static char geneLine[GENELINELENGTH];
 	void setReferencePath(char *s);
+	const char* getReferencePath() { return referencePath; }
 	int getChrNum() { return chr[3]=='Y'?24:chr[3]=='X'?23:atoi(chr+3); } // chr21
 	char *getChr() { return chr; }
 	int getStart() { return firstExonStart; }
@@ -120,7 +121,7 @@ public:
 	int findGene(char *name);
 	int getNextGene(int transcriptionStartCanVary=1);
 	int checkExonLengths();
-	refseqGeneInfo() { upstream=downstream=baitMargin=0; geneListFile=0; geneListFileName[0]='\0'; baitsFile=0; baitsFileName[0]='\0'; chr[0]='\0'; nTranscript=0; }
+	refseqGeneInfo() { upstream = downstream = baitMargin = 0; geneListFile = 0; geneListFileName[0] = '\0'; baitsFile = 0; baitsFileName[0] = '\0'; chr[0] = '\0'; nTranscript = 0; referencePath[0] = '\0'; 	}
 	~refseqGeneInfo() { geneListFile && fclose(geneListFile); baitsFile && fclose(baitsFile); }
 	void setListFile(char *fn) { strcpy(geneListFileName,fn); }
 	void setBaitsFile(char *fn) { strcpy(baitsFileName,fn); }

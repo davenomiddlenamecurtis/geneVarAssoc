@@ -759,15 +759,68 @@ dcexpr_val *annot_func(dcvnode *b1)
 	return rv;
 }
 
+static faSequenceFile f;
+
 dcexpr_val *attrib_func(dcvnode *b1)
 {
 	dcexpr_val *r1;
 	EVAL_R1;
 	char buff[100],chrStr[20];
 	int chr;
+	char a;
 	char *attrib_type=(char*)(*r1);
 	dcexpr_val *rv;
-	if (!strcmp(attrib_type,"WEIGHT"))
+	if (!strcmp(attrib_type, "CPG"))
+	{
+		if (!f.inited())
+		{
+			chr = geneVarParser::thisLocus->getChr();
+			if (chr==23)
+				sprintf(buff, "%schrX.fa", geneVarParser::thisGene->getReferencePath());
+			else
+				sprintf(buff, "%schr%d.fa", geneVarParser::thisGene->getReferencePath(), chr);
+			f.init(buff);
+				
+		}
+		if (!f.inited())
+		{
+			dcerror(1, "Could not open genome reference file %s", buff);
+			rv = new dcexpr_double(0);
+		}
+		else
+		{
+			a = geneVarParser::thisLocus->getAll(0)[0];
+			if (a == 'C')
+			{
+				f.getSequence(buff, (int)geneVarParser::thisLocus->getPos(), 2);
+				if (buff[0] != 'C')
+				{
+					dcerror(1, "Reference sequence at %ld is %c instead of expected C for REF allele", geneVarParser::thisLocus->getPos(),buff[0]);
+					rv = new dcexpr_double(0);
+				} 
+				else if (buff[1]=='G')
+					rv = new dcexpr_double(1);
+				else 
+					rv = new dcexpr_double(0);
+			}
+			else 			if (a == 'G')
+			{
+				f.getSequence(buff, (int)geneVarParser::thisLocus->getPos()-1, 2);
+				if (buff[1] != 'G')
+				{
+					dcerror(1, "Reference sequence at %ld is %c instead of expected G for REF allele", geneVarParser::thisLocus->getPos(), buff[1]);
+					rv = new dcexpr_double(0);
+				}
+				else if (buff[0] == 'C')
+					rv = new dcexpr_double(1);
+				else
+					rv = new dcexpr_double(1);
+			}
+			else
+				rv = new dcexpr_double(0);
+		}
+	}
+	else if (!strcmp(attrib_type,"WEIGHT"))
 		rv=new dcexpr_double(geneVarParser::thisWeight);
 	else if (!strcmp(attrib_type,"POS"))
 	{

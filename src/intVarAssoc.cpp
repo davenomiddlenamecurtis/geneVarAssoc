@@ -26,15 +26,17 @@ along with geneVarAssoc.If not, see <http://www.gnu.org/licenses/>.
 #include "geneVarParser.hpp"
 
 #define PROGRAM "intVarAassoc"
-#define IVAVERSION "1.4"
+#define IVAVERSION "1.5"
+
+gvaParams gp;
+analysisSpecs spec;
+refseqGeneInfo r; // even though there is no gene will use this to access reference files to e.g. check for CpG changes
 
 int main(int argc,char *argv[])
 {
 	char fn[100],fn2[100],line[1000], chrStr[100], startStr[100], endStr[100], chr[10], * tbiFn, * ptr, tbiFnBuff[1000];
 	int i,first,extractedOK,cc;
 	FILE *fp,*fi;
-	gvaParams gp;
-	analysisSpecs spec;
 	weightTable *wt;
 	intervalList iList;
 
@@ -56,6 +58,8 @@ int main(int argc,char *argv[])
 	if (!gp.readParms(argc,argv,spec))
 		exit(1);
 	masterLocusFile vf(gp.bedFileFn[0] ? 1 : gp.nCc[0] + gp.nCc[1]);
+	if (gp.referencePath[0] != '\0')
+		r.setReferencePath(gp.referencePath);
 
 	if (gp.intervalListFn[0]=='\0')
 	{
@@ -147,21 +151,25 @@ int main(int argc,char *argv[])
 	}
 
 	sprintf(fn, "%s", gp.testName);
-	printf("Writing scoreassoc files...\n");
-	vf.writeScoreAssocFiles(fn,spec.wf,gp.useFreqs,gp.nSubs,1,gp.writeComments, gp.writeScoreFile, gp.writeRecScoreFile, spec);
-#ifndef MSDOS
-	sprintf(line,"bash %s.sh\n",fn);
-#else
-	sprintf(line,"%s.bat\n",fn);
-#endif
-	if(!gp.doNotRun)
+	if (extractedOK)
 	{
-		printf("Running command: %s\n",line);
-		checkSystem();
-		system(line);
+		geneVarParser::thisGene = &r; // in case needed e.g. for CpGs
+		printf("Writing scoreassoc files...\n");
+		vf.writeScoreAssocFiles(fn, spec.wf, gp.useFreqs, gp.nSubs, 1, gp.writeComments, gp.writeScoreFile, gp.writeRecScoreFile, spec);
+#ifndef MSDOS
+		sprintf(line, "bash %s.sh\n", fn);
+#else
+		sprintf(line, "%s.bat\n", fn);
+#endif
+		if (!gp.doNotRun)
+		{
+			printf("Running command: %s\n", line);
+			checkSystem();
+			system(line);
+		}
+		else
+			printf("Files for %s analysis written OK, to run analysis enter:\n%s\n\n", fn, line);
 	}
-	else
-		printf("Files for %s analysis written OK, to run analysis enter:\n%s\n\n",fn,line);
 	if (!gp.keepTempFiles)
 	{
 		vf.closeFiles();
