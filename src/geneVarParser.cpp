@@ -789,16 +789,16 @@ dcexpr_val *attrib_func(dcvnode *b1)
 		}
 		else
 		{
-			a = geneVarParser::thisLocus->getAll(0)[0];
+			a = toupper(geneVarParser::thisLocus->getAll(0)[0]);
 			if (a == 'C')
 			{
 				f.getSequence(buff, (int)geneVarParser::thisLocus->getPos(), 2);
-				if (buff[0] != 'C')
+				if (toupper(buff[0]) != 'C')
 				{
 					dcerror(1, "Reference sequence at %ld is %c instead of expected C for REF allele", geneVarParser::thisLocus->getPos(),buff[0]);
 					rv = new dcexpr_double(0);
 				} 
-				else if (buff[1]=='G')
+				else if (toupper(buff[1])=='G')
 					rv = new dcexpr_double(1);
 				else 
 					rv = new dcexpr_double(0);
@@ -806,12 +806,12 @@ dcexpr_val *attrib_func(dcvnode *b1)
 			else 			if (a == 'G')
 			{
 				f.getSequence(buff, (int)geneVarParser::thisLocus->getPos()-1, 2);
-				if (buff[1] != 'G')
+				if (toupper(buff[1]) != 'G')
 				{
 					dcerror(1, "Reference sequence at %ld is %c instead of expected G for REF allele", geneVarParser::thisLocus->getPos(), buff[1]);
 					rv = new dcexpr_double(0);
 				}
-				else if (buff[0] == 'C')
+				else if (toupper(buff[0]) == 'C')
 					rv = new dcexpr_double(1);
 				else
 					rv = new dcexpr_double(0);
