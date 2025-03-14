@@ -87,7 +87,7 @@ typedef float probTriple[3];
 typedef char strEntry[MAXSTR+1];
 #define DEFAULTNUMVCFFIELDSTOSKIP 9 // maybe one day allow this to vary
 
-enum locusSNP { SNP_NO=0,SNP_MAYBE,SNP_YES } ;
+enum locusSNP { SNP_NO=0,SNP_YES,SNP_MAYBE } ;
 
 class masterLocusFile;
 class localLocus;
