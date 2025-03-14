@@ -1392,10 +1392,12 @@ int masterLocusFile::gotoNextInRange(analysisSpecs &spec)
 	int c;
 	FILEPOSITION recPos;
 	recPos = index.get_next();
+	if (recPos == 0)
+		return 0;
 	testKey=index.current_key();
 	if ((c=atoi(testKey))==0 || c>spec.ec || (c==spec.ec && atol(testKey+3)>spec.ep))
 		return 0;
-	if (recPos==0 || load(tempRecord,recPos)==0)
+	if (load(tempRecord,recPos)==0)
 		return 0;
 	else
 		return 1;
