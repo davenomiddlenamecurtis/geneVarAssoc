@@ -921,7 +921,7 @@ int masterLocusFile::writeScoreAssocFiles(masterLocusFile &subFile,char *root, f
 	}
 #endif
 	checkSystem();
-	if (spec.useConsequenceWeights)
+	if (spec.useConsequenceWeights  || numWeights>0) // may have expression producing weights without setting spec.useConsequenceWeights
 	{
 		for (w = 0; w < numWeights; ++w)
 		{
