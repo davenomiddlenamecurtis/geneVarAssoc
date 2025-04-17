@@ -1319,7 +1319,7 @@ if (recPos!=0L)
 							useLocus[splitLocusCount] = 0;
 					}
 				}
-				if (spec.weightExpressions.size()+ spec.recWeightExpressions.size() && spec.useConsequenceWeights)
+				if (spec.weightExpressions.size()+ spec.recWeightExpressions.size())
 				{
 					geneVarParser::thisLocus = &tempRecord;
 					geneVarParser::thisAltAllele = all;
