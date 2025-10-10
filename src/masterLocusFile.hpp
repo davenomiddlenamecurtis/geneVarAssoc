@@ -208,6 +208,7 @@ public:
 	locusSNP isSNP() { return SNP; }
 	int outputProbs(probTriple *prob,FILE *f,int whichFile,int nSubs,analysisSpecs const &spec);
 	int outputAlleles(allelePair *all,FILE *f,int whichFile,int nSubs,analysisSpecs const &spec);
+	const char* getLocalLocusLine(FILE* f, int whichFile, analysisSpecs const& spec);
 	int outputCalls(strEntry *call,FILE *f,int whichFile,int nSubs,analysisSpecs const &spec);
 	int outputVcfGenotypes(FILE *fo,FILE *f,int whichFile,int nSubs,analysisSpecs const &spec);
 	int print(FILE *fp);
@@ -236,9 +237,10 @@ protected:
 	long pos;
 	char id[VCFFIELDLENGTH];
 	char ref[MAXALLLENGTH];
-	char alt[MAXALLLENGTH*MAXALLLENGTH];
+	char alt[MAXALL*MAXALLLENGTH];
 	char alls[MAXALL][MAXALLLENGTH];
 	float alleleFreq[MAXALL];
+	float alleleCount[MAXALL];
 	int nAltAlls; // number of alt alleles for which frequency is given
 	locusSNP SNP;
 	char filter[VCFFIELDLENGTH];
@@ -248,6 +250,7 @@ protected:
 	virtual void clear();
 	locusSNP isSNP();
 	virtual int outputAlleles(allelePair *all,FILE *f,FILEPOSITION filePos,int nSubs,int *alleleMap,analysisSpecs const &spec)=0;
+	virtual const char* getLocalLocusLine(FILE* f, FILEPOSITION filePos, analysisSpecs const& spec) { return 0; }
 	virtual int outputProbs(probTriple *prob,FILE *f,FILEPOSITION filePos,int nSubs,int *alleleMap,analysisSpecs const &spec)=0;
 public:
 	virtual int outputCalls(strEntry *call, FILE *f, FILEPOSITION filePos,int nSubs, int *alleleMap, analysisSpecs const &spec) { return 0; }
@@ -257,7 +260,8 @@ public:
 	virtual int typeSpecificCopy(localLocus *src);
 	localLocus();
 	virtual ~localLocus() { ; }
-	virtual const char *getInfo() { return ""; }
+	virtual const char* getInfo() { return ""; }
+	virtual const char* getVFCField(int f) { return ""; }
 };
 
 class locusFile {
@@ -323,6 +327,7 @@ public:
 	int printFeatures(FILE* fp,analysisSpecs const &spec,int showFreq=-1);
 	int outputCurrentAlleles(allelePair *all,analysisSpecs &spec);
 	int outputCurrentProbs(probTriple *prob,analysisSpecs &spec);
+	const char* getCurrentLine(int whichFile, analysisSpecs& spec);
 	int outputAlleles(allelePair **all,analysisSpecs &spec);
 	int outputProbs(probTriple **all,analysisSpecs &spec);
 	int outputCalls(strEntry **call,analysisSpecs &spec);

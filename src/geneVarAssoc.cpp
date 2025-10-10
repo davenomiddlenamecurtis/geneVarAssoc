@@ -58,6 +58,7 @@ int main(int argc,char *argv[])
 	weightTableList[wt->tableName]=wt;
 
 	dcerror.warn();
+
 	strcpy(gp.testName,"gva");
 	if (!gp.readParms(argc,argv,spec))
 		exit(1);

@@ -47,7 +47,7 @@ public:
 	weightTable() { ; }
 	~weightTable() { ; }
 	int readFromFile(char *fn,char *n);
-	void init(char *n,consequenceReport consequence[],int nConsequence);
+	void init(const char *n,consequenceReport consequence[],int nConsequence);
 };
 
 extern std::map<std::string,weightTable*> weightTableList;

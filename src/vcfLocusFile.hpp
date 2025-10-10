@@ -30,6 +30,7 @@ class vcfLocalLocus : localLocus {
 	int nFieldsToSkip;
 public:
 	virtual void clear();
+	virtual const char* getLocalLocusLine(FILE* f, FILEPOSITION filePos, analysisSpecs const& spec);
 	virtual int outputAlleles(allelePair *all,FILE *f,FILEPOSITION filePos,int nSubs,int *alleleMap,analysisSpecs const &spec);
 	virtual int outputProbs(probTriple *all,FILE *f,FILEPOSITION filePos,int nSubs,int *alleleMap,analysisSpecs const &spec);
 	virtual const char *getInfo() { return info; }

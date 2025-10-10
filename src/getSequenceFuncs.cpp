@@ -92,7 +92,7 @@ aminoAcid allAminoAcids[] =
 
 char codonReader::table[4][4][4];
 int codonReader::baseLookup[256];
-char *codonReader::nameTable[256];
+const char *codonReader::nameTable[256];
 
 char compBases[5][2]=
 {

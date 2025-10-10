@@ -1421,6 +1421,11 @@ int masterLocusFile::outputCurrentProbs(probTriple *prob, analysisSpecs &spec)
 	return 1;
 }
 
+const char* masterLocusFile::getCurrentLine(int whichFile, analysisSpecs& spec)
+{
+	return tempRecord.getLocalLocusLine(locusFiles[whichFile]->fp, whichFile, spec);
+}
+
 int masterLocusFile::outputCurrentAlleles(allelePair *all, analysisSpecs &spec)
 {
 	int i,subCount;
@@ -1597,6 +1602,11 @@ int masterLocus::outputProbs(probTriple *prob,FILE *f,int whichFile,int nSubs,an
 	else
 		return myLocalLocus[whichFile]->outputProbs(prob,f,locusPosInFile[whichFile],nSubs,alleleMapping[whichFile],spec);
 return 1;
+}
+
+const char * masterLocus::getLocalLocusLine(FILE* f, int whichFile, analysisSpecs const& spec)
+{
+	return myLocalLocus[whichFile]->getLocalLocusLine(f, locusPosInFile[whichFile], spec);
 }
 
 int masterLocus::outputAlleles(allelePair *all,FILE *f,int whichFile,int nSubs,analysisSpecs const &spec)
@@ -2092,8 +2102,11 @@ void localLocus::clear()
 	int i;
 	SNP=SNP_MAYBE;
 	nAltAlls=0;
-	for (i=0;i<MAXALL;++i)
-		alleleFreq[i]=0;
+	for (i = 0; i < MAXALL; ++i)
+	{
+		alleleFreq[i] = 0;
+		alleleCount[i] = 0;
+	}
 	AF=0;
 	strcpy(filter,"UNTYPED");
 	id[0]=ref[0]=alt[0]='\0';

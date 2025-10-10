@@ -44,7 +44,7 @@ static char *mystrupr(char *s)
 #endif
 
 struct new_op_t un_ch[MAX_N_OPS],bin_ch[MAX_N_OPS][MAX_OP_LEVEL];
-char *all_op[MAX_N_OPS*2];
+const char *all_op[MAX_N_OPS*2];
 int n_un_ops,n_bin_ops[MAX_OP_LEVEL],n_levels,n_all_ops,last_op_level;
 // for initialisers to work, all these must be zero
 // hopefully they should be
@@ -681,21 +681,21 @@ const char *express::get_next(const char *s)
  else return s;
  }
 
-void add_un_op(char *lab,dcexpr_val *(*f)(dcvnode *)) 
+void add_un_op(const char *lab,dcexpr_val *(*f)(dcvnode *)) 
 { 
 un_ch[n_un_ops].str=lab;
 un_ch[n_un_ops++].inst=new vnvun_op(f); 
 all_op[n_all_ops++]=lab;
 }
  
-void add_bin_op_same(char *lab,dcexpr_val *(*f)(dcvnode *,dcvnode *)) 
+void add_bin_op_same(const char *lab,dcexpr_val *(*f)(dcvnode *,dcvnode *)) 
 { 
 bin_ch[last_op_level][n_bin_ops[last_op_level]].str=lab;
 bin_ch[last_op_level][n_bin_ops[last_op_level]++].inst=new vnvbin_op(f); 
 all_op[n_all_ops++]=lab;
 }
 
-void add_bin_op_next(char *lab,dcexpr_val *(*f)(dcvnode *,dcvnode *)) 
+void add_bin_op_next(const char *lab,dcexpr_val *(*f)(dcvnode *,dcvnode *)) 
 { 
 ++last_op_level;
 if (n_levels<last_op_level)
@@ -705,7 +705,7 @@ bin_ch[last_op_level][n_bin_ops[last_op_level]++].inst=new vnvbin_op(f);
 all_op[n_all_ops++]=lab;
 }
 	
-void add_bin_op(char *lab,dcexpr_val *(*f)(dcvnode *,dcvnode *),int level) 
+void add_bin_op(const char *lab,dcexpr_val *(*f)(dcvnode *,dcvnode *),int level) 
 { 
 last_op_level=level;
 if (n_levels<last_op_level)

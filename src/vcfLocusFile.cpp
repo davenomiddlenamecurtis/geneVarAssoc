@@ -242,6 +242,21 @@ int vcfLocalLocus::outputProbs(probTriple *prob,FILE *f,FILEPOSITION filePos,int
 	return 1;
 }
 
+const char* vcfLocalLocus::getLocalLocusLine(FILE* f, FILEPOSITION filePos, analysisSpecs const& spec)
+{
+	if (fseek(f, filePos, SEEK_SET) != 0)
+	{
+		dcerror(99, "Failed to fseek() correctly in vcfLocalLocus::getLocalLocusLine()");
+		return 0;
+	}
+	if (!fgets(locusFile::buff, BUFFSIZE - 1, f))
+	{
+		dcerror(99, "Failed read locus data after fseek() in vcfLocalLocus::getLocalLocusLine()");
+		return 0;
+	}
+	return locusFile::buff;
+}
+
 int vcfLocalLocus::outputAlleles(allelePair *all,FILE *f,FILEPOSITION filePos,int nSubs,int *alleleMap,analysisSpecs const &spec)
 {
 	char *ptr,allStr[20],*aptr,*ptr2;

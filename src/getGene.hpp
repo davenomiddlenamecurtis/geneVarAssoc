@@ -93,13 +93,14 @@ friend class ggParams;
 	int exonStarts[MAXEXONPERGENE],exonEnds[MAXEXONPERGENE];
 	int firstExonStart, lastExonEnd;
 	int txStart, txEnd; // lowest and highest
+	int firstCdsStart, lastCdsEnd;
 	int upstream,downstream;
 	char strand;
 	char quickFeatureBuff[100],referencePath[100];
 	int nTranscript;
 	refseqTranscript transcript[MAXTRANSCRIPTPERGENE];
-	void getAllExons();
 public:
+	void getAllExons();
 	static char geneLine[GENELINELENGTH];
 	void setReferencePath(char *s);
 	const char* getReferencePath() { return referencePath; }
@@ -109,6 +110,11 @@ public:
 	int getEnd() { return lastExonEnd; }
 	int getTxStart() { return txStart; }
 	int getTxEnd() { return txEnd; }
+	int getFirstCdsStart() { return firstCdsStart; }
+	int getLastCdsEnd() { return lastCdsEnd; }
+	int getExonCount() { return allExonCount; }
+	int getExonStart(int e) { return exonStarts[e]; }
+	int getExonEnd(int e) { return exonEnds[e]; }
 	char *getGene() { return geneName; }
 	void setUpstream(int u) { upstream=u; }
 	void setDownstream(int d) { downstream=d; }
@@ -142,7 +148,7 @@ class geneExtractor {
 	char variantFileName[200];
 public:
 	geneExtractor() { variantFileName[0]='\0'; }
-	void setVariantFileName(char *s) { strcpy(variantFileName,s); }
+	void setVariantFileName(const char *s) { strcpy(variantFileName,s); }
 	int downloadGene(refseqGeneInfo &r,char *outFn); // from 1000 genomes
 	int extractVariants(refseqGeneInfo &r,char *outFn,int appendToOld,int addChrInVCF,int removeSpaces,int omitIntrons, int spliceRegionSize); // from local file
 };

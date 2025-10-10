@@ -36,15 +36,15 @@ public:
 
 class aminoAcid {
 public:
-	char *name;
+	const char *name;
 	char letter;
-	char *code;
+	const char *code;
 };
 
 class codonReader {
 	static char table[4][4][4];
 	static int baseLookup[256];
-	static char *nameTable[256];
+	static const char *nameTable[256];
 public:
 	char translate(char codon[3],char strand);
 	codonReader();

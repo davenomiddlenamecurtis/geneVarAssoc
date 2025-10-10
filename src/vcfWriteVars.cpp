@@ -253,7 +253,6 @@ int masterLocusFile::outputSubNames(strEntry *subName,analysisSpecs &spec)
 return 1;
 }
 
-
 int vcfLocalLocus::outputCalls(strEntry *call,FILE *f,FILEPOSITION filePos,int nSubs,int *alleleMap,analysisSpecs const &spec)
 {
 	char *ptr,*strPtr,firstStr[100],secondStr[100],allStr[100];
@@ -261,12 +260,12 @@ int vcfLocalLocus::outputCalls(strEntry *call,FILE *f,FILEPOSITION filePos,int n
 	int s,i;
 	if (fseek(f,filePos,SEEK_SET)!=0)
 	{
-		dcerror(99,"Failed to fseek() correctly in localLocus::outputAlleles()");
+		dcerror(99,"Failed to fseek() correctly in localLocus::outputCalls()");
 		return 0;
 	}
     if (!fgets(locusFile::buff,BUFFSIZE-1,f))
 	{
-		dcerror(99,"Failed read locus data after fseek() in localLocus::outputAlleles()");
+		dcerror(99,"Failed read locus data after fseek() in localLocus::outputCalls()");
 		return 0;
 	}
 	for (s=0,ptr=locusFile::buff;s<nFieldsToSkip;++s)

@@ -530,12 +530,18 @@ int refseqGeneInfo::getNextGene(int transcriptionStartCanVary)
 	}
 	firstExonStart=transcript[0].exonStarts[0];
 	lastExonEnd=transcript[0].exonEnds[transcript[0].exonCount-1];
+	firstCdsStart = transcript[0].cdsStart;
+	lastCdsEnd = transcript[0].cdsEnd;
 	for (t=0;t<nTranscript;++t) // this was t==1, which assumed first transcript did not have a large exonEnds value
 	{
 	if (firstExonStart>transcript[t].exonStarts[0])
 		firstExonStart=transcript[t].exonStarts[0];
 	if (lastExonEnd<transcript[t].exonEnds[transcript[t].exonCount-1])
 		lastExonEnd=transcript[t].exonEnds[transcript[t].exonCount-1];
+	if (firstCdsStart > transcript[t].cdsStart)
+		firstCdsStart = transcript[t].cdsStart;
+	if (lastCdsEnd < transcript[t].cdsEnd)
+		lastCdsEnd = transcript[t].cdsEnd;
 	}
 	return 1;
 }
@@ -605,7 +611,7 @@ int refseqTranscript::checkExonLengths()
 }
 
 void refseqGeneInfo::getAllExons()
-// we will assume exons do no vary between transcripts
+// we will assume exons do not vary between transcripts
 {
 	int allFound,t,lastStart,nextStart,tt,s,ss;
 	if (gotAllExons)

@@ -82,7 +82,7 @@ enum e_consequenceType {
 
 struct consequenceReport_t {
 	int t;
-	char *str;
+	const char *str;
 	double weight;
 };
 

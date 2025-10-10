@@ -63,7 +63,7 @@ int weightTable::readFromFile(char *fn,char *n)
 }
 
 
-void weightTable::init(char *n,consequenceReport consequence[],int nConsequence)
+void weightTable::init(const char *n,consequenceReport consequence[],int nConsequence)
 {
 	int c;
 	tableName=n;
@@ -607,7 +607,8 @@ dcexpr_val* extract_vep_field_func(dcvnode* b1, dcvnode* b2)
 	dcexpr_string* rv;
 	EVAL_BOTH;
 	int f,i;
-	char* annotation, * ptr, * nptr;
+	const char * ptr;
+	char* annotation, * nptr;
 	dcexpr_string* specificAnnotation = getSpecificAnnotation(r1);
 	annotation = (char*)(*specificAnnotation);
 	f = (double)(*r2);
@@ -856,6 +857,11 @@ dcexpr_val *attrib_func(dcvnode *b1)
 	else if (!strcmp(attrib_type,"ISSNP"))
 	{
 		rv=new dcexpr_double((double)geneVarParser::thisLocus->isSNP());
+	}
+	
+	else if (!strcmp(attrib_type, "ISINDEL"))
+	{
+		rv = new dcexpr_double((double)(strlen(geneVarParser::thisLocus->getAll(0))!=strlen(geneVarParser::thisLocus->getAll(geneVarParser::thisAltAllele))));
 	}
 	else
 	{

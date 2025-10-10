@@ -17,18 +17,18 @@ xmlns="http://www.w3.org/TR/REC-html40">
  <o:DocumentProperties>
   <o:Author>David Curtis</o:Author>
   <o:Template>B436C3BA.dotm</o:Template>
-  <o:LastAuthor>Curtis, David</o:LastAuthor>
-  <o:Revision>72</o:Revision>
-  <o:TotalTime>10305</o:TotalTime>
+  <o:LastAuthor>Dave Curtis</o:LastAuthor>
+  <o:Revision>73</o:Revision>
+  <o:TotalTime>10306</o:TotalTime>
   <o:Created>2018-06-13T14:53:00Z</o:Created>
-  <o:LastSaved>2025-02-13T16:23:00Z</o:LastSaved>
+  <o:LastSaved>2025-10-10T12:14:00Z</o:LastSaved>
   <o:Pages>53</o:Pages>
-  <o:Words>10030</o:Words>
-  <o:Characters>57172</o:Characters>
+  <o:Words>10040</o:Words>
+  <o:Characters>57230</o:Characters>
   <o:Company>UCL</o:Company>
   <o:Lines>476</o:Lines>
   <o:Paragraphs>134</o:Paragraphs>
-  <o:CharactersWithSpaces>67068</o:CharactersWithSpaces>
+  <o:CharactersWithSpaces>67136</o:CharactersWithSpaces>
   <o:Version>16.00</o:Version>
  </o:DocumentProperties>
  <o:OfficeDocumentSettings>
@@ -1272,13 +1272,13 @@ combined files can hold all the subjects, in which case one or more separate
 files specifying phenotypes must be provided. If the subjects consist of sets
 of trios then no phenotypes need be provided and it is assumed that the
 children are all affected. Generally the <i style='mso-bidi-font-style:normal'>vcf</i>
-files will contain genotypes but they can instead contain genotype probabilities
-as output by IMPUTE2. If individual level data is not available then instead a
-file of allele frequencies for cases or controls or both can be provided, e.g.
-from 1KG or ExAC. If this is done, the number of subjects used to produce these
-frequencies must also be given. There can be a separate <i style='mso-bidi-font-style:
-normal'>vcf</i> file for each chromosome or else all chromosomes can be
-combined.</p>
+files will contain genotypes but they can instead contain genotype
+probabilities as output by IMPUTE2. If individual level data is not available
+then instead a file of allele frequencies for cases or controls or both can be
+provided, e.g. from 1KG or ExAC. If this is done, the number of subjects used
+to produce these frequencies must also be given. There can be a separate <i
+style='mso-bidi-font-style:normal'>vcf</i> file for each chromosome or else all
+chromosomes can be combined.</p>
 
 <p class=MsoListParagraphCxSpMiddle><o:p>&nbsp;</o:p></p>
 
@@ -1424,10 +1424,10 @@ repeated if there is more than one file containing phenotypes.</p>
 
 <p class=MsoNormal>Provides the name of a <i>plink</i> format <i
 style='mso-bidi-font-style:normal'>bed</i> file containing subject genotypes.
-If there is a separate <i>bed</i> file for each chromosome then the name
-specified should contain an asterisk where the chromosome number or letter X
-would be, e.g. if the name is given as <i>BP.chr*.bed </i>then for a gene on
-chromosome 3 the program would use the file <i>BP.chr3.bed</i>.</p>
+If there is a separate <i>bed</i> file for each chromosome then the name specified
+should contain an asterisk where the chromosome number or letter X would be,
+e.g. if the name is given as <i>BP.chr*.bed </i>then for a gene on chromosome 3
+the program would use the file <i>BP.chr3.bed</i>.</p>
 
 <h3>--bim-file filename</h3>
 
@@ -1460,10 +1460,10 @@ analyses by <i>scoreassoc</i>.</p>
 
 <p class=MsoNormal><a name="_Hlk37422218">Specifies the name of a file which
 provides phenotypes of the subjects in the <i style='mso-bidi-font-style:normal'>vcf</i>
-file(s). There is one row per subject, </a>consisting of a 0 or 1 (for case or
-control) or any other number (to omit this subject from the analysis). The rows
-must exactly match the order of subjects in the <i style='mso-bidi-font-style:
-normal'>vcf</i> file(s). This option can be used if one does not have separate <i
+file(s). There is one row per subject, </a>consisting of a 0 or 1 (for case or control)
+or any other number (to omit this subject from the analysis). The rows must
+exactly match the order of subjects in the <i style='mso-bidi-font-style:normal'>vcf</i>
+file(s). This option can be used if one does not have separate <i
 style='mso-bidi-font-style:normal'>vcf</i> files for cases and controls.
 Typically one would use it with just a single <i style='mso-bidi-font-style:
 normal'>vcf</i> file. However, if for some reason one does wish to use this
@@ -1760,20 +1760,20 @@ to output scores as well as standard output file.</p>
 code give the chromosome entry for chromosome 17 as chr17, other as 17. If this
 argument is 1, adds <i style='mso-bidi-font-style:normal'>chr</i> to the
 chromosome number when running <i style='mso-bidi-font-style:normal'>tabix</i>
-to extract variants from all the <i style='mso-bidi-font-style:normal'>vcf</i> files,
-making e.g. chr17. If 0, adds <i style='mso-bidi-font-style:normal'>chr</i> for
-none of them, making e.g. 17. If a sequence of 0's and 1's, equal in length to
-the number of <i style='mso-bidi-font-style:normal'>vcf</i> files, then adds <i
-style='mso-bidi-font-style:normal'>chr</i> to the <i style='mso-bidi-font-style:
+to extract variants from all the <i style='mso-bidi-font-style:normal'>vcf</i>
+files, making e.g. chr17. If 0, adds <i style='mso-bidi-font-style:normal'>chr</i>
+for none of them, making e.g. 17. If a sequence of 0's and 1's, equal in length
+to the number of <i style='mso-bidi-font-style:normal'>vcf</i> files, then adds
+<i style='mso-bidi-font-style:normal'>chr</i> to the <i style='mso-bidi-font-style:
 normal'>vcf</i> files corresponding to the 1's.</p>
 
 <h3>--num-fields-to-skip x</h3>
 
 <p class=MsoNormal>This specifies the number of fields in the <i
-style='mso-bidi-font-style:normal'>vcf</i> file to skip before reading the
-genotypes. Normally there are 9 fields and this is the default value. However
-if for example the <i style='mso-bidi-font-style:normal'>PASS</i> field is
-blank then the number of fields to skip must be reduced to 8. This is because <i
+style='mso-bidi-font-style:normal'>vcf</i> file to skip before reading the genotypes.
+Normally there are 9 fields and this is the default value. However if for
+example the <i style='mso-bidi-font-style:normal'>PASS</i> field is blank then
+the number of fields to skip must be reduced to 8. This is because <i
 style='mso-bidi-font-style:normal'>geneVarAssoc</i> treats fields as being
 delimited by white space rather than by tabs so if an entry is missing it does
 not get counted. </p>
@@ -1944,8 +1944,8 @@ for debugging. Default value is 0.</p>
 
 <p class=MsoNormal>If 1, set up all the files for the analysis but do not
 actually run <i style='mso-bidi-font-style:normal'>scoreassoc</i>. A bash
-script or, under MSDOS, a batch file will be created which can be run to perform
-the analysis. Can be useful for debugging. Default value is 0.</p>
+script or, under MSDOS, a batch file will be created which can be run to
+perform the analysis. Can be useful for debugging. Default value is 0.</p>
 
 <h3>--debug 0 or 1</h3>
 
@@ -1990,12 +1990,13 @@ normal'>gva</i> with the value <i style='mso-bidi-font-style:normal'>name</i>.</
 
 <h3>--weight-expression 'expression'</h3>
 
-<p class=MsoNormal>Provides an expression to use to provide weights for each locus
-instead of the default scheme based on the inbuilt or <i style='mso-bidi-font-style:
-normal'>VEP</i> annotations. For further information, see below in the sections
-on expressions and annotations. There can be any number of these expressions
-and each one will produce its own locus weight file, meaning that a separate
-score will be produced for each weight expression. </p>
+<p class=MsoNormal>Provides an expression to use to provide weights for each
+locus instead of the default scheme based on the inbuilt or <i
+style='mso-bidi-font-style:normal'>VEP</i> annotations. For further
+information, see below in the sections on expressions and annotations. There
+can be any number of these expressions and each one will produce its own locus
+weight file, meaning that a separate score will be produced for each weight
+expression. </p>
 
 <h3>--rec-weight-expression 'expression'</h3>
 
@@ -2008,9 +2009,9 @@ option.</p>
 
 <h3>--weight-name name</h3>
 
-<p class=MsoNormal>Provides the name associated with a weight expression,
-overriding the default names for the scores. As many names should be provided
-as there are weight expressions.</p>
+<p class=MsoNormal>Provides the name associated with a weight expression, overriding
+the default names for the scores. As many names should be provided as there are
+weight expressions.</p>
 
 <h3>--weight-name-file file</h3>
 
@@ -2267,8 +2268,8 @@ practical situations.</p>
   height:14.4pt'>
   <p class=MsoNormal style='margin:0cm;mso-pagination:widow-orphan'><span
   style='font-size:12.0pt;mso-bidi-font-family:Calibri;mso-bidi-theme-font:
-  minor-latin;color:black'>AND operator, return 1 if both arguments are true,
-  only evaluate second if first is true.<o:p></o:p></span></p>
+  minor-latin;color:black'>AND operator, return 1 if both arguments are true, only
+  evaluate second if first is true.<o:p></o:p></span></p>
   </td>
  </tr>
  <tr style='mso-yfti-irow:9;height:14.4pt'>
@@ -2528,9 +2529,9 @@ practical situations.</p>
   height:14.4pt'>
   <p class=MsoNormal style='margin:0cm;mso-pagination:widow-orphan'><span
   style='font-size:12.0pt;mso-bidi-font-family:Calibri;mso-bidi-theme-font:
-  minor-latin;color:black'>This function behaves in the same way as VCFLOOKUP
-  except that it converts chromosome 23 to X when performing the lookup into
-  the <i style='mso-bidi-font-style:normal'>VCF</i> file.<o:p></o:p></span></p>
+  minor-latin;color:black'>This function behaves in the same way as VCFLOOKUP except
+  that it converts chromosome 23 to X when performing the lookup into the <i
+  style='mso-bidi-font-style:normal'>VCF</i> file.<o:p></o:p></span></p>
   </td>
  </tr>
  <tr style='mso-yfti-irow:24;height:14.4pt'>
@@ -2834,8 +2835,9 @@ practical situations.</p>
   coordinates,<span style='mso-spacerun:yes'>&nbsp; </span>e.g.
   &quot;17:1376826&quot;; &quot;ALLS&quot; produces a string consisting of the
   reference and first alternate allele, e.g. &quot;G,C&quot;; &quot;ID&quot;
-  produces a string consisting of the variant name, e.g. &quot;rs785623&quot;;
-  &quot;ISSNP&quot; produces a value of 1 if the variant is an SNP, else 0; &#8220;CPG&#8221;
+  produces a string consisting of the variant name, e.g. &quot;rs785623&quot;; &quot;ISSNP&quot;
+  produces a value of 1 if the variant is an SNP, else 0; &quot;ISINDEL&quot;
+  produces a value of 1 if the variant is an indel, else 0; &#8220;CPG&#8221;
   produces a 1 if REF allele at current position is C and next is G or if
   current is G and previous is C, else 0.<o:p></o:p></span></p>
   </td>
@@ -3302,8 +3304,8 @@ option</i> is specified.</p>
  </tr>
 </table>
 
-<p class=MsoNormal>The <i style='mso-bidi-font-style:normal'>VEP</i> annotations
-and their default weights are as follows:</p>
+<p class=MsoNormal>The <i style='mso-bidi-font-style:normal'>VEP</i>
+annotations and their default weights are as follows:</p>
 
 <table class=MsoNormalTable border=0 cellspacing=0 cellpadding=0 width=444
  style='width:333.0pt;border-collapse:collapse;mso-yfti-tbllook:1184;
@@ -4054,8 +4056,8 @@ and their default weights are as follows:</p>
 ones then the <i style='mso-bidi-font-style:normal'>--weight-expression</i>
 option can be used. The two internal tables of default weights are referred to
 as <i style='mso-bidi-font-style:normal'>DEFAULTWEIGHTS</i> and <i
-style='mso-bidi-font-style:normal'>DEFAULTVEPWEIGHTS</i> and if desired these
-can be used in a weight expression. This means that this:</p>
+style='mso-bidi-font-style:normal'>DEFAULTVEPWEIGHTS</i> and if desired these can
+be used in a weight expression. This means that this:</p>
 
 <p class=command>--weight-expression '(ANNOT &quot;INBUILT&quot;) GETWEIGHT
 &quot;DEFAULTWEIGHTS&quot;'<span style='mso-fareast-font-family:"Times New Roman";
@@ -4260,8 +4262,8 @@ mso-fareast-theme-font:minor-fareast'><o:p>&nbsp;</o:p></span></p>
 minor-fareast'>Example argument files<o:p></o:p></span></h2>
 
 <p class=MsoNormal><span style='mso-fareast-font-family:"Times New Roman";
-mso-fareast-theme-font:minor-fareast'>Some example files are provided which
-illustrate some of the functionality of <i style='mso-bidi-font-style:normal'>geneVarAssoc</i>.<o:p></o:p></span></p>
+mso-fareast-theme-font:minor-fareast'>Some example files are provided which illustrate
+some of the functionality of <i style='mso-bidi-font-style:normal'>geneVarAssoc</i>.<o:p></o:p></span></p>
 
 <h3><span style='mso-fareast-font-family:"Times New Roman";mso-fareast-theme-font:
 minor-fareast'>gva.BP.ExAC.test.arg<o:p></o:p></span></h3>
@@ -4424,8 +4426,8 @@ They will have names such as </span><i style='mso-bidi-font-style:normal'>BP_chr
 
 <p class=command>--ref-gene-file \reference\refseqgenesorted.txt</p>
 
-<p class=MsoNormal>This is the file which provides the coordinates for genes, exomes,
-etc. All the transcripts for each gene must be grouped together.</p>
+<p class=MsoNormal>This is the file which provides the coordinates for genes,
+exomes, etc. All the transcripts for each gene must be grouped together.</p>
 
 <p class=command>\reference\SureSelect_All_Exon_50mb.hg19.w100.nr.bed </p>
 
@@ -4981,8 +4983,8 @@ mso-fareast-font-family:"Times New Roman";mso-fareast-theme-font:minor-fareast'>
 /share/ref/VEP/ensembl-tools-release-87/scripts/variant_effect_predictor/variant_effect_predictor.pl
 --cache --dir /share/ref/VEP/Cache --merged --offline --input_file
 SSS2.vars.vcf.gz --format vcf --output_file SSS2.vars.annot.vcf --vcf
---force_overwrite <span style='mso-tab-count:1'>&nbsp;&nbsp; </span>--sift b
---polyphen b --pick_allele_gene<o:p></o:p></span></p>
+--force_overwrite <span style='mso-tab-count:1'> </span>--sift b --polyphen b
+--pick_allele_gene<o:p></o:p></span></p>
 
 <p class=MsoNormal><span style='mso-fareast-font-family:"Times New Roman";
 mso-fareast-theme-font:minor-fareast'>The <i style='mso-bidi-font-style:normal'>--pick_allele_gene</i>
@@ -5111,9 +5113,9 @@ code, examine variables etc. <o:p></o:p></span></p>
 <h2><i>intVarAssoc<o:p></o:p></i></h2>
 
 <p class=MsoNormal>This is a separate program which works in exactly the same
-way as <i style='mso-bidi-font-style:normal'>geneVarAssoc</i> except that
-instead of analysing variants in a named gene it analyses variants in
-particular regions, which are provided in a file specified by the <i>--interval-list-file</i>
+way as <i style='mso-bidi-font-style:normal'>geneVarAssoc</i> except that instead
+of analysing variants in a named gene it analyses variants in particular
+regions, which are provided in a file specified by the <i>--interval-list-file</i>
 argument. This is text file which contains a list of intervals in the format <i>chr:start-stop</i>,
 one interval to each line, e.g.:</p>
 

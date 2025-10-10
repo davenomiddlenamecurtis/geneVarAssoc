@@ -81,9 +81,9 @@ virtual dcvnode *copy()=0;
 int matches(const char *s);
 };
 
-extern void add_un_op(char *lab,dcexpr_val *(*f)(dcvnode *));
-extern void add_bin_op_same(char *lab,dcexpr_val *(*f)(dcvnode *,dcvnode *));
-extern void add_bin_op_next(char *lab,dcexpr_val *(*f)(dcvnode *,dcvnode *));
+extern void add_un_op(const char *lab,dcexpr_val *(*f)(dcvnode *));
+extern void add_bin_op_same(const char *lab,dcexpr_val *(*f)(dcvnode *,dcvnode *));
+extern void add_bin_op_next(const char *lab,dcexpr_val *(*f)(dcvnode *,dcvnode *));
 
 class express {
 protected:
@@ -129,7 +129,7 @@ dcvnode *copy();
 dcexpr_val *eval();
 };
 
-struct new_op_t { char *str; dcvnode *inst; };
+struct new_op_t { const char *str; dcvnode *inst; };
 
 extern char dc_expr_buff[];
 
