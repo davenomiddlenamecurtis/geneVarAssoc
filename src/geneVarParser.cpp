@@ -847,7 +847,7 @@ dcexpr_val *attrib_func(dcvnode *b1)
 	}
 	else if (!strcmp(attrib_type, "ALLS"))
 	{
-		sprintf(buff, "%s,%s", geneVarParser::thisLocus->getAll(0), geneVarParser::thisLocus->getAll(1));
+		sprintf(buff, "%s,%s", geneVarParser::thisLocus->getAll(0), geneVarParser::thisLocus->getAll(geneVarParser::thisAltAllele));
 		rv = new dcexpr_string(buff);
 	}
 	else if (!strcmp(attrib_type,"ID"))
