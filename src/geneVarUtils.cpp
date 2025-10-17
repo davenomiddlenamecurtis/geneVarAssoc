@@ -237,11 +237,11 @@ while (getNextArg(arg, argc, argv, fp, &depth, &argNum))
 	{
 		if (alls[0] == '\0')
 		{
-			sprintf(line, "(ATTRIB(%cPOS%c)=%c%s%c)*1", '"', '"', '"', locusPos, '"');
+			sprintf(line, "'(ATTRIB(%cPOS%c)=%c%s%c)*1'", '"', '"', '"', locusPos, '"');
 		}
 		else 
 		{
-			sprintf(line, "(ATTRIB(%cPOS%c)=%c%s%c & ATTRIB(%cALLS%c)=%c%s%c)*1", '"', '"', '"', locusPos, '"', '"', '"', '"', alls, '"');
+			sprintf(line, "'(ATTRIB(%cPOS%c)=%c%s%c & ATTRIB(%cALLS%c)=%c%s%c)*1'", '"', '"', '"', locusPos, '"', '"', '"', '"', alls, '"');
 		}
 		spec.weightExpressions.push_back(*(new std::string(line)));
 		if (alls[0] == '\0')
