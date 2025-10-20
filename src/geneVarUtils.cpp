@@ -115,7 +115,7 @@ while (getNextArg(arg, argc, argv, fp, &depth, &argNum))
 		|| !strcmp(arg, "--start-from-fitted") || !strcmp(arg, "--maxmaf")
 		|| !strcmp(arg, "--maxrecloci") || !strcmp(arg, "--propcomphet")
 		|| !strcmp(arg, "--lamda") || !strcmp(arg, "--missingzero")
-		|| !strcmp(arg, "--debugfile"))
+		|| !strcmp(arg, "--debugfile") || !strcmp(arg, "--addheader"))
 	{
 		strcpy(spec.scoreassocArgs[spec.nScoreassocArgs][0], arg);
 		getNextArg(arg, argc, argv, fp, &depth, &argNum);
