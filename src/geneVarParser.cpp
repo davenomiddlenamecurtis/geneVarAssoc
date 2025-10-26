@@ -186,9 +186,9 @@ dcexpr_val* dbNSFPLookup_func(dcvnode* b1, dcvnode* b2)
 
 dcexpr_val* dbNGPNLookup_func(dcvnode* b1)
 {
-	char fnBuff[1000], * ptr, * tptr, queryBuff[1000], chrStr[10], refAll[1000], altAll[1000], fn[1000], queryFn[100],fieldStr[100];
+	char fnBuff[1000], * ptr, * tptr, queryBuff[1000], chrStr[10], refAll[1000], altAll[1000], fn[1000], queryFn[100], fieldStr[100];
 	// a long alt allele could overwrite other variables
-	int noEntry, c, f, l, ff,stest;
+	int noEntry, c, f, l, ff, stest;
 	dcexpr_val* r1;
 	EVAL_R1;
 	dcexpr_val* rv;
@@ -212,30 +212,90 @@ dcexpr_val* dbNGPNLookup_func(dcvnode* b1)
 	strcpy(altAll, geneVarParser::thisLocus->getAll(geneVarParser::thisAltAllele));
 	sprintf(queryBuff, "%s:%ld-%s/%s", chrStr, geneVarParser::thisLocus->getPos(), refAll, altAll);
 	// not caching query results because only one result per variant
-		sprintf(queryFn, "GPNQueryOutput.%s.txt", geneVarParser::thisGene ? geneVarParser::thisGene->getGene() : "NOGENE");
-		remove(queryFn); // I wonder if file was deleted after being written
-		sprintf(lineBuff, "tabix %s %s:%ld-%ld > %s",
-			fnBuff, chrStr, geneVarParser::thisLocus->getPos(), geneVarParser::thisLocus->getPos(), queryFn);
-		checkSystem();
-		if ((stest = system(lineBuff)) != 0)
-			dcerror(1, "Could not execute %s, failed with error %d\n", lineBuff, stest);
-		fq = fopen(queryFn, "r");
-		*lineBuff = '\0';
-			noEntry = 1;
-			while (fgets(lineBuff, MAXINFOLENGTH, fq)) // may be no lines at all or no matching lines
-			{
-				char all0[100], all1[100];
-				sscanf(lineBuff, "%*s %*d %s %s", all0, all1);
-				if ((!strcmp(refAll, all0) && !strcmp(altAll, all1)) || (!strcmp(refAll, all1) && !strcmp(altAll, all0)))
-				{
-					noEntry = 0;
-					break;
-				}
-			}
-			if (noEntry)
-				sprintf(lineBuff, "NOGPNENTRY_%s", queryBuff);
-		fclose(fq);
+	sprintf(queryFn, "GPNQueryOutput.%s.txt", geneVarParser::thisGene ? geneVarParser::thisGene->getGene() : "NOGENE");
+	remove(queryFn); // I wonder if file was deleted after being written
+	sprintf(lineBuff, "tabix %s %s:%ld-%ld > %s",
+		fnBuff, chrStr, geneVarParser::thisLocus->getPos(), geneVarParser::thisLocus->getPos(), queryFn);
+	checkSystem();
+	if ((stest = system(lineBuff)) != 0)
+		dcerror(1, "Could not execute %s, failed with error %d\n", lineBuff, stest);
+	fq = fopen(queryFn, "r");
+	*lineBuff = '\0';
+	noEntry = 1;
+	while (fgets(lineBuff, MAXINFOLENGTH, fq)) // may be no lines at all or no matching lines
+	{
+		char all0[100], all1[100];
+		sscanf(lineBuff, "%*s %*d %s %s", all0, all1);
+		if ((!strcmp(refAll, all0) && !strcmp(altAll, all1)) || (!strcmp(refAll, all1) && !strcmp(altAll, all0)))
+		{
+			noEntry = 0;
+			break;
+		}
+	}
+	if (noEntry)
+		sprintf(lineBuff, "NOGPNENTRY_%s", queryBuff);
+	fclose(fq);
 	if (strncmp(lineBuff, "NOGPNENTRY", strlen("NOGPNENTRY")))
+	{
+		sscanf(lineBuff, "%*s %*s %*s %*s %s", fieldStr);
+		strcpy(lineBuff, fieldStr);
+	}
+	rv = new dcexpr_string(lineBuff);
+	return rv;
+}
+
+dcexpr_val* dbCADDLookup_func(dcvnode* b1)
+{
+	char fnBuff[1000], * ptr, * tptr, queryBuff[1000], chrStr[10], refAll[1000], altAll[1000], fn[1000], queryFn[100], fieldStr[100];
+	// a long alt allele could overwrite other variables
+	int noEntry, c, f, l, ff, stest;
+	dcexpr_val* r1;
+	EVAL_R1;
+	dcexpr_val* rv;
+	FILE* fq;
+	strcpy(fn, (char*)(*r1));
+	delete r1;
+	strcpy(fnBuff, fn);
+	int chr = geneVarParser::thisLocus->getChr();
+	if (chr == 23)
+		sprintf(chrStr, "X");
+	else
+		sprintf(chrStr, "%d", chr);
+	if (ptr = strchr(fnBuff, '*'))
+	{
+		strcpy(ptr, chrStr);
+		strcpy(lineBuff, fn);
+		ptr = strchr(lineBuff, '*');
+		strcat(fnBuff, lineBuff);
+	}
+	strcpy(refAll, geneVarParser::thisLocus->getAll(0));
+	strcpy(altAll, geneVarParser::thisLocus->getAll(geneVarParser::thisAltAllele));
+	sprintf(queryBuff, "%s:%ld-%s/%s", chrStr, geneVarParser::thisLocus->getPos(), refAll, altAll);
+	// not caching query results because only one result per variant
+	sprintf(queryFn, "CADDQueryOutput.%s.txt", geneVarParser::thisGene ? geneVarParser::thisGene->getGene() : "NOGENE");
+	remove(queryFn); // I wonder if file was deleted after being written
+	sprintf(lineBuff, "tabix %s %s:%ld-%ld > %s",
+		fnBuff, chrStr, geneVarParser::thisLocus->getPos(), geneVarParser::thisLocus->getPos(), queryFn);
+	checkSystem();
+	if ((stest = system(lineBuff)) != 0)
+		dcerror(1, "Could not execute %s, failed with error %d\n", lineBuff, stest);
+	fq = fopen(queryFn, "r");
+	*lineBuff = '\0';
+	noEntry = 1;
+	while (fgets(lineBuff, MAXINFOLENGTH, fq)) // may be no lines at all or no matching lines
+	{
+		char all0[100], all1[100];
+		sscanf(lineBuff, "%*s %*d %s %s", all0, all1);
+		if ((!strcmp(refAll, all0) && !strcmp(altAll, all1)) || (!strcmp(refAll, all1) && !strcmp(altAll, all0)))
+		{
+			noEntry = 0;
+			break;
+		}
+	}
+	if (noEntry)
+		sprintf(lineBuff, "NOCADDENTRY_%s", queryBuff);
+	fclose(fq);
+	if (strncmp(lineBuff, "NOCADDENTRY", strlen("NOCADDENTRY")))
 	{
 		sscanf(lineBuff, "%*s %*s %*s %*s %s", fieldStr);
 		strcpy(lineBuff, fieldStr);
@@ -940,6 +1000,7 @@ int initGeneVarParser()
 	add_un_op("GETCUSTOM",extract_custom_func);
 	add_un_op("GETVEP", extract_vep_func);
 	add_un_op("GETGPN", dbNGPNLookup_func);
+	add_un_op("GETCADD", dbNGPNLookup_func);
 	return 1;
 }
 
