@@ -297,8 +297,8 @@ dcexpr_val* dbCADDLookup_func(dcvnode* b1)
 	fclose(fq);
 	if (strncmp(lineBuff, "NOCADDENTRY", strlen("NOCADDENTRY")))
 	{
-		sscanf(lineBuff, "%*s %*s %*s %*s %*s %s", fieldStr);
-		// use PHRED-scale score not raw score
+		sscanf(lineBuff, "%*s %*s %*s %*s %s", fieldStr);
+		// use raw scores
 		strcpy(lineBuff, fieldStr);
 	}
 	rv = new dcexpr_string(lineBuff);
