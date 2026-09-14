@@ -129,7 +129,7 @@ dcexpr_val* dbNSFPLookup_func(dcvnode* b1, dcvnode* b2)
 		{
 			int matched = 0;
 			ff = 0;
-			while (*tempBuff = '\0', sscanf(lineBuff, "%s %[^\n]", fieldStr, tempBuff) > 1)
+			while (*tempBuff = '\0', sscanf(lineBuff, "%s %[^\n]", fieldStr, tempBuff) >= 1)
 			{
 				if (!strcmp(fieldName, fieldStr))
 				{
