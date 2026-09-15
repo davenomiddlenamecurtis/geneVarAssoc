@@ -105,7 +105,7 @@ dcexpr_val* dbNSFPLookup_func(dcvnode* b1, dcvnode* b2)
 	}
 	strcpy(refAll, geneVarParser::thisLocus->getAll(0));
 	strcpy(altAll, geneVarParser::thisLocus->getAll(geneVarParser::thisAltAllele));
-	sprintf(queryBuff, "%s:%ld-%s/%s", chrStr, geneVarParser::thisLocus->getPos(), refAll, altAll);
+	sprintf(queryBuff, "%s %s:%ld-%s/%s", fnBuff, chrStr, geneVarParser::thisLocus->getPos(), refAll, altAll);
 	std::map<std::string, std::string>::const_iterator queryIter = geneVarParser::dbNSFPCache.find(queryBuff);
 	std::map<std::string, int>::const_iterator fieldIter = geneVarParser::dbNSFPFields.find(fieldName);
 	if (queryIter == geneVarParser::dbNSFPCache.end() || fieldIter == geneVarParser::dbNSFPFields.end())
